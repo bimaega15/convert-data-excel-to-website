@@ -27,7 +27,10 @@ function hideTip() {
 const menu = [
   {
     label: 'Menu',
-    items: [{ to: '/', label: 'Dashboard', icon: 'home' }],
+    items: [
+      { to: '/', label: 'Dashboard', icon: 'home' },
+      { to: '/import', label: 'Import Excel', icon: 'upload' },
+    ],
   },
   {
     label: 'Master Data',

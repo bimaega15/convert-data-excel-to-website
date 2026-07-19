@@ -6,6 +6,7 @@ import { createRequire } from 'node:module'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { basename, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { findMissingSheets } from '../src/data/sheet-schema.js'
 
 const require = createRequire(import.meta.url)
 const XLSX = require('xlsx')
@@ -18,6 +19,15 @@ const outDir = join(root, 'src', 'data', 'generated')
 // cellDates dimatikan: serial Excel dikonversi manual berbasis UTC supaya
 // tanggal tidak bergeser oleh penyesuaian zona waktu lokal SheetJS.
 const wb = XLSX.readFile(srcFile)
+
+// Gagal lebih awal dengan pesan jelas, bukan crash saat membaca sheet yang hilang.
+const missing = findMissingSheets(wb.SheetNames)
+if (missing.length) {
+  console.error(`\n✗ Workbook tidak lengkap: ${missing.length} sheet wajib tidak ditemukan.\n`)
+  for (const s of missing) console.error(`  - ${s.name}  (${s.label})`)
+  console.error(`\nSumber: ${basename(srcFile)}\n`)
+  process.exit(1)
+}
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const EXCEL_EPOCH_UTC = Date.UTC(1899, 11, 30)

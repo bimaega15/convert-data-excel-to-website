@@ -9,6 +9,12 @@ const routes = [
     meta: { title: 'Dashboard', subtitle: 'Regional 4 SIFP Assurance', collapseSidebar: true },
   },
   {
+    path: '/import',
+    name: 'import',
+    component: () => import('../pages/ImportPage.vue'),
+    meta: { title: 'Import Excel', subtitle: 'Data Management' },
+  },
+  {
     path: '/master/observations',
     name: 'observations',
     component: () => import('../pages/master/ObservationsPage.vue'),
