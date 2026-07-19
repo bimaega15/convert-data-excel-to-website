@@ -7,6 +7,8 @@ import {
   EndpointNotConfiguredError,
   IMPORT_ENDPOINT,
   buildSummary,
+  columnLetter,
+  flattenEdits,
   formatBytes,
   parseWorkbook,
 } from '../services/excelImport'
@@ -21,7 +23,52 @@ const dragging = ref(false)
 const reviewed = ref(false)
 const submit = ref({ status: 'idle', message: '' })
 
+// Perubahan sel disimpan terpisah dari data hasil parse, supaya nilai asli file
+// selalu bisa dibandingkan dan dikembalikan.
+// bentuk: { [namaSheet]: { "excelRow:col": { excelRow, col, from, to } } }
+const edits = ref({})
+
 const activeSheet = computed(() => parsed.value?.sheets[activeIndex.value] ?? null)
+const activeEdits = computed(() => edits.value[activeSheet.value?.name] ?? {})
+
+const editList = computed(() => flattenEdits(edits.value))
+const editCount = computed(() => editList.value.length)
+
+const editCountBySheet = computed(() => {
+  const map = {}
+  for (const [name, cells] of Object.entries(edits.value)) {
+    const n = Object.keys(cells).length
+    if (n) map[name] = n
+  }
+  return map
+})
+
+function applyEdit({ excelRow, col, from, to }) {
+  const name = activeSheet.value.name
+  if (!edits.value[name]) edits.value[name] = {}
+  edits.value[name][`${excelRow}:${col}`] = { excelRow, col, from, to }
+  // perubahan data membatalkan konfirmasi sebelumnya
+  reviewed.value = false
+}
+
+function revertEdit({ excelRow, col }, sheetName) {
+  const name = sheetName ?? activeSheet.value.name
+  const cells = edits.value[name]
+  if (!cells) return
+  delete cells[`${excelRow}:${col}`]
+  if (!Object.keys(cells).length) delete edits.value[name]
+  reviewed.value = false
+}
+
+function resetAllEdits() {
+  edits.value = {}
+  reviewed.value = false
+}
+
+function gotoEdit(entry) {
+  const idx = parsed.value.sheets.findIndex((s) => s.name === entry.sheet)
+  if (idx >= 0) activeIndex.value = idx
+}
 
 // Workbook tanpa sheet wajib pasti ditolak converter, jadi jangan biarkan terkirim.
 const blockedByMissing = computed(() => (parsed.value?.missingSheets.length ?? 0) > 0)
@@ -41,6 +88,7 @@ function reset() {
   activeIndex.value = 0
   errorMsg.value = ''
   reviewed.value = false
+  edits.value = {}
   submit.value = { status: 'idle', message: '' }
   if (fileInput.value) fileInput.value.value = ''
 }
@@ -72,7 +120,11 @@ async function onSubmit() {
   submit.value = { status: 'sending', message: '' }
   try {
     const { submitWorkbook } = await import('../services/excelImport')
-    const res = await submitWorkbook(rawFile.value, buildSummary(parsed.value))
+    const res = await submitWorkbook(
+      rawFile.value,
+      buildSummary(parsed.value, edits.value),
+      edits.value
+    )
     submit.value = {
       status: 'success',
       message: res?.message ?? 'Workbook berhasil dikirim ke server.',
@@ -95,6 +147,9 @@ async function onSubmit() {
       <template #right>
         <span v-if="parsed" class="stat-chip">Sheet <strong>{{ parsed.sheets.length }}</strong></span>
         <span v-if="parsed" class="stat-chip">Total baris <strong>{{ parsed.totalRows }}</strong></span>
+        <span v-if="editCount" class="stat-chip stat-chip--edit">
+          Sel diubah <strong>{{ editCount }}</strong>
+        </span>
       </template>
     </PageHeader>
 
@@ -173,22 +228,66 @@ async function onSubmit() {
               >
                 <span class="sheetlist__dot" :class="sheet.required ? 'is-req' : 'is-extra'"></span>
                 <span class="sheetlist__name" :title="sheet.name">{{ sheet.name }}</span>
-                <span class="sheetlist__count">{{ sheet.rowCount }}</span>
+                <span
+                  v-if="editCountBySheet[sheet.name]"
+                  class="sheetlist__edited"
+                  :title="`${editCountBySheet[sheet.name]} sel diubah`"
+                >
+                  {{ editCountBySheet[sheet.name] }}✎
+                </span>
+                <span class="sheetlist__count" title="Jumlah baris data (tidak termasuk baris judul)">{{ sheet.rowCount - 1 }}</span>
               </button>
             </li>
           </ul>
         </aside>
 
         <div class="panel preview__pane">
-          <SheetPreview v-if="activeSheet" :sheet="activeSheet" />
+          <SheetPreview
+            v-if="activeSheet"
+            :sheet="activeSheet"
+            :edits="activeEdits"
+            @edit="applyEdit"
+            @revert="revertEdit"
+          />
         </div>
       </div>
+
+      <!-- daftar perubahan: dipakai untuk memeriksa ulang sebelum submit -->
+      <section v-if="editCount" class="panel changes">
+        <div class="changes__head">
+          <strong>{{ editCount }} sel diubah</strong>
+          <span>File asli tidak diubah — perubahan dikirim terpisah agar rumus & format tetap utuh.</span>
+          <button type="button" class="btn-ghost" @click="resetAllEdits">Batalkan semua</button>
+        </div>
+        <ul class="changes__list">
+          <li v-for="entry in editList" :key="`${entry.sheet}-${entry.cell}`">
+            <button type="button" class="changes__loc" @click="gotoEdit(entry)">
+              {{ entry.sheet }}<span>!{{ entry.cell }}</span>
+            </button>
+            <span class="changes__from">{{ entry.from === '' ? '(kosong)' : entry.from }}</span>
+            <span class="changes__arrow">→</span>
+            <span class="changes__to">{{ entry.to === '' ? '(kosong)' : entry.to }}</span>
+            <button
+              type="button"
+              class="changes__undo"
+              title="Kembalikan ke nilai asli"
+              @click="revertEdit({ excelRow: entry.excelRow, col: entry.excelCol - 1 }, entry.sheet)"
+            >
+              Kembalikan
+            </button>
+          </li>
+        </ul>
+      </section>
 
       <!-- langkah 3: submit -->
       <section class="panel submitbar">
         <label class="submitbar__check" :class="{ 'is-disabled': blockedByMissing }">
           <input v-model="reviewed" type="checkbox" :disabled="blockedByMissing" />
-          <span>Saya sudah memeriksa preview seluruh sheet dan data sudah benar.</span>
+          <span>
+            Saya sudah memeriksa preview seluruh sheet dan data sudah benar<template v-if="editCount">
+              , termasuk {{ editCount }} sel yang saya ubah</template
+            >.
+          </span>
         </label>
 
         <span v-if="blockedByMissing" class="submitbar__blocked">
@@ -214,10 +313,11 @@ async function onSubmit() {
         <DashIcon name="warning" :size="17" />
         <div>
           <strong>Endpoint backend belum dikonfigurasi — file belum terkirim.</strong>
-          Preview di atas berjalan sepenuhnya di browser. Untuk mengaktifkan pengiriman, isi
-          <code>VITE_IMPORT_ENDPOINT</code> pada file <code>.env</code>, lalu jalankan ulang dev
-          server. File akan dikirim sebagai <code>multipart/form-data</code> dengan field
-          <code>file</code> dan <code>summary</code>.
+          Preview dan pengeditan di atas berjalan sepenuhnya di browser. Untuk mengaktifkan
+          pengiriman, isi <code>VITE_IMPORT_ENDPOINT</code> pada file <code>.env</code>, lalu
+          jalankan ulang dev server. File akan dikirim sebagai
+          <code>multipart/form-data</code> dengan field <code>file</code>,
+          <code>summary</code>, dan <code>edits</code>.
         </div>
       </div>
       <p v-else-if="!IMPORT_ENDPOINT" class="submitbar__note">
@@ -497,6 +597,136 @@ async function onSubmit() {
 
 .preview__pane {
   min-width: 0;
+}
+
+.sheetlist__edited {
+  flex: none;
+  background: var(--st-degraded);
+  color: #fff;
+  border-radius: 5px;
+  padding: 0 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+/* ===== daftar perubahan ===== */
+.changes {
+  margin-bottom: 0.8rem;
+}
+
+.changes__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.changes__head strong {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--ink-strong);
+}
+
+.changes__head span {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.changes__head .btn-ghost {
+  margin-left: auto;
+}
+
+.changes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0.55rem 0.55rem;
+  max-height: 210px;
+  overflow-y: auto;
+}
+
+.changes__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.35rem;
+  border-radius: 8px;
+  font-size: 0.68rem;
+}
+
+.changes__list li:hover {
+  background: #f6f8fd;
+}
+
+.changes__loc {
+  flex: none;
+  max-width: 30ch;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.changes__loc:hover {
+  text-decoration: underline;
+}
+
+.changes__loc span {
+  color: var(--ink-muted);
+}
+
+.changes__from,
+.changes__to {
+  max-width: 26ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.changes__from {
+  background: #fdeae8;
+  color: #b3261e;
+  text-decoration: line-through;
+}
+
+.changes__to {
+  background: #e2f3e9;
+  color: #0a6b38;
+}
+
+.changes__arrow {
+  color: var(--ink-muted);
+  font-weight: 800;
+}
+
+.changes__undo {
+  margin-left: auto;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0.18rem 0.5rem;
+}
+
+.changes__undo:hover {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
 }
 
 /* ===== submit ===== */

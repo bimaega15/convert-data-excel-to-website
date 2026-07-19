@@ -80,23 +80,33 @@ export async function parseWorkbook(file) {
 
   const sheets = wb.SheetNames.map((name) => {
     const ws = wb.Sheets[name]
-    const rows = XLSX.utils.sheet_to_json(ws, {
+    // blankrows:true dipertahankan supaya indeks larik = nomor baris asli Excel.
+    // Baris kosong dibuang belakangan, setelah nomor barisnya dicatat — kalau
+    // dibuang oleh SheetJS, nomor baris preview akan bergeser dari file aslinya.
+    const raw = XLSX.utils.sheet_to_json(ws, {
       header: 1,
       raw: false,
       defval: '',
-      blankrows: false,
+      blankrows: true,
     })
-    const colCount = rows.reduce((max, r) => Math.max(max, r.length), 0)
-    // samakan panjang tiap baris agar grid preview tidak bergerigi
-    const grid = rows.map((r) => Array.from({ length: colCount }, (_, i) => r[i] ?? ''))
+    const colCount = raw.reduce((max, r) => Math.max(max, r.length), 0)
+
+    const rows = []
+    raw.forEach((cells, i) => {
+      // samakan panjang tiap baris agar grid preview tidak bergerigi
+      const padded = Array.from({ length: colCount }, (_, c) => cells[c] ?? '')
+      if (padded.some((v) => String(v).trim() !== '')) {
+        rows.push({ excelRow: i + 1, cells: padded })
+      }
+    })
 
     return {
       name,
-      grid,
-      rowCount: grid.length,
+      rows,
+      rowCount: rows.length,
       colCount,
       required: required.has(name),
-      empty: grid.length === 0,
+      empty: rows.length === 0,
     }
   })
 
@@ -109,8 +119,41 @@ export async function parseWorkbook(file) {
   }
 }
 
+/**
+ * Mengubah state edit UI menjadi daftar datar siap kirim.
+ * excelRow/col memakai penomoran Excel (baris 1-based, kolom 1-based) supaya
+ * backend bisa menerapkannya langsung ke workbook tanpa menebak offset.
+ */
+export function flattenEdits(edits) {
+  const out = []
+  for (const [sheetName, cells] of Object.entries(edits ?? {})) {
+    for (const edit of Object.values(cells)) {
+      out.push({
+        sheet: sheetName,
+        excelRow: edit.excelRow,
+        excelCol: edit.col + 1,
+        cell: `${columnLetter(edit.col)}${edit.excelRow}`,
+        from: edit.from,
+        to: edit.to,
+      })
+    }
+  }
+  return out
+}
+
+export function columnLetter(index) {
+  let s = ''
+  let n = index
+  do {
+    s = String.fromCharCode(65 + (n % 26)) + s
+    n = Math.floor(n / 26) - 1
+  } while (n >= 0)
+  return s
+}
+
 /** Ringkasan yang ikut dikirim ke backend bersama file aslinya. */
-export function buildSummary(parsed) {
+export function buildSummary(parsed, edits) {
+  const editList = flattenEdits(edits)
   return {
     fileName: parsed.fileName,
     fileSize: parsed.fileSize,
@@ -122,6 +165,7 @@ export function buildSummary(parsed) {
       cols: s.colCount,
       required: s.required,
     })),
+    editCount: editList.length,
   }
 }
 
@@ -130,13 +174,19 @@ export const IMPORT_ENDPOINT = import.meta.env.VITE_IMPORT_ENDPOINT ?? ''
 /**
  * Mengirim file asli (bukan hasil parse) ke backend sebagai multipart/form-data,
  * supaya backend tetap menjadi sumber kebenaran saat memproses ulang workbook.
+ *
+ * Perubahan sel dari preview dikirim TERPISAH sebagai daftar `edits`, bukan
+ * ditimpakan ke file. Menyusun ulang .xlsx di browser akan membuang rumus,
+ * format, dan merge cell dari workbook asli — dan diam-diam mengubah arti file
+ * yang diunggah user. Backend yang menerapkan edits ke file asli.
  */
-export async function submitWorkbook(file, summary) {
+export async function submitWorkbook(file, summary, edits) {
   if (!IMPORT_ENDPOINT) throw new EndpointNotConfiguredError()
 
   const body = new FormData()
   body.append('file', file, file.name)
   body.append('summary', JSON.stringify(summary))
+  body.append('edits', JSON.stringify(flattenEdits(edits)))
 
   let res
   try {

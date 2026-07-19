@@ -66,4 +66,14 @@ defineProps({
   color: var(--accent-blue);
   font-weight: 800;
 }
+
+.page-header__right :deep(.stat-chip--edit) {
+  background: #fff6dd;
+  border-color: #e9d59a;
+  color: #7a5800;
+}
+
+.page-header__right :deep(.stat-chip--edit strong) {
+  color: #7a5800;
+}
 </style>
