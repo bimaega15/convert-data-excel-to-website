@@ -25,8 +25,12 @@
 
   --page-bg: #edf0f7;
   --surface: #ffffff;
-  --track: #e5e9f2;
-  --line: #dfe4ee;
+  --track: #dce2ee;
+
+  /* dua tingkat border: --line membentuk komponen (tepi kartu, kontrol,
+     header tabel), --line-soft memisahkan baris di dalam komponen. */
+  --line: #c3cee3;
+  --line-soft: #d5dcec;
 }
 
 body {
@@ -38,8 +42,9 @@ body {
 /* ===== kartu panel dasar ===== */
 .panel {
   background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  box-shadow: 0 1px 3px rgba(20, 36, 107, 0.1);
+  box-shadow: 0 1px 2px rgba(20, 36, 107, 0.06);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -115,6 +120,78 @@ body {
   text-align: center;
   font-style: italic;
   font-family: Georgia, serif;
+}
+
+/* ===== utilitas halaman master data ===== */
+.master-page {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem 2rem;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.pill--yes {
+  background: #e2f3e9;
+  color: #0a6b38;
+}
+
+.pill--no {
+  background: #fdeae8;
+  color: #b3261e;
+}
+
+.pill--na {
+  background: #eef0f4;
+  color: #5b6472;
+}
+
+.pill--progress {
+  background: #fdf3d7;
+  color: #7a5800;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.14rem 0.5rem;
+  border-radius: 7px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: #eef1fb;
+  color: var(--navy-bar);
+  white-space: nowrap;
+}
+
+.score-badge {
+  display: inline-block;
+  min-width: 3.4rem;
+  text-align: center;
+  padding: 0.16rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.score-badge--effective {
+  background: #e2f3e9;
+  color: #0a6b38;
+}
+
+.score-badge--degraded {
+  background: #fdf3d7;
+  color: #7a5800;
+}
+
+.score-badge--failed {
+  background: #fdeae8;
+  color: #b3261e;
 }
 
 /* tooltip chart */

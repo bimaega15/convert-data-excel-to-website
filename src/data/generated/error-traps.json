@@ -1,0 +1,450 @@
+[
+  {
+    "obsId": "OBS-001",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Pekerja terlalu familiar terhadap aktivitas scaffolding sehingga questioning attitude terhadap bahaya fall hazard menurun."
+  },
+  {
+    "obsId": "OBS-001",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "Personel belum memahami hierarchy of control WAH, fall restraint vs fall arrest, serta bahaya suspension trauma."
+  },
+  {
+    "obsId": "OBS-001",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Task_Demands",
+    "errorTrap": "Vague Written Guidance",
+    "comments": "Prosedur dan PTW belum menjelaskan anchorage point, free fall distance, swing fall hazard, dan rescue requirement secara detail."
+  },
+  {
+    "obsId": "OBS-001",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Rescue equipment dan perangkat pendukung suspension trauma rescue belum tersedia secara memadai di lokasi kerja."
+  },
+  {
+    "obsId": "OBS-002",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Personel menganggap pengamanan isolasi oleh IA sudah cukup sehingga individual LOTO tidak diterapkan oleh seluruh pekerja terekspos."
+  },
+  {
+    "obsId": "OBS-002",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "Pemahaman terkait filosofi “one man one lock one key” dan individual accountability terhadap hazardous energy masih lemah."
+  },
+  {
+    "obsId": "OBS-002",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Task_Demands",
+    "errorTrap": "Vague Written Guidance",
+    "comments": "Implementasi group lock box dan individual LOTO belum dijelaskan secara kuat dan konsisten dalam praktik lapangan."
+  },
+  {
+    "obsId": "OBS-002",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Ketersediaan dan distribusi equipment LOTO kepada seluruh pekerja belum optimal."
+  },
+  {
+    "obsId": "OBS-003",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Personel mulai terbiasa menggunakan pengendalian administratif tanpa personal lock sebagai barrier individual protection."
+  },
+  {
+    "obsId": "OBS-003",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "Komunikasi mengenai mandatory individual LOTO belum dipahami konsisten oleh seluruh personel yang terekspos hazardous energy."
+  },
+  {
+    "obsId": "OBS-003",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Task_Demands",
+    "errorTrap": "Inadequate Job Design",
+    "comments": "Penggunaan chain lock pada valve isolation dilakukan tanpa guidance engineering yang detail terkait efektivitas positive isolation."
+  },
+  {
+    "obsId": "OBS-003",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Handwheel valve lockout cover atau universal cable valve lockout yang lebih sesuai belum tersedia memadai."
+  },
+  {
+    "obsId": "OBS-004",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "category": "Individual_Factor",
+    "errorTrap": "Risk Tolerance",
+    "comments": "Pekerjaan excavation tetap dilanjutkan sebelum underground utility teridentifikasi secara lengkap."
+  },
+  {
+    "obsId": "OBS-004",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "category": "Organizational_Factor",
+    "errorTrap": "Poor Job Planning",
+    "comments": "Identifikasi underground utility pada tahap perencanaan dan RA/JSA belum memadai sebelum excavation dimulai."
+  },
+  {
+    "obsId": "OBS-004",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "category": "Task_Demands",
+    "errorTrap": "Inadequate Job Design",
+    "comments": "Kondisi underground cable yang tidak teridentifikasi menciptakan ketidakpastian hazard pada pekerjaan excavation."
+  },
+  {
+    "obsId": "OBS-004",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "category": "Work_Environment",
+    "errorTrap": "Inadequate Labels / Signs / Display",
+    "comments": "Underground cable/utilities tidak memiliki penandaan yang jelas di area excavation."
+  },
+  {
+    "obsId": "OBS-005",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Masih ditemukan pekerja belum 100% tie-off saat berpindah posisi pada scaffolding."
+  },
+  {
+    "obsId": "OBS-005",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "Personel belum memahami engineering consequence fall arrest system, anchorage strength, dan suspension trauma."
+  },
+  {
+    "obsId": "OBS-005",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Task_Demands",
+    "errorTrap": "Vague Written Guidance",
+    "comments": "Rescue plan, anchorage requirement, dan free fall calculation belum dijelaskan detail pada prosedur dan PTW."
+  },
+  {
+    "obsId": "OBS-005",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Rescue equipment dan safety standby support terhadap suspension trauma belum tersedia secara memadai."
+  },
+  {
+    "obsId": "OBS-006",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Pekerja/PA terbiasa menggunakan fall arrest tanpa mempertanyakan adequacy fall prevention/fall restraint dan rescue readiness."
+  },
+  {
+    "obsId": "OBS-006",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "Pemahaman fall restraint, fall arrest, free fall distance, anchorage strength, dan suspension trauma masih lemah."
+  },
+  {
+    "obsId": "OBS-006",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Task_Demands",
+    "errorTrap": "Vague Written Guidance",
+    "comments": "Prosedur/SWC belum menjelaskan anchor point, free fall calculation, swing fall, dan rescue requirement secara detail."
+  },
+  {
+    "obsId": "OBS-006",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Work_Environment",
+    "errorTrap": "Inadequate Labels / Signs / Display",
+    "comments": "Barricade/marking line of fire terhadap dropped object dari pekerja scaffolding di atas belum tersedia memadai."
+  },
+  {
+    "obsId": "OBS-007",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Individual_Factor",
+    "errorTrap": "Risk Tolerance",
+    "comments": "Pekerjaan di confined space tetap diproses walaupun watch man/rescue readiness dan verification electrical leakage belum lengkap."
+  },
+  {
+    "obsId": "OBS-007",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "Pemahaman requirement CSE, penggunaan respiratory protection untuk gas tester, dan rescue readiness belum kuat."
+  },
+  {
+    "obsId": "OBS-007",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Task_Demands",
+    "errorTrap": "Vague Written Guidance",
+    "comments": "Sertifikat CSE/SWC belum secara jelas mengunci requirement watch man, rescue equipment, dan electrical leakage verification."
+  },
+  {
+    "obsId": "OBS-007",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Alat bantu/tali untuk menarik personel saat emergency serta respiratory protection untuk gas tester belum tersedia memadai."
+  },
+  {
+    "obsId": "OBS-008",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Watchman/HSSE merangkap fungsi dan kondisi ini berpotensi dianggap cukup karena pekerjaan berjalan tanpa insiden."
+  },
+  {
+    "obsId": "OBS-008",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Organizational_Factor",
+    "errorTrap": "Time Pressure",
+    "comments": "Target penyelesaian tanki akhir Juli 2026 dan pergantian tim/permit berulang menurunkan kualitas verification."
+  },
+  {
+    "obsId": "OBS-008",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Task_Demands",
+    "errorTrap": "Poor Job Planning",
+    "comments": "Rescue plan, biological hazard, SCBA, tali penarik, dan dedicated watchman belum direncanakan memadai."
+  },
+  {
+    "obsId": "OBS-008",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Hanya tersedia basket stretcher; SCBA, tali penarik, dan rescue equipment lain belum memadai."
+  },
+  {
+    "obsId": "OBS-009",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Watchman/HSSE merangkap fungsi dan kondisi ini berpotensi dianggap cukup karena pekerjaan berjalan tanpa insiden."
+  },
+  {
+    "obsId": "OBS-009",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Organizational_Factor",
+    "errorTrap": "Time Pressure",
+    "comments": "Target pekerjaan blasting/painting dan handover PA melalui telepon berpotensi menurunkan kualitas verification."
+  },
+  {
+    "obsId": "OBS-009",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Task_Demands",
+    "errorTrap": "Poor Job Planning",
+    "comments": "Rescue plan, biological hazard, SCBA, tali penarik, dan dedicated watchman belum direncanakan memadai."
+  },
+  {
+    "obsId": "OBS-009",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Work_Environment",
+    "errorTrap": "Limited Tool Availability",
+    "comments": "Hanya tersedia basket stretcher; SCBA, tali penarik, dan rescue equipment lain belum memadai."
+  },
+  {
+    "obsId": "OBS-010",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Scaffolding yang belum lengkap tetap digunakan oleh rigger setelah dipertimbangkan operasional lapangan."
+  },
+  {
+    "obsId": "OBS-010",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate Training",
+    "comments": "AA, PA, dan pekerja belum memahami fall restraint vs fall arrest dan free fall clearance."
+  },
+  {
+    "obsId": "OBS-010",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Task_Demands",
+    "errorTrap": "Poor Job Planning",
+    "comments": "Verifikasi Green Tag, toe board, anchorage, dan rescue plan belum dikunci sebelum pekerjaan dimulai."
+  },
+  {
+    "obsId": "OBS-010",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Work_Environment",
+    "errorTrap": "Inadequate Labels / Signs / Display",
+    "comments": "Green Inspection Tag belum dipasang pada scaffolding yang digunakan."
+  },
+  {
+    "obsId": "OBS-011",
+    "protocolCode": "HW",
+    "protocolName": "Hot Work",
+    "category": "Task_Demands",
+    "errorTrap": "High workload, multitasking",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-011",
+    "protocolCode": "HW",
+    "protocolName": "Hot Work",
+    "category": "Work_Environment",
+    "errorTrap": "Limited tool availability",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-011",
+    "protocolCode": "HW",
+    "protocolName": "Hot Work",
+    "category": "Task_Demands",
+    "errorTrap": "Inadeautea job design",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-011",
+    "protocolCode": "HW",
+    "protocolName": "Hot Work",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-012",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Task_Demands",
+    "errorTrap": "Vague written guidance",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-012",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Organizational_Factor",
+    "errorTrap": "Inadequate training",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-012",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Work_Environment",
+    "errorTrap": "Limited tool availability",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-012",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual_Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation checklist"
+  },
+  {
+    "obsId": "OBS-013",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-013."
+  },
+  {
+    "obsId": "OBS-014",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-014."
+  },
+  {
+    "obsId": "OBS-015",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-015."
+  },
+  {
+    "obsId": "OBS-017",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-017."
+  },
+  {
+    "obsId": "OBS-018",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-018."
+  },
+  {
+    "obsId": "OBS-019",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-019."
+  },
+  {
+    "obsId": "OBS-020",
+    "protocolCode": "LoF",
+    "protocolName": "Line of Fire",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-020."
+  },
+  {
+    "obsId": "OBS-023",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "category": "Individual Factor",
+    "errorTrap": "Complacency",
+    "comments": "Checked in source observation document OBS-023."
+  }
+]

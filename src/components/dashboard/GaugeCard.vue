@@ -17,7 +17,10 @@ const color = computed(() => colors[props.kpi.variant] ?? 'var(--accent-green)')
 const ARC_LEN = Math.PI * 80
 const dash = computed(() => `${(props.kpi.value / 100) * ARC_LEN} ${ARC_LEN}`)
 
-const valueLabel = computed(() => `${props.kpi.value.toFixed(1)}%`)
+const valueLabel = computed(() =>
+  props.kpi.pending ? 'Pending' : `${props.kpi.value.toFixed(1)}%`
+)
+const centerLabel = computed(() => (props.kpi.pending ? 'N/A' : `${props.kpi.value.toFixed(1)}%`))
 </script>
 
 <template>
@@ -25,7 +28,9 @@ const valueLabel = computed(() => `${props.kpi.value.toFixed(1)}%`)
     <div class="panel-body gauge-card__body">
       <h2 class="gauge-card__code" :style="{ color }">{{ kpi.code }}</h2>
       <p class="gauge-card__title">{{ kpi.title }}</p>
-      <p class="gauge-card__value" :style="{ color }">{{ valueLabel }}</p>
+      <p class="gauge-card__value" :style="{ color: kpi.pending ? 'var(--ink-muted)' : color }">
+        {{ valueLabel }}
+      </p>
       <p class="gauge-card__desc">{{ kpi.desc }}</p>
 
       <div class="gauge-card__gauge">
@@ -45,7 +50,7 @@ const valueLabel = computed(() => `${props.kpi.value.toFixed(1)}%`)
             stroke-linecap="round"
             :stroke-dasharray="dash"
           />
-          <text x="100" y="93" class="gauge-card__center">{{ valueLabel }}</text>
+          <text x="100" y="93" class="gauge-card__center">{{ centerLabel }}</text>
         </svg>
         <div class="gauge-card__scale">
           <span>0%</span>

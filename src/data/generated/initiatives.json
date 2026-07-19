@@ -1,0 +1,82 @@
+[
+  {
+    "id": "IMP-R4-001",
+    "initiative": "AI-assisted RA & JSA",
+    "relatedClsr": "JSA / Multi CLSR",
+    "owner": "All Zona",
+    "status": "In Progress",
+    "progress": 20,
+    "expectedImpact": "Improve JSA quality for BP company",
+    "notes": null
+  },
+  {
+    "id": "IMP-R4-002",
+    "initiative": "SWC Reinforcement: 10 CLSR Readiness Program",
+    "relatedClsr": "Multi CLSR",
+    "owner": "All Zona",
+    "status": "In Progress",
+    "progress": 0,
+    "expectedImpact": "Based on target list",
+    "notes": null
+  },
+  {
+    "id": "IMP-R4-003",
+    "initiative": "Business Partner (BP) V&V Coaching",
+    "relatedClsr": "Multi CLSR",
+    "owner": "All Zona",
+    "status": "In Progress",
+    "progress": 0,
+    "expectedImpact": "Selected BP companies",
+    "notes": null
+  },
+  {
+    "id": "IMP-IHE-Z13-001",
+    "initiative": "CLSR #5 Powered System: Individual LOTO Campaign",
+    "relatedClsr": "IHE",
+    "owner": "HSSE Zona 13",
+    "status": "In Progress",
+    "progress": 15,
+    "expectedImpact": "Reduce LOTO gaps",
+    "notes": "Pilot"
+  },
+  {
+    "id": "IMP-WAH-Z11-001",
+    "initiative": "CLSR #7 WAH: Develop SOP for erection/dismantling scaffolding",
+    "relatedClsr": "WAH",
+    "owner": "HSSE Zona 11",
+    "status": "In Progress",
+    "progress": 5,
+    "expectedImpact": "Improve WAH safeguards",
+    "notes": "Pilot"
+  },
+  {
+    "id": "IMP-WAH-Z11-002",
+    "initiative": "CLSR #7 WAH: Hierarchy of Control for Work at Height (WAH)",
+    "relatedClsr": "WAH",
+    "owner": "HSSE Zona 11",
+    "status": "In Progress",
+    "progress": 5,
+    "expectedImpact": "Improve WAH safeguards",
+    "notes": "Pilot"
+  },
+  {
+    "id": "IMP-R4-004",
+    "initiative": "Human Performance Tools (HPTs)",
+    "relatedClsr": "Multi CLSR",
+    "owner": "All Zona",
+    "status": "In Progress",
+    "progress": 0,
+    "expectedImpact": "Reduce Errors: Prevent individual mistakes during critical work steps.",
+    "notes": null
+  },
+  {
+    "id": "IMP-R4-005",
+    "initiative": "PJSM: Pre-Job Briefing & Worksite Risk Review",
+    "relatedClsr": "Multi CLSR",
+    "owner": "All Zona",
+    "status": "In Progress",
+    "progress": 0,
+    "expectedImpact": "Selected PA: HP-Based PJSM",
+    "notes": null
+  }
+]

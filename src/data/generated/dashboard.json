@@ -1,0 +1,693 @@
+{
+  "meta": {
+    "title": "REGIONAL 4 SIFP ASSURANCE DASHBOARD",
+    "subtitle": "Executive Dashboard – Full Database (July 2026)",
+    "draft": true,
+    "sourceFile": "VnV_FULL_DATABASE_09July2026_OBS001-023 ver.Jul2026.xlsx",
+    "generatedAt": "2026-07-19T09:05:03.949Z"
+  },
+  "kpis": [
+    {
+      "code": "PSEC",
+      "title": "Priority SIF Exposure Coverage",
+      "value": 70,
+      "pending": false,
+      "desc": "7 of 10 Priority SIF Exposures Verified",
+      "variant": "green",
+      "target": "TARGET: 100%"
+    },
+    {
+      "code": "CCVC",
+      "title": "Critical Control Verification Coverage",
+      "value": 55.84,
+      "pending": false,
+      "desc": "43 of 77 Critical Safeguards Applicable Verified",
+      "variant": "blue",
+      "target": "TARGET: 100%"
+    },
+    {
+      "code": "PSIE",
+      "title": "Priority SIF Improvement Effectiveness",
+      "value": 0,
+      "pending": true,
+      "desc": "Awaiting approved improvement initiatives and re-verification",
+      "variant": "purple",
+      "target": "TARGET: 100%"
+    }
+  ],
+  "conformance": {
+    "value": 51.88,
+    "target": "TARGET: 100%",
+    "bands": [
+      {
+        "status": "failed",
+        "from": 0,
+        "to": 50
+      },
+      {
+        "status": "degraded",
+        "from": 50,
+        "to": 80
+      },
+      {
+        "status": "effective",
+        "from": 80,
+        "to": 100
+      }
+    ]
+  },
+  "quickFacts": [
+    {
+      "icon": "clipboard",
+      "label": "Total Observations Completed",
+      "value": "23"
+    },
+    {
+      "icon": "shield",
+      "label": "Priority SIF Exposure Verified (PSEC)",
+      "value": "7 / 10"
+    },
+    {
+      "icon": "checklist",
+      "label": "Critical Safeguards Verified (CCVC)",
+      "value": "43 / 77"
+    },
+    {
+      "icon": "gear",
+      "label": "Regional 4 Conformance Score",
+      "value": "51.88%"
+    },
+    {
+      "icon": "pin",
+      "label": "Zones Covered",
+      "value": "3 / 4"
+    },
+    {
+      "icon": "calendar",
+      "label": "Observation Period",
+      "value": "14 May 2026 – 09 Jul 2026"
+    },
+    {
+      "icon": "pin",
+      "label": "Sites / Locations Observed",
+      "value": "9"
+    },
+    {
+      "icon": "warning",
+      "label": "Missing Zones",
+      "value": "Zona 14"
+    }
+  ],
+  "healthMap": {
+    "zones": [
+      "Z11",
+      "Z12",
+      "Z13",
+      "Z14"
+    ],
+    "rows": [
+      {
+        "name": "Tools & Equipment",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "effective",
+            "score": 100,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 100,
+        "regionalStatus": "effective"
+      },
+      {
+        "name": "Line of Fire",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "failed",
+            "score": 33.33,
+            "value": 33.33
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 33.33,
+        "regionalStatus": "failed"
+      },
+      {
+        "name": "Hot Work",
+        "cells": [
+          {
+            "status": "failed",
+            "score": 42.86,
+            "value": 42.86
+          },
+          {
+            "status": "degraded",
+            "score": 75,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 54.55,
+        "regionalStatus": "degraded"
+      },
+      {
+        "name": "Confined Space Entry",
+        "cells": [
+          {
+            "status": "degraded",
+            "score": 60,
+            "value": null
+          },
+          {
+            "status": "degraded",
+            "score": 50,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 57.69,
+        "regionalStatus": "degraded"
+      },
+      {
+        "name": "Powered System / Isolation of Hazardous Energy",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "degraded",
+            "score": 73.33,
+            "value": null
+          },
+          {
+            "status": "degraded",
+            "score": 62.5,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 67.74,
+        "regionalStatus": "degraded"
+      },
+      {
+        "name": "Lifting & Rigging",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": null,
+        "regionalStatus": "nodata"
+      },
+      {
+        "name": "Work at Height",
+        "cells": [
+          {
+            "status": "failed",
+            "score": 29.63,
+            "value": 29.63
+          },
+          {
+            "status": "failed",
+            "score": 41.67,
+            "value": 41.67
+          },
+          {
+            "status": "failed",
+            "score": 44.44,
+            "value": 44.44
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 37.5,
+        "regionalStatus": "failed"
+      },
+      {
+        "name": "Ground Disturbance / Excavation",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "degraded",
+            "score": 77.78,
+            "value": null
+          },
+          {
+            "status": "degraded",
+            "score": 50,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": 69.23,
+        "regionalStatus": "degraded"
+      },
+      {
+        "name": "Water-Based Work Activities",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": null,
+        "regionalStatus": "nodata"
+      },
+      {
+        "name": "Land Transportation",
+        "cells": [
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          },
+          {
+            "status": "nodata",
+            "score": null,
+            "value": null
+          }
+        ],
+        "regional": null,
+        "regionalStatus": "nodata"
+      }
+    ]
+  },
+  "topPanels": [
+    {
+      "no": 2,
+      "title": "TOP 5 SIF EXPOSURES",
+      "subtitle": "(by Frequency)",
+      "variant": "green",
+      "dash": "green",
+      "items": [
+        {
+          "label": "Work at Height",
+          "display": "8 (35%)",
+          "weight": 1
+        },
+        {
+          "label": "Confined Space Entry",
+          "display": "4 (17%)",
+          "weight": 0.5
+        },
+        {
+          "label": "Powered System / Isolation of Hazardous Energy",
+          "display": "4 (17%)",
+          "weight": 0.5
+        },
+        {
+          "label": "Ground Disturbance / Excavation",
+          "display": "3 (13%)",
+          "weight": 0.375
+        },
+        {
+          "label": "Hot Work",
+          "display": "2 (9%)",
+          "weight": 0.25
+        }
+      ],
+      "footer": {
+        "icon": "clipboard",
+        "label": "Total Observations",
+        "value": 23
+      }
+    },
+    {
+      "no": 3,
+      "title": "TOP 5 CRITICAL SAFEGUARD GAPS",
+      "subtitle": "(by Frequency)",
+      "variant": "red",
+      "dash": "red",
+      "items": [
+        {
+          "label": "Rescue Preparedness",
+          "display": "11",
+          "weight": 1
+        },
+        {
+          "label": "Correct Equipment",
+          "display": "8",
+          "weight": 0.7272727272727273
+        },
+        {
+          "label": "Fall Protection",
+          "display": "8",
+          "weight": 0.7272727272727273
+        },
+        {
+          "label": "Engineering Safeguard",
+          "display": "7",
+          "weight": 0.6363636363636364
+        },
+        {
+          "label": "Anchorage Integrity",
+          "display": "6",
+          "weight": 0.5454545454545454
+        }
+      ],
+      "footer": {
+        "icon": "shield",
+        "label": "Total Findings",
+        "value": 77
+      }
+    },
+    {
+      "no": 4,
+      "title": "TOP 5 RECURRING DRIFT",
+      "subtitle": "(Observed)",
+      "variant": "blue",
+      "dash": "amber",
+      "items": [
+        {
+          "label": "Barrier Management Drift",
+          "display": "49",
+          "weight": 1
+        },
+        {
+          "label": "Risk Assessment Drift",
+          "display": "29",
+          "weight": 0.5918367346938775
+        },
+        {
+          "label": "Administrative Compliance Drift",
+          "display": "26",
+          "weight": 0.5306122448979592
+        },
+        {
+          "label": "Procedural Drift",
+          "display": "18",
+          "weight": 0.3673469387755102
+        },
+        {
+          "label": "Engineering / Operating Drift",
+          "display": "6",
+          "weight": 0.12244897959183673
+        }
+      ],
+      "footer": {
+        "icon": "refresh",
+        "label": "Total Occurrences",
+        "value": 139
+      }
+    },
+    {
+      "no": 5,
+      "title": "TOP 5 SYSTEMIC ISSUES",
+      "subtitle": "(Identified)",
+      "variant": "purple",
+      "dash": null,
+      "items": [
+        {
+          "label": "Competency / Training",
+          "display": "39",
+          "weight": 1
+        },
+        {
+          "label": "Procedure / Documentation",
+          "display": "37",
+          "weight": 0.9487179487179487
+        },
+        {
+          "label": "Leadership / Supervision",
+          "display": "29",
+          "weight": 0.7435897435897436
+        },
+        {
+          "label": "Planning / Risk Assessment",
+          "display": "23",
+          "weight": 0.5897435897435898
+        },
+        {
+          "label": "Engineering / Design",
+          "display": "16",
+          "weight": 0.41025641025641024
+        }
+      ],
+      "footer": {
+        "icon": "gear",
+        "label": "Total Findings",
+        "value": 156
+      }
+    }
+  ],
+  "trend": {
+    "target": 100,
+    "targetLabel": "Target: 100%",
+    "points": [
+      {
+        "month": "May-26",
+        "value": 46.81
+      },
+      {
+        "month": "Jun-26",
+        "value": 46.99
+      },
+      {
+        "month": "Jul-26",
+        "value": 51.88
+      }
+    ],
+    "projection": [
+      {
+        "month": "Aug-26",
+        "value": 61.5
+      },
+      {
+        "month": "Sep-26",
+        "value": 71.13
+      },
+      {
+        "month": "Oct-26",
+        "value": 80.75
+      },
+      {
+        "month": "Nov-26",
+        "value": 90.38
+      },
+      {
+        "month": "Dec-26",
+        "value": 100
+      }
+    ]
+  },
+  "zonaScores": {
+    "target": 100,
+    "targetLabel": "Target: 100%",
+    "bars": [
+      {
+        "zone": "Zona 11",
+        "obs": 7,
+        "value": 42.59
+      },
+      {
+        "zone": "Zona 12",
+        "obs": 12,
+        "value": 57.14
+      },
+      {
+        "zone": "Zona 13",
+        "obs": 4,
+        "value": 55.17
+      },
+      {
+        "zone": "Zona 14",
+        "obs": 0,
+        "value": 0
+      }
+    ]
+  },
+  "initiatives": [
+    {
+      "name": "AI-assisted RA & JSA",
+      "owner": "All Zona",
+      "status": "In Progress",
+      "progress": 20
+    },
+    {
+      "name": "SWC Reinforcement: 10 CLSR Readiness Program",
+      "owner": "All Zona",
+      "status": "In Progress",
+      "progress": 0
+    },
+    {
+      "name": "Business Partner (BP) V&V Coaching",
+      "owner": "All Zona",
+      "status": "In Progress",
+      "progress": 0
+    },
+    {
+      "name": "CLSR #5 Powered System: Individual LOTO Campaign",
+      "owner": "HSSE Zona 13",
+      "status": "In Progress",
+      "progress": 15
+    },
+    {
+      "name": "CLSR #7 WAH: Develop SOP for erection/dismantling scaffolding",
+      "owner": "HSSE Zona 11",
+      "status": "In Progress",
+      "progress": 5
+    },
+    {
+      "name": "CLSR #7 WAH: Hierarchy of Control for Work at Height (WAH)",
+      "owner": "HSSE Zona 11",
+      "status": "In Progress",
+      "progress": 5
+    },
+    {
+      "name": "Human Performance Tools (HPTs)",
+      "owner": "All Zona",
+      "status": "In Progress",
+      "progress": 0
+    },
+    {
+      "name": "PJSM: Pre-Job Briefing & Worksite Risk Review",
+      "owner": "All Zona",
+      "status": "In Progress",
+      "progress": 0
+    }
+  ],
+  "summaryCards": [
+    {
+      "icon": "warning",
+      "tone": "red",
+      "title": "TOP SIF EXPOSURES",
+      "text": "Work at Height (WAH) dan Confined Space Entry merupakan SIF exposures paling sering diobservasi."
+    },
+    {
+      "icon": "shield",
+      "tone": "navy",
+      "title": "CRITICAL GAPS",
+      "text": "Rescue Preparedness, Fall Protection, dan Engineering Safeguard merupakan gap tertinggi."
+    },
+    {
+      "icon": "pin",
+      "tone": "red",
+      "title": "ZONA ATTENTION",
+      "text": "Zona 11 memiliki skor terendah dan perlu penguatan kontrol/coaching."
+    },
+    {
+      "icon": "people",
+      "tone": "navy",
+      "title": "KEY SYSTEMIC ISSUE",
+      "text": "Competency / Training, Procedure / Documentation, Leadership / Supervision menjadi systemic issue utama yang perlu ditangani segera."
+    },
+    {
+      "icon": "target",
+      "tone": "green",
+      "title": "FOCUS AREA",
+      "text": "Perkuat verifikasi critical safeguards dan tingkatkan kompetensi personel."
+    }
+  ],
+  "summaryNotes": [
+    "Data berdasarkan 23 observasi pada periode 14 May 2026 – 09 Jul 2026.",
+    "Data cutoff: 5 Juni 2026.",
+    "Dashboard diperbarui setiap bulan."
+  ],
+  "footerNote": "Dashboard ini menggunakan data observasi V&V (Full Database). Nilai indikator diperbarui otomatis dari hasil konversi Excel setiap kali data observasi bertambah dan tervalidasi."
+}

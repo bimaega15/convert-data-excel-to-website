@@ -80,7 +80,7 @@ import { initiatives } from '../../data/dashboard'
 
 .init-table td {
   padding: 0.34rem 0.45rem;
-  border-bottom: 1px solid #eef1f8;
+  border-bottom: 1px solid var(--line-soft);
   font-size: 0.68rem;
   vertical-align: middle;
 }

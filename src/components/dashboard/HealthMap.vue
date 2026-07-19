@@ -3,8 +3,14 @@ import { healthMap, statusLegend } from '../../data/dashboard'
 
 const statusLabel = Object.fromEntries(statusLegend.map((l) => [l.status, l.label]))
 
-function regionalClass(value) {
-  return value < 50 ? 'hm-regional--failed' : 'hm-regional--ok'
+function regionalClass(status) {
+  return status === 'failed' ? 'hm-regional--failed' : 'hm-regional--ok'
+}
+
+function cellTitle(row, zoneIdx, cell) {
+  const label = statusLabel[cell.status]
+  const score = cell.score ?? cell.value
+  return `${row.name} — ${healthMap.zones[zoneIdx]}: ${label}${score != null ? ` (${fmt(score)})` : ''}`
 }
 
 function fmt(value) {
@@ -34,12 +40,12 @@ function fmt(value) {
                   <span
                     class="status-dot"
                     :class="`status-dot--${cell.status}`"
-                    :title="`${row.name} — ${healthMap.zones[j]}: ${statusLabel[cell.status]}${cell.value != null ? ` (${fmt(cell.value)})` : ''}`"
+                    :title="cellTitle(row, j, cell)"
                   ></span>
                   <span v-if="cell.value != null" class="hm-cell-val">{{ fmt(cell.value) }}</span>
                 </span>
               </td>
-              <td class="hm-regional" :class="row.regional != null ? regionalClass(row.regional) : ''">
+              <td class="hm-regional" :class="row.regional != null ? regionalClass(row.regionalStatus) : ''">
                 {{ row.regional != null ? fmt(row.regional) : '-' }}
               </td>
             </tr>
@@ -72,7 +78,7 @@ function fmt(value) {
 .hm-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 480px;
+  min-width: 430px;
 }
 
 .hm-table th {
@@ -92,12 +98,18 @@ function fmt(value) {
 
 .hm-table td {
   padding: 0.28rem 0.3rem;
-  border-bottom: 1px solid #eef1f8;
+  border-bottom: 1px solid var(--line-soft);
   font-size: 0.68rem;
 }
 
+/* garis pemisah hanya antar kolom zona, bukan antara nomor urut dan nama CLSR */
+.hm-cell,
+.hm-regional {
+  border-left: 1px solid var(--line-soft);
+}
+
 .hm-table tbody tr:nth-child(even) {
-  background: #f8fafd;
+  background: #f4f7fc;
 }
 
 .hm-table tbody tr:last-child td {
@@ -115,7 +127,7 @@ function fmt(value) {
   font-weight: 700;
   color: var(--ink);
   text-transform: uppercase;
-  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .hm-cell {

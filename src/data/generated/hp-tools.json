@@ -1,0 +1,392 @@
+[
+  {
+    "obsId": "OBS-001",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat terdapat ketidakpastian terhadap critical safeguard WAH",
+    "kapanDigunakan": "Saat pekerja tidak memahami fall restraint vs fall arrest, suspension trauma hazard, dan rescue preparedness",
+    "caraPakai": "Hentikan pekerjaan dan lakukan coaching/verifikasi dengan personel kompeten sebelum pekerjaan dilanjutkan",
+    "effectivenessNotes": "SWA digunakan untuk coaching terhadap critical safeguard WAH, namun gap kompetensi dan engineering understanding masih ditemukan"
+  },
+  {
+    "obsId": "OBS-001",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Memastikan pekerja memahami hazard dan safeguard pekerjaan WAH",
+    "kapanDigunakan": "Sebelum pekerjaan dismantling scaffolding dimulai",
+    "caraPakai": "Bahas hazard jatuh, dropped object, anchor point, dan rescue preparedness",
+    "effectivenessNotes": "Briefing lebih dominan administratif dan belum membangun pemahaman engineering consequence secara mendalam"
+  },
+  {
+    "obsId": "OBS-002",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat ditemukan gap implementasi individual LOTO",
+    "kapanDigunakan": "Saat diketahui hanya IA yang memasang LOTO sementara pekerja lain belum protected by personal lock",
+    "caraPakai": "Hentikan pekerjaan dan lakukan review ulang implementasi individual LOTO sebelum pekerjaan dilanjutkan",
+    "effectivenessNotes": "Coaching berhasil meningkatkan awareness penggunaan LOTO BOX sebagai additional barrier"
+  },
+  {
+    "obsId": "OBS-002",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "tool": "Pre-task brief",
+    "tujuan": "Memastikan pekerja memahami hazardous energy exposure",
+    "kapanDigunakan": "Sebelum pekerjaan overhaul dan alignment pompa dimulai",
+    "caraPakai": "Bahas isolation point, zero energy verification, dan individual accountability",
+    "effectivenessNotes": "Briefing belum cukup menekankan fatal risk unexpected energization"
+  },
+  {
+    "obsId": "OBS-003",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat ditemukan gap individual LOTO",
+    "kapanDigunakan": "Saat pekerja belum memasang personal lock pada pekerjaan alignment booster compressor",
+    "caraPakai": "Pekerjaan dihentikan sementara untuk review implementasi LOTO",
+    "effectivenessNotes": "Coaching meningkatkan awareness terhadap kebutuhan personal protection barrier"
+  },
+  {
+    "obsId": "OBS-003",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap hazardous energy",
+    "kapanDigunakan": "Sebelum alignment booster compressor dilakukan",
+    "caraPakai": "Review ICC, titik isolasi, dan exposure hazardous energy",
+    "effectivenessNotes": "Briefing belum memastikan implementasi individual accountability"
+  },
+  {
+    "obsId": "OBS-004",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat ditemukan utilitas bawah tanah yang tidak teridentifikasi",
+    "kapanDigunakan": "Saat excavation menemukan kabel bawah tanah pada kedalaman ±0.5 meter",
+    "caraPakai": "Hentikan excavation dan lakukan reassessment sebelum pekerjaan dilanjutkan",
+    "effectivenessNotes": "SWA telah digunakan dengan baik sebagai escalation trigger"
+  },
+  {
+    "obsId": "OBS-004",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "tool": "Pre-task brief",
+    "tujuan": "Memastikan pekerja memahami excavation hazard dan SWA trigger",
+    "kapanDigunakan": "Sebelum excavation dimulai",
+    "caraPakai": "Bahas underground utilities, cave-in hazard, dan permit revalidation",
+    "effectivenessNotes": "Briefing belum cukup membangun awareness escalation hazard"
+  },
+  {
+    "obsId": "OBS-005",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat rescue readiness dan tie-off belum memadai",
+    "kapanDigunakan": "Saat rescue plan dan safety standby person belum tersedia",
+    "caraPakai": "Hentikan pekerjaan untuk verifikasi rescue preparedness dan safeguard",
+    "effectivenessNotes": "SWA digunakan untuk coaching terhadap suspension trauma hazard dan rescue readiness"
+  },
+  {
+    "obsId": "OBS-005",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun pemahaman terhadap critical safeguard pekerjaan WAH",
+    "kapanDigunakan": "Sebelum erection scaffolding dimulai",
+    "caraPakai": "Bahas anchor point, free fall distance, swing fall, dan rescue plan",
+    "effectivenessNotes": "Briefing masih dominan administratif dan belum membahas engineering consequence secara mendalam"
+  },
+  {
+    "obsId": "OBS-006",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat critical safeguard Work at Height tidak siap",
+    "kapanDigunakan": "Saat ditemukan gap pada rescue readiness, verification, atau safeguard utama",
+    "caraPakai": "Hentikan pekerjaan WAH pada scaffolding/heat exchanger, lakukan reassessment, lengkapi safeguard, lalu revalidasi permit/SWC",
+    "effectivenessNotes": "SWA/stop-work digunakan sebagai trigger coaching dan perbaikan safeguard lapangan"
+  },
+  {
+    "obsId": "OBS-006",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard Work at Height",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada WAH pada scaffolding/heat exchanger",
+    "effectivenessNotes": "Briefing perlu lebih teknikal, bukan hanya administratif"
+  },
+  {
+    "obsId": "OBS-007",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat critical safeguard Confined Space Entry tidak siap",
+    "kapanDigunakan": "Saat ditemukan gap pada rescue readiness, verification, atau safeguard utama",
+    "caraPakai": "Hentikan pekerjaan penarikan kabel di ruang terbatas SSB, lakukan reassessment, lengkapi safeguard, lalu revalidasi permit/SWC",
+    "effectivenessNotes": "SWA/stop-work digunakan sebagai trigger coaching dan perbaikan safeguard lapangan"
+  },
+  {
+    "obsId": "OBS-007",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard Confined Space Entry",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada penarikan kabel di ruang terbatas SSB",
+    "effectivenessNotes": "Briefing perlu lebih teknikal, bukan hanya administratif"
+  },
+  {
+    "obsId": "OBS-008",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat critical safeguard Confined Space Entry tidak siap",
+    "kapanDigunakan": "Saat ditemukan gap pada rescue readiness, verification, atau safeguard utama",
+    "caraPakai": "Hentikan pekerjaan repair bottom floor Tank T-0006, lakukan reassessment, lengkapi safeguard, lalu revalidasi permit/SWC",
+    "effectivenessNotes": "SWA/stop-work digunakan sebagai trigger coaching dan perbaikan safeguard lapangan"
+  },
+  {
+    "obsId": "OBS-008",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard Confined Space Entry",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada repair bottom floor Tank T-0006",
+    "effectivenessNotes": "Briefing perlu lebih teknikal, bukan hanya administratif"
+  },
+  {
+    "obsId": "OBS-009",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat critical safeguard Confined Space Entry tidak siap",
+    "kapanDigunakan": "Saat ditemukan gap pada rescue readiness, verification, atau safeguard utama",
+    "caraPakai": "Hentikan pekerjaan blasting painting inside condensate tank, lakukan reassessment, lengkapi safeguard, lalu revalidasi permit/SWC",
+    "effectivenessNotes": "SWA/stop-work digunakan sebagai trigger coaching dan perbaikan safeguard lapangan"
+  },
+  {
+    "obsId": "OBS-009",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard Confined Space Entry",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada blasting painting inside condensate tank",
+    "effectivenessNotes": "Briefing perlu lebih teknikal, bukan hanya administratif"
+  },
+  {
+    "obsId": "OBS-010",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and Get Help",
+    "tujuan": "Menghentikan pekerjaan saat critical safeguard Work at Height tidak siap",
+    "kapanDigunakan": "Saat ditemukan gap pada rescue readiness, verification, atau safeguard utama",
+    "caraPakai": "Hentikan pekerjaan install steel structure new HE CPP Gundih, lakukan reassessment, lengkapi safeguard, lalu revalidasi permit/SWC",
+    "effectivenessNotes": "SWA/stop-work digunakan sebagai trigger coaching dan perbaikan safeguard lapangan"
+  },
+  {
+    "obsId": "OBS-010",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard Work at Height",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada install steel structure new HE CPP Gundih",
+    "effectivenessNotes": "Briefing perlu lebih teknikal, bukan hanya administratif"
+  },
+  {
+    "obsId": "OBS-011",
+    "protocolCode": "HW",
+    "protocolName": "Hot Work",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada Hot work repair bottom floor inside Tank T-006",
+    "effectivenessNotes": "Briefing perlu teknikal dan spesifik terhadap critical safeguards"
+  },
+  {
+    "obsId": "OBS-012",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and get help",
+    "tujuan": "Menghentikan pekerjaan saat critical safeguard belum siap",
+    "kapanDigunakan": "Saat ditemukan gap critical safeguard atau kondisi berubah",
+    "caraPakai": "Hentikan pekerjaan, lakukan reassessment, lengkapi safeguard, lalu revalidasi permit/SWC pada Install & dismantle scaffolding for NDT UT flare header 475-LF & 470-HF 32\" at ~10 m",
+    "effectivenessNotes": "Digunakan sebagai trigger coaching dan perbaikan safeguard"
+  },
+  {
+    "obsId": "OBS-012",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding terhadap critical safeguard",
+    "kapanDigunakan": "Sebelum pekerjaan high-risk dimulai atau setelah kondisi berubah",
+    "caraPakai": "Bahas scope, hazard, critical safeguard, emergency/rescue plan, dan stop-work trigger pada Install & dismantle scaffolding for NDT UT flare header 475-LF & 470-HF 32\" at ~10 m",
+    "effectivenessNotes": "Briefing perlu teknikal dan spesifik terhadap critical safeguards"
+  },
+  {
+    "obsId": "OBS-013",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "tool": "3-Way Communication",
+    "tujuan": "Menghindari miskomunikasi",
+    "kapanDigunakan": "Instruksi kritis",
+    "caraPakai": "Sender memberi instruksi → receiver repeat back → sender confirm.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-013."
+  },
+  {
+    "obsId": "OBS-013",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-013."
+  },
+  {
+    "obsId": "OBS-014",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and get help",
+    "tujuan": "Mencegah tindakan berdasarkan asumsi saat ragu",
+    "kapanDigunakan": "Saat kondisi tidak dipahami, abnormal, atau tidak sesuai prosedur",
+    "caraPakai": "Hentikan pekerjaan sementara dan minta bantuan/verifikasi dari personel kompeten sebelum melanjutkan.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-014."
+  },
+  {
+    "obsId": "OBS-014",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-014."
+  },
+  {
+    "obsId": "OBS-015",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Stop and get help",
+    "tujuan": "Mencegah tindakan berdasarkan asumsi saat ragu",
+    "kapanDigunakan": "Saat kondisi tidak dipahami, abnormal, atau tidak sesuai prosedur",
+    "caraPakai": "Hentikan pekerjaan sementara dan minta bantuan/verifikasi dari personel kompeten sebelum melanjutkan.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-015."
+  },
+  {
+    "obsId": "OBS-015",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-015."
+  },
+  {
+    "obsId": "OBS-016",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "tool": "Stop and get help",
+    "tujuan": "Mencegah tindakan berdasarkan asumsi saat ragu",
+    "kapanDigunakan": "Saat kondisi tidak dipahami, abnormal, atau tidak sesuai prosedur",
+    "caraPakai": "Hentikan pekerjaan sementara dan minta bantuan/verifikasi dari personel kompeten sebelum melanjutkan.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-016."
+  },
+  {
+    "obsId": "OBS-016",
+    "protocolCode": "GD",
+    "protocolName": "Ground Disturbance or Excavation",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-016."
+  },
+  {
+    "obsId": "OBS-017",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-017."
+  },
+  {
+    "obsId": "OBS-017",
+    "protocolCode": "CSE",
+    "protocolName": "Confined Space Entry",
+    "tool": "Post Job Review",
+    "tujuan": "Mengambil lesson learned",
+    "kapanDigunakan": "Setelah pekerjaan",
+    "caraPakai": "Diskusikan apa yang berjalan baik, error traps, dan improvement.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-017."
+  },
+  {
+    "obsId": "OBS-018",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-018."
+  },
+  {
+    "obsId": "OBS-019",
+    "protocolCode": "WAH",
+    "protocolName": "Work at Height",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-019."
+  },
+  {
+    "obsId": "OBS-020",
+    "protocolCode": "LoF",
+    "protocolName": "Line of Fire",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-020."
+  },
+  {
+    "obsId": "OBS-021",
+    "protocolCode": "T&E",
+    "protocolName": "Tools & Equipment",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-021."
+  },
+  {
+    "obsId": "OBS-021",
+    "protocolCode": "T&E",
+    "protocolName": "Tools & Equipment",
+    "tool": "Post Job Review",
+    "tujuan": "Mengambil lesson learned",
+    "kapanDigunakan": "Setelah pekerjaan",
+    "caraPakai": "Diskusikan apa yang berjalan baik, error traps, dan improvement.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-021."
+  },
+  {
+    "obsId": "OBS-023",
+    "protocolCode": "IHE",
+    "protocolName": "Powered System / Isolation of Hazardous Energy",
+    "tool": "Pre-task brief",
+    "tujuan": "Membangun shared understanding sebelum pekerjaan dimulai",
+    "kapanDigunakan": "Sebelum pekerjaan high risk",
+    "caraPakai": "Diskusikan scope, hazard, critical safeguard, error traps, SWA trigger, rescue plan, dan role tiap personel.",
+    "effectivenessNotes": "Checked/used in source observation document OBS-023."
+  }
+]
