@@ -466,5 +466,128 @@ for (const [file, data] of Object.entries(outputs)) {
   const count = Array.isArray(data) ? data.length : Object.keys(data).length
   console.log(`✓ ${file} (${Array.isArray(data) ? `${count} baris` : `${count} bagian`})`)
 }
+
+// ---------- Manifest + data mentah SEMUA worksheet (untuk viewer generik) ----------
+// Setiap sheet Excel diekspor apa adanya ke sheets/<slug>.json, dan _manifest.json
+// menjadi sumber tunggal daftar menu sidebar -> jumlah menu selalu mengikuti
+// jumlah worksheet di file Excel tanpa perlu mengubah kode.
+
+// Sheet yang punya halaman kurasi khusus: arahkan menu ke halaman itu, bukan viewer generik.
+const CURATED = {
+  'INPUT-SIF_Questions': { route: '/master/sif-questions', label: 'SIF Questions', icon: 'checklist' },
+  'INPUT-Error_Traps': { route: '/master/error-traps', label: 'Error Traps', icon: 'warning' },
+  'INPUT-HP_Tools': { route: '/master/hp-tools', label: 'HP Tools', icon: 'gear' },
+  'INPUT-Drift_Conditions': { route: '/master/drift-conditions', label: 'Drift Conditions', icon: 'refresh' },
+  'INPUT-Latent_Conditions': { route: '/master/latent-conditions', label: 'Latent Conditions', icon: 'layers' },
+  DATABASE_PSEC_CCVC: { route: '/master/ccvc-library', label: 'PSEC & CCVC Library', icon: 'book' },
+  'ANALYZE-CONFORMANCE_SCORE': { route: '/master/observations', label: 'Observations', icon: 'clipboard' },
+  'ANALYZE-IMPROVEMENT_INITIATIVES': { route: '/master/initiatives', label: 'Improvement Initiatives', icon: 'target' },
+}
+
+// Urutan tampil grup di sidebar; sheet di dalam grup mengikuti urutan aslinya di Excel.
+const GROUP_ORDER = ['Data Input', 'Database', 'Analisis', 'Konfigurasi', 'Sumber', 'Audit', 'Helper', 'Lainnya']
+const GROUP_ICON = {
+  'Data Input': 'clipboard',
+  Database: 'book',
+  Analisis: 'gear',
+  Konfigurasi: 'gear',
+  Sumber: 'file',
+  Audit: 'shield',
+  Helper: 'layers',
+  Lainnya: 'file',
+}
+
+function groupOf(name) {
+  if (/^INPUT/i.test(name)) return 'Data Input'
+  if (/^DATABASE/i.test(name)) return 'Database'
+  if (/^ANALYZE/i.test(name)) return 'Analisis'
+  if (/^CONFIG/i.test(name)) return 'Konfigurasi'
+  if (/^SOURCE/i.test(name)) return 'Sumber'
+  if (/^AUDIT/i.test(name)) return 'Audit'
+  if (/^Helper/i.test(name)) return 'Helper'
+  return 'Lainnya'
+}
+
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+// Label ringkas untuk sheet non-kurasi: buang token kategori di depan (sudah jadi
+// judul grup) lalu ubah pemisah "_" / "-" menjadi spasi.
+function shortLabel(name) {
+  const stripped = name.replace(/^(INPUT|DATABASE|ANALYZE|CONFIG|SOURCE|AUDIT|Helper)[-_]?/i, '')
+  const words = (stripped || name).replace(/[_-]+/g, ' ').trim()
+  return words || name
+}
+
+// raw:false -> tanggal & persen tampil seperti di Excel, bukan angka serial.
+function rawGrid(sheetName) {
+  const grid = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
+    header: 1,
+    raw: false,
+    defval: '',
+    blankrows: false,
+  })
+  const colCount = grid.reduce((m, r) => Math.max(m, r.length), 0)
+  const rows = grid.map((r) => Array.from({ length: colCount }, (_, c) => r[c] ?? ''))
+  return { rows, colCount }
+}
+
+const sheetsDir = join(outDir, 'sheets')
+mkdirSync(sheetsDir, { recursive: true })
+
+const usedSlugs = new Set()
+const manifestItems = wb.SheetNames.map((name, index) => {
+  let slug = slugify(name)
+  while (usedSlugs.has(slug)) slug += '-x'
+  usedSlugs.add(slug)
+
+  const { rows, colCount } = rawGrid(name)
+  const curated = CURATED[name]
+  const group = groupOf(name)
+
+  writeFileSync(
+    join(sheetsDir, `${slug}.json`),
+    JSON.stringify({ name, slug, rowCount: rows.length, colCount, rows }, null, 2)
+  )
+
+  return {
+    name,
+    slug,
+    index,
+    group,
+    label: curated?.label ?? shortLabel(name),
+    icon: curated?.icon ?? GROUP_ICON[group],
+    route: curated?.route ?? `/sheet/${slug}`,
+    curated: Boolean(curated),
+    rowCount: rows.length,
+    colCount,
+    dataRows: Math.max(0, rows.length - 1),
+  }
+})
+
+const sheetGroups = GROUP_ORDER.map((label) => ({
+  label,
+  items: manifestItems.filter((it) => it.group === label),
+})).filter((g) => g.items.length)
+
+writeFileSync(
+  join(sheetsDir, '_manifest.json'),
+  JSON.stringify(
+    {
+      generatedAt: new Date().toISOString(),
+      sourceFile: basename(srcFile),
+      sheetCount: manifestItems.length,
+      groups: sheetGroups,
+    },
+    null,
+    2
+  )
+)
+console.log(`✓ sheets/_manifest.json (${manifestItems.length} worksheet, ${sheetGroups.length} grup)`)
+
 console.log(`\nSumber : ${basename(srcFile)}`)
 console.log(`Output : ${outDir}`)

@@ -1,0 +1,74 @@
+{
+  "name": "Helper_Exposure",
+  "slug": "helper-exposure",
+  "rowCount": 11,
+  "colCount": 4,
+  "rows": [
+    [
+      "Protocol_Code",
+      "Exposure_Name",
+      "Count",
+      "Rank"
+    ],
+    [
+      "T&E",
+      "Tools & Equipment",
+      "1",
+      "6"
+    ],
+    [
+      "LoF",
+      "Line of Fire",
+      "1",
+      "7"
+    ],
+    [
+      "HW",
+      "Hot Work",
+      "2",
+      "5"
+    ],
+    [
+      "CSE",
+      "Confined Space Entry",
+      "4",
+      "2"
+    ],
+    [
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "4",
+      "3"
+    ],
+    [
+      "L&R",
+      "Lifting & Rigging",
+      "0",
+      ""
+    ],
+    [
+      "WAH",
+      "Work at Height",
+      "8",
+      "1"
+    ],
+    [
+      "GD",
+      "Ground Disturbance / Excavation",
+      "3",
+      "4"
+    ],
+    [
+      "WBA",
+      "Water-Based Work Activities",
+      "0",
+      ""
+    ],
+    [
+      "LT",
+      "Land Transportation",
+      "0",
+      ""
+    ]
+  ]
+}

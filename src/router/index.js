@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { sheetBySlug } from '../data/sheets'
 
 const routes = [
   {
@@ -62,12 +63,29 @@ const routes = [
     component: () => import('../pages/master/InitiativesPage.vue'),
     meta: { title: 'Improvement Initiatives', subtitle: 'Master Data' },
   },
+  {
+    // Viewer generik untuk worksheet yang belum punya halaman kurasi.
+    path: '/sheet/:slug',
+    name: 'sheet',
+    component: () => import('../pages/SheetViewerPage.vue'),
+    meta: { title: 'Worksheet', subtitle: 'Data Excel' },
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior: () => ({ top: 0 }),
+})
+
+// Route worksheet memakai satu definisi untuk semua sheet, jadi judul topbar
+// diisi dari manifest sesuai slug yang sedang dibuka.
+router.beforeEach((to) => {
+  if (to.name === 'sheet') {
+    const entry = sheetBySlug[to.params.slug]
+    to.meta.title = entry?.label ?? 'Worksheet'
+    to.meta.subtitle = entry ? `Worksheet · ${entry.name}` : 'Data Excel'
+  }
 })
 
 router.afterEach((to) => {

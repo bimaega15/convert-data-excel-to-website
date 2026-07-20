@@ -16,7 +16,6 @@ import { meta } from '../../data/dashboard'
     </div>
 
     <div class="dash-header__right">
-      <span v-if="meta.draft" class="draft-stamp">DRAFT</span>
       <span class="brand-mark">
         <span class="brand-mark__name">PERTAMINA</span>
         <span class="brand-mark__unit">EP CEPU</span>
@@ -76,18 +75,6 @@ import { meta } from '../../data/dashboard'
   align-items: center;
   justify-content: flex-end;
   gap: 1rem;
-}
-
-.draft-stamp {
-  color: var(--accent-red);
-  border: 3px solid var(--accent-red);
-  border-radius: 10px;
-  padding: 0.15rem 0.8rem;
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  transform: rotate(-4deg);
-  opacity: 0.9;
 }
 
 .brand-mark {

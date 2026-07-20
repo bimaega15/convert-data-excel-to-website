@@ -1,0 +1,98 @@
+{
+  "name": "ANALYZE-IMPROVEMENT_INITIATIVES",
+  "slug": "analyze-improvement-initiatives",
+  "rowCount": 9,
+  "colCount": 8,
+  "rows": [
+    [
+      "Improvement_ID",
+      "Initiative",
+      "Related_CLSR",
+      "V&V_Team_Asset_Owner",
+      "Status",
+      "Progress_%",
+      "Expected_Impact",
+      "Notes"
+    ],
+    [
+      "IMP-R4-001",
+      "AI-assisted RA & JSA",
+      "JSA / Multi CLSR",
+      "All Zona",
+      "In Progress",
+      "20%",
+      "Improve JSA quality for BP company",
+      ""
+    ],
+    [
+      "IMP-R4-002",
+      "SWC Reinforcement: 10 CLSR Readiness Program",
+      "Multi CLSR",
+      "All Zona",
+      "In Progress",
+      "0%",
+      "Based on target list",
+      ""
+    ],
+    [
+      "IMP-R4-003",
+      "Business Partner (BP) V&V Coaching",
+      "Multi CLSR",
+      "All Zona",
+      "In Progress",
+      "0%",
+      "Selected BP companies",
+      ""
+    ],
+    [
+      "IMP-IHE-Z13-001",
+      "CLSR #5 Powered System: Individual LOTO Campaign",
+      "IHE",
+      "HSSE Zona 13",
+      "In Progress",
+      "15%",
+      "Reduce LOTO gaps",
+      "Pilot"
+    ],
+    [
+      "IMP-WAH-Z11-001",
+      "CLSR #7 WAH: Develop SOP for erection/dismantling scaffolding",
+      "WAH",
+      "HSSE Zona 11",
+      "In Progress",
+      "5%",
+      "Improve WAH safeguards",
+      "Pilot"
+    ],
+    [
+      "IMP-WAH-Z11-002",
+      "CLSR #7 WAH: Hierarchy of Control for Work at Height (WAH)",
+      "WAH",
+      "HSSE Zona 11",
+      "In Progress",
+      "5%",
+      "Improve WAH safeguards",
+      "Pilot"
+    ],
+    [
+      "IMP-R4-004",
+      "Human Performance Tools (HPTs)",
+      "Multi CLSR",
+      "All Zona",
+      "In Progress",
+      "0%",
+      "Reduce Errors: Prevent individual mistakes during critical work steps.",
+      ""
+    ],
+    [
+      "IMP-R4-005",
+      "PJSM: Pre-Job Briefing & Worksite Risk Review",
+      "Multi CLSR",
+      "All Zona",
+      "In Progress",
+      "0%",
+      "Selected PA: HP-Based PJSM",
+      ""
+    ]
+  ]
+}

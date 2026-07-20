@@ -1,0 +1,43 @@
+{
+  "name": "AUDIT-ACTIVE_LINKAGE",
+  "slug": "audit-active-linkage",
+  "rowCount": 7,
+  "colCount": 3,
+  "rows": [
+    [
+      "Control Check",
+      "Expected Logic",
+      "Result / Formula"
+    ],
+    [
+      "Current Conformance",
+      "YES/(YES+NO), Active_Observation=Y",
+      "51.88%"
+    ],
+    [
+      "Drift linkage",
+      "Only active sequence counted",
+      "139"
+    ],
+    [
+      "Latent linkage",
+      "Only active sequence counted",
+      "156"
+    ],
+    [
+      "Inactive SIF rows",
+      "Sequence replaced by higher sequence",
+      "0"
+    ],
+    [
+      "PSIE reverification rows",
+      "Sequence>=2 and PSIE Eligible=Y",
+      "0"
+    ],
+    [
+      "Improvement IDs referenced",
+      "Nonblank Improvement_ID in SIF input",
+      "0"
+    ]
+  ]
+}

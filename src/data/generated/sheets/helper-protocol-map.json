@@ -1,0 +1,52 @@
+{
+  "name": "Helper_Protocol_Map",
+  "slug": "helper-protocol-map",
+  "rowCount": 11,
+  "colCount": 2,
+  "rows": [
+    [
+      "Protocol_Code",
+      "Expected_CLSR"
+    ],
+    [
+      "T&E",
+      "CLSR01"
+    ],
+    [
+      "LoF",
+      "CLSR02"
+    ],
+    [
+      "HW",
+      "CLSR03"
+    ],
+    [
+      "CSE",
+      "CLSR04"
+    ],
+    [
+      "IHE",
+      "CLSR05"
+    ],
+    [
+      "L&R",
+      "CLSR06"
+    ],
+    [
+      "WAH",
+      "CLSR07"
+    ],
+    [
+      "GD",
+      "CLSR08"
+    ],
+    [
+      "WBA",
+      "CLSR09"
+    ],
+    [
+      "LT",
+      "CLSR10"
+    ]
+  ]
+}

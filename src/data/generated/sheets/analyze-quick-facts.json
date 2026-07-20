@@ -1,0 +1,53 @@
+{
+  "name": "ANALYZE-QUICK_FACTS",
+  "slug": "analyze-quick-facts",
+  "rowCount": 9,
+  "colCount": 3,
+  "rows": [
+    [
+      "Fact_Name",
+      "Fact_Value",
+      "Notes"
+    ],
+    [
+      "Total Observations Completed",
+      "23",
+      "Unique Obs_ID"
+    ],
+    [
+      "Priority SIF Exposure Verified (PSEC)",
+      "7 / 10",
+      "From Executive Measures"
+    ],
+    [
+      "Critical Safeguards Verified (CCVC)",
+      "43 / 77",
+      "Unique applicable CCVC_ID"
+    ],
+    [
+      "Regional 4 Conformance Score",
+      "51.88%",
+      "Overall OBS-001 to latest Obs_ID | Total YES / (Total YES + Total NO)"
+    ],
+    [
+      "Zones Covered",
+      "3 / 4",
+      "Zona with observations"
+    ],
+    [
+      "Observation Period",
+      "14 May 2026 – 09 Jul 2026",
+      "Minimum–maximum observation date"
+    ],
+    [
+      "Sites / Locations Observed",
+      "9",
+      "Unique Site"
+    ],
+    [
+      "Missing Zones",
+      "Zona 14",
+      "Zona without observations"
+    ]
+  ]
+}

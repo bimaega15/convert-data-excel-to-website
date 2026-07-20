@@ -1,0 +1,32 @@
+{
+  "name": "CONFIG-DASHBOARD_TEXT",
+  "slug": "config-dashboard-text",
+  "rowCount": 6,
+  "colCount": 2,
+  "rows": [
+    [
+      "Section",
+      "Text"
+    ],
+    [
+      "Top SIF Exposure Note",
+      "Work at Height (WAH) dan Confined Space Entry merupakan SIF exposures paling sering diobservasi."
+    ],
+    [
+      "Critical Gaps Note",
+      "Rescue Preparedness, Fall Protection, dan Engineering Safeguard merupakan gap tertinggi."
+    ],
+    [
+      "Zona Attention Note",
+      "Zona 11 memiliki skor terendah dan perlu penguatan kontrol/coaching."
+    ],
+    [
+      "Focus Area Note",
+      "Perkuat verifikasi critical safeguards dan tingkatkan kompetensi personel."
+    ],
+    [
+      "Data Cutoff",
+      "5 Juni 2026"
+    ]
+  ]
+}

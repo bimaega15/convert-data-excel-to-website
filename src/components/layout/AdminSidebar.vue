@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import DashIcon from '../dashboard/DashIcon.vue'
 import { meta } from '../../data/dashboard'
+import { sheetGroups } from '../../data/sheets'
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -24,6 +25,19 @@ function hideTip() {
   tip.value.show = false
 }
 
+// Grup worksheet dibangun otomatis dari manifest hasil konversi Excel, sehingga
+// jumlah & isi menu selalu mengikuti worksheet yang ada di file Excel.
+const worksheetGroups = sheetGroups.map((group) => ({
+  label: group.label,
+  items: group.items.map((it) => ({
+    to: it.route,
+    label: it.label,
+    icon: it.icon,
+    title: it.name, // nama sheet asli untuk tooltip
+    count: it.dataRows,
+  })),
+}))
+
 const menu = [
   {
     label: 'Menu',
@@ -32,19 +46,7 @@ const menu = [
       { to: '/import', label: 'Import Excel', icon: 'upload' },
     ],
   },
-  {
-    label: 'Master Data',
-    items: [
-      { to: '/master/observations', label: 'Observations', icon: 'clipboard' },
-      { to: '/master/sif-questions', label: 'SIF Questions', icon: 'checklist' },
-      { to: '/master/ccvc-library', label: 'PSEC & CCVC Library', icon: 'book' },
-      { to: '/master/error-traps', label: 'Error Traps', icon: 'warning' },
-      { to: '/master/hp-tools', label: 'HP Tools', icon: 'gear' },
-      { to: '/master/drift-conditions', label: 'Drift Conditions', icon: 'refresh' },
-      { to: '/master/latent-conditions', label: 'Latent Conditions', icon: 'layers' },
-      { to: '/master/initiatives', label: 'Improvement Initiatives', icon: 'target' },
-    ],
-  },
+  ...worksheetGroups,
 ]
 </script>
 
@@ -70,14 +72,16 @@ const menu = [
           :to="item.to"
           class="sidebar__link"
           :aria-label="item.label"
+          :title="item.title ?? item.label"
           @click="emit('close')"
-          @mouseenter="showTip($event, item.label)"
-          @focus="showTip($event, item.label)"
+          @mouseenter="showTip($event, item.title ?? item.label)"
+          @focus="showTip($event, item.title ?? item.label)"
           @mouseleave="hideTip"
           @blur="hideTip"
         >
           <span class="sidebar__link-icon"><DashIcon :name="item.icon" :size="17" /></span>
           <span class="sidebar__link-text">{{ item.label }}</span>
+          <span v-if="item.count != null" class="sidebar__link-count">{{ item.count }}</span>
         </router-link>
       </div>
     </nav>
@@ -210,8 +214,28 @@ const menu = [
 }
 
 .sidebar__link-text {
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__link-count {
+  flex: none;
+  min-width: 1.4rem;
+  text-align: center;
+  padding: 0.02rem 0.32rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar__link.router-link-exact-active .sidebar__link-count {
+  background: rgba(255, 255, 255, 0.24);
+  color: #fff;
 }
 
 /* tooltip mode ikon: fixed agar tidak terpotong area scroll menu */
@@ -267,6 +291,7 @@ const menu = [
   .sidebar--collapsed .sidebar__brand-text,
   .sidebar--collapsed .sidebar__group-label,
   .sidebar--collapsed .sidebar__link-text,
+  .sidebar--collapsed .sidebar__link-count,
   .sidebar--collapsed .sidebar__footer {
     display: none;
   }

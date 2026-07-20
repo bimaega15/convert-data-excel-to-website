@@ -1,0 +1,58 @@
+{
+  "name": "ANALYZE-EXECUTIVE_MEASURES",
+  "slug": "analyze-executive-measures",
+  "rowCount": 5,
+  "colCount": 8,
+  "rows": [
+    [
+      "Metric_Code",
+      "Metric_Name",
+      "Numerator",
+      "Denominator",
+      "Score_%",
+      "Target_%",
+      "Status",
+      "Notes"
+    ],
+    [
+      "PSEC",
+      "Priority SIF Exposure Coverage",
+      "7",
+      "10",
+      "70.00%",
+      "100.00%",
+      "Gap",
+      "7/10 CLSR Verified"
+    ],
+    [
+      "CCVC",
+      "Critical Control Verification Coverage",
+      "43",
+      "77",
+      "55.84%",
+      "100.00%",
+      "Gap",
+      "43/77 Critical Safeguards Applicable Verified"
+    ],
+    [
+      "PSIE",
+      "Priority SIF Improvement Effectiveness",
+      "",
+      "",
+      "",
+      "100.00%",
+      "Pending",
+      "Awaiting approved improvement initiatives and re-verification"
+    ],
+    [
+      "CONF",
+      "Regional 4 Conformance Score",
+      "83",
+      "160",
+      "51.88%",
+      "100.00%",
+      "Gap",
+      "Current active sequence per Zona + Protocol | YES/(YES+NO)"
+    ]
+  ]
+}

@@ -1,0 +1,372 @@
+{
+  "generatedAt": "2026-07-20T13:52:06.969Z",
+  "sourceFile": "VnV_FULL_DATABASE_09July2026_OBS001-023 ver.Jul2026.xlsx",
+  "sheetCount": 25,
+  "groups": [
+    {
+      "label": "Data Input",
+      "items": [
+        {
+          "name": "INPUT-SIF_Questions",
+          "slug": "input-sif-questions",
+          "index": 0,
+          "group": "Data Input",
+          "label": "SIF Questions",
+          "icon": "checklist",
+          "route": "/master/sif-questions",
+          "curated": true,
+          "rowCount": 300,
+          "colCount": 32,
+          "dataRows": 299
+        },
+        {
+          "name": "INPUT-Error_Traps",
+          "slug": "input-error-traps",
+          "index": 1,
+          "group": "Data Input",
+          "label": "Error Traps",
+          "icon": "warning",
+          "route": "/master/error-traps",
+          "curated": true,
+          "rowCount": 57,
+          "colCount": 6,
+          "dataRows": 56
+        },
+        {
+          "name": "INPUT-HP_Tools",
+          "slug": "input-hp-tools",
+          "index": 2,
+          "group": "Data Input",
+          "label": "HP Tools",
+          "icon": "gear",
+          "route": "/master/hp-tools",
+          "curated": true,
+          "rowCount": 40,
+          "colCount": 8,
+          "dataRows": 39
+        },
+        {
+          "name": "INPUT-Drift_Conditions",
+          "slug": "input-drift-conditions",
+          "index": 3,
+          "group": "Data Input",
+          "label": "Drift Conditions",
+          "icon": "refresh",
+          "route": "/master/drift-conditions",
+          "curated": true,
+          "rowCount": 300,
+          "colCount": 12,
+          "dataRows": 299
+        },
+        {
+          "name": "INPUT-Latent_Conditions",
+          "slug": "input-latent-conditions",
+          "index": 4,
+          "group": "Data Input",
+          "label": "Latent Conditions",
+          "icon": "layers",
+          "route": "/master/latent-conditions",
+          "curated": true,
+          "rowCount": 300,
+          "colCount": 14,
+          "dataRows": 299
+        }
+      ]
+    },
+    {
+      "label": "Database",
+      "items": [
+        {
+          "name": "DATABASE_PSEC_CCVC",
+          "slug": "database-psec-ccvc",
+          "index": 5,
+          "group": "Database",
+          "label": "PSEC & CCVC Library",
+          "icon": "book",
+          "route": "/master/ccvc-library",
+          "curated": true,
+          "rowCount": 134,
+          "colCount": 11,
+          "dataRows": 133
+        },
+        {
+          "name": "DATABASE-DRIFT_LATENT_HP_ERROR",
+          "slug": "database-drift-latent-hp-error",
+          "index": 6,
+          "group": "Database",
+          "label": "DRIFT LATENT HP ERROR",
+          "icon": "book",
+          "route": "/sheet/database-drift-latent-hp-error",
+          "curated": false,
+          "rowCount": 153,
+          "colCount": 13,
+          "dataRows": 152
+        }
+      ]
+    },
+    {
+      "label": "Analisis",
+      "items": [
+        {
+          "name": "ANALYZE-CONFORMANCE_SCORE",
+          "slug": "analyze-conformance-score",
+          "index": 7,
+          "group": "Analisis",
+          "label": "Observations",
+          "icon": "clipboard",
+          "route": "/master/observations",
+          "curated": true,
+          "rowCount": 100,
+          "colCount": 24,
+          "dataRows": 99
+        },
+        {
+          "name": "ANALYZE-EXECUTIVE_MEASURES",
+          "slug": "analyze-executive-measures",
+          "index": 8,
+          "group": "Analisis",
+          "label": "EXECUTIVE MEASURES",
+          "icon": "gear",
+          "route": "/sheet/analyze-executive-measures",
+          "curated": false,
+          "rowCount": 5,
+          "colCount": 8,
+          "dataRows": 4
+        },
+        {
+          "name": "ANALYZE-QUICK_FACTS",
+          "slug": "analyze-quick-facts",
+          "index": 9,
+          "group": "Analisis",
+          "label": "QUICK FACTS",
+          "icon": "gear",
+          "route": "/sheet/analyze-quick-facts",
+          "curated": false,
+          "rowCount": 9,
+          "colCount": 3,
+          "dataRows": 8
+        },
+        {
+          "name": "ANALYZE-CLSR_HEALTH_MAP",
+          "slug": "analyze-clsr-health-map",
+          "index": 10,
+          "group": "Analisis",
+          "label": "CLSR HEALTH MAP",
+          "icon": "gear",
+          "route": "/sheet/analyze-clsr-health-map",
+          "curated": false,
+          "rowCount": 11,
+          "colCount": 15,
+          "dataRows": 10
+        },
+        {
+          "name": "ANALYZE-TOP5",
+          "slug": "analyze-top5",
+          "index": 11,
+          "group": "Analisis",
+          "label": "TOP5",
+          "icon": "gear",
+          "route": "/sheet/analyze-top5",
+          "curated": false,
+          "rowCount": 21,
+          "colCount": 8,
+          "dataRows": 20
+        },
+        {
+          "name": "ANALYZE-TREND_ZONE",
+          "slug": "analyze-trend-zone",
+          "index": 12,
+          "group": "Analisis",
+          "label": "TREND ZONE",
+          "icon": "gear",
+          "route": "/sheet/analyze-trend-zone",
+          "curated": false,
+          "rowCount": 13,
+          "colCount": 17,
+          "dataRows": 12
+        },
+        {
+          "name": "ANALYZE-IMPROVEMENT_INITIATIVES",
+          "slug": "analyze-improvement-initiatives",
+          "index": 13,
+          "group": "Analisis",
+          "label": "Improvement Initiatives",
+          "icon": "target",
+          "route": "/master/initiatives",
+          "curated": true,
+          "rowCount": 9,
+          "colCount": 8,
+          "dataRows": 8
+        }
+      ]
+    },
+    {
+      "label": "Konfigurasi",
+      "items": [
+        {
+          "name": "CONFIG-DASHBOARD_TEXT",
+          "slug": "config-dashboard-text",
+          "index": 14,
+          "group": "Konfigurasi",
+          "label": "DASHBOARD TEXT",
+          "icon": "gear",
+          "route": "/sheet/config-dashboard-text",
+          "curated": false,
+          "rowCount": 6,
+          "colCount": 2,
+          "dataRows": 5
+        }
+      ]
+    },
+    {
+      "label": "Sumber",
+      "items": [
+        {
+          "name": "SOURCE_OBS06_10",
+          "slug": "source-obs06-10",
+          "index": 18,
+          "group": "Sumber",
+          "label": "OBS06 10",
+          "icon": "file",
+          "route": "/sheet/source-obs06-10",
+          "curated": false,
+          "rowCount": 6,
+          "colCount": 4,
+          "dataRows": 5
+        }
+      ]
+    },
+    {
+      "label": "Audit",
+      "items": [
+        {
+          "name": "AUDIT_OBS013_023",
+          "slug": "audit-obs013-023",
+          "index": 19,
+          "group": "Audit",
+          "label": "OBS013 023",
+          "icon": "shield",
+          "route": "/sheet/audit-obs013-023",
+          "curated": false,
+          "rowCount": 90,
+          "colCount": 21,
+          "dataRows": 89
+        },
+        {
+          "name": "AUDIT-DATA_QUALITY",
+          "slug": "audit-data-quality",
+          "index": 22,
+          "group": "Audit",
+          "label": "DATA QUALITY",
+          "icon": "shield",
+          "route": "/sheet/audit-data-quality",
+          "curated": false,
+          "rowCount": 250,
+          "colCount": 12,
+          "dataRows": 249
+        },
+        {
+          "name": "AUDIT-ACTIVE_LINKAGE",
+          "slug": "audit-active-linkage",
+          "index": 24,
+          "group": "Audit",
+          "label": "ACTIVE LINKAGE",
+          "icon": "shield",
+          "route": "/sheet/audit-active-linkage",
+          "curated": false,
+          "rowCount": 7,
+          "colCount": 3,
+          "dataRows": 6
+        }
+      ]
+    },
+    {
+      "label": "Helper",
+      "items": [
+        {
+          "name": "Helper_Drift",
+          "slug": "helper-drift",
+          "index": 16,
+          "group": "Helper",
+          "label": "Drift",
+          "icon": "layers",
+          "route": "/sheet/helper-drift",
+          "curated": false,
+          "rowCount": 100,
+          "colCount": 5,
+          "dataRows": 99
+        },
+        {
+          "name": "Helper_Latent",
+          "slug": "helper-latent",
+          "index": 17,
+          "group": "Helper",
+          "label": "Latent",
+          "icon": "layers",
+          "route": "/sheet/helper-latent",
+          "curated": false,
+          "rowCount": 100,
+          "colCount": 4,
+          "dataRows": 99
+        },
+        {
+          "name": "Helper_Exposure",
+          "slug": "helper-exposure",
+          "index": 20,
+          "group": "Helper",
+          "label": "Exposure",
+          "icon": "layers",
+          "route": "/sheet/helper-exposure",
+          "curated": false,
+          "rowCount": 11,
+          "colCount": 4,
+          "dataRows": 10
+        },
+        {
+          "name": "Helper_Gaps",
+          "slug": "helper-gaps",
+          "index": 21,
+          "group": "Helper",
+          "label": "Gaps",
+          "icon": "layers",
+          "route": "/sheet/helper-gaps",
+          "curated": false,
+          "rowCount": 100,
+          "colCount": 3,
+          "dataRows": 99
+        },
+        {
+          "name": "Helper_Protocol_Map",
+          "slug": "helper-protocol-map",
+          "index": 23,
+          "group": "Helper",
+          "label": "Protocol Map",
+          "icon": "layers",
+          "route": "/sheet/helper-protocol-map",
+          "curated": false,
+          "rowCount": 11,
+          "colCount": 2,
+          "dataRows": 10
+        }
+      ]
+    },
+    {
+      "label": "Lainnya",
+      "items": [
+        {
+          "name": "ReadMe",
+          "slug": "readme",
+          "index": 15,
+          "group": "Lainnya",
+          "label": "ReadMe",
+          "icon": "file",
+          "route": "/sheet/readme",
+          "curated": false,
+          "rowCount": 19,
+          "colCount": 2,
+          "dataRows": 18
+        }
+      ]
+    }
+  ]
+}

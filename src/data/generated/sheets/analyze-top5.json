@@ -1,0 +1,218 @@
+{
+  "name": "ANALYZE-TOP5",
+  "slug": "analyze-top5",
+  "rowCount": 21,
+  "colCount": 8,
+  "rows": [
+    [
+      "Category",
+      "Rank",
+      "Item",
+      "Count",
+      "Percent",
+      "Status_Color",
+      "Source_Logic",
+      "Denominator"
+    ],
+    [
+      "Top SIF Exposure",
+      "1",
+      "Work at Height",
+      "8",
+      "34.78%",
+      "Red",
+      "Unique Obs_ID frequency by official CLSR/Protocol",
+      "23"
+    ],
+    [
+      "Top SIF Exposure",
+      "2",
+      "Confined Space Entry",
+      "4",
+      "17.39%",
+      "Red",
+      "Unique Obs_ID frequency by official CLSR/Protocol",
+      "23"
+    ],
+    [
+      "Top SIF Exposure",
+      "3",
+      "Powered System / Isolation of Hazardous Energy",
+      "4",
+      "17.39%",
+      "Red",
+      "Unique Obs_ID frequency by official CLSR/Protocol",
+      "23"
+    ],
+    [
+      "Top SIF Exposure",
+      "4",
+      "Ground Disturbance / Excavation",
+      "3",
+      "13.04%",
+      "Yellow",
+      "Unique Obs_ID frequency by official CLSR/Protocol",
+      "23"
+    ],
+    [
+      "Top SIF Exposure",
+      "5",
+      "Hot Work",
+      "2",
+      "8.70%",
+      "Yellow",
+      "Unique Obs_ID frequency by official CLSR/Protocol",
+      "23"
+    ],
+    [
+      "Top Critical Safeguard Gap",
+      "1",
+      "Rescue Preparedness",
+      "11",
+      "14.29%",
+      "Red",
+      "Critical_Safeguard frequency where NO=1",
+      "77"
+    ],
+    [
+      "Top Critical Safeguard Gap",
+      "2",
+      "Correct Equipment",
+      "8",
+      "10.39%",
+      "Red",
+      "Critical_Safeguard frequency where NO=1",
+      "77"
+    ],
+    [
+      "Top Critical Safeguard Gap",
+      "3",
+      "Fall Protection",
+      "8",
+      "10.39%",
+      "Red",
+      "Critical_Safeguard frequency where NO=1",
+      "77"
+    ],
+    [
+      "Top Critical Safeguard Gap",
+      "4",
+      "Engineering Safeguard",
+      "7",
+      "9.09%",
+      "Yellow",
+      "Critical_Safeguard frequency where NO=1",
+      "77"
+    ],
+    [
+      "Top Critical Safeguard Gap",
+      "5",
+      "Anchorage Integrity",
+      "6",
+      "7.79%",
+      "Yellow",
+      "Critical_Safeguard frequency where NO=1",
+      "77"
+    ],
+    [
+      "Top Recurring Drift",
+      "1",
+      "Barrier Management Drift",
+      "49",
+      "35.25%",
+      "Red",
+      "Drift_Level_1 frequency | Active_Observation=Y",
+      "139"
+    ],
+    [
+      "Top Recurring Drift",
+      "2",
+      "Risk Assessment Drift",
+      "29",
+      "20.86%",
+      "Red",
+      "Drift_Level_1 frequency | Active_Observation=Y",
+      "139"
+    ],
+    [
+      "Top Recurring Drift",
+      "3",
+      "Administrative Compliance Drift",
+      "26",
+      "18.71%",
+      "Red",
+      "Drift_Level_1 frequency | Active_Observation=Y",
+      "139"
+    ],
+    [
+      "Top Recurring Drift",
+      "4",
+      "Procedural Drift",
+      "18",
+      "12.95%",
+      "Yellow",
+      "Drift_Level_1 frequency | Active_Observation=Y",
+      "139"
+    ],
+    [
+      "Top Recurring Drift",
+      "5",
+      "Engineering / Operating Drift",
+      "6",
+      "4.32%",
+      "Yellow",
+      "Drift_Level_1 frequency | Active_Observation=Y",
+      "139"
+    ],
+    [
+      "Top Systemic Issue",
+      "1",
+      "Competency / Training",
+      "39",
+      "25.00%",
+      "Red",
+      "Latent_Level_1 frequency | Active_Observation=Y",
+      "156"
+    ],
+    [
+      "Top Systemic Issue",
+      "2",
+      "Procedure / Documentation",
+      "37",
+      "23.72%",
+      "Red",
+      "Latent_Level_1 frequency | Active_Observation=Y",
+      "156"
+    ],
+    [
+      "Top Systemic Issue",
+      "3",
+      "Leadership / Supervision",
+      "29",
+      "18.59%",
+      "Red",
+      "Latent_Level_1 frequency | Active_Observation=Y",
+      "156"
+    ],
+    [
+      "Top Systemic Issue",
+      "4",
+      "Planning / Risk Assessment",
+      "23",
+      "14.74%",
+      "Yellow",
+      "Latent_Level_1 frequency | Active_Observation=Y",
+      "156"
+    ],
+    [
+      "Top Systemic Issue",
+      "5",
+      "Engineering / Design",
+      "16",
+      "10.26%",
+      "Yellow",
+      "Latent_Level_1 frequency | Active_Observation=Y",
+      "156"
+    ]
+  ]
+}

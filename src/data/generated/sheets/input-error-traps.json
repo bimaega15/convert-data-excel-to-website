@@ -1,0 +1,464 @@
+{
+  "name": "INPUT-Error_Traps",
+  "slug": "input-error-traps",
+  "rowCount": 57,
+  "colCount": 6,
+  "rows": [
+    [
+      "Obs_ID",
+      "Protocols",
+      "Protocols",
+      "Error Trap Catergories",
+      "Error Trap",
+      "Comments"
+    ],
+    [
+      "OBS-001",
+      "WAH",
+      "Work at Height",
+      "Individual_Factor",
+      "Complacency",
+      "Pekerja terlalu familiar terhadap aktivitas scaffolding sehingga questioning attitude terhadap bahaya fall hazard menurun."
+    ],
+    [
+      "OBS-001",
+      "WAH",
+      "Work at Height",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "Personel belum memahami hierarchy of control WAH, fall restraint vs fall arrest, serta bahaya suspension trauma."
+    ],
+    [
+      "OBS-001",
+      "WAH",
+      "Work at Height",
+      "Task_Demands",
+      "Vague Written Guidance",
+      "Prosedur dan PTW belum menjelaskan anchorage point, free fall distance, swing fall hazard, dan rescue requirement secara detail."
+    ],
+    [
+      "OBS-001",
+      "WAH",
+      "Work at Height",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Rescue equipment dan perangkat pendukung suspension trauma rescue belum tersedia secara memadai di lokasi kerja."
+    ],
+    [
+      "OBS-002",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Individual_Factor",
+      "Complacency",
+      "Personel menganggap pengamanan isolasi oleh IA sudah cukup sehingga individual LOTO tidak diterapkan oleh seluruh pekerja terekspos."
+    ],
+    [
+      "OBS-002",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "Pemahaman terkait filosofi “one man one lock one key” dan individual accountability terhadap hazardous energy masih lemah."
+    ],
+    [
+      "OBS-002",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Task_Demands",
+      "Vague Written Guidance",
+      "Implementasi group lock box dan individual LOTO belum dijelaskan secara kuat dan konsisten dalam praktik lapangan."
+    ],
+    [
+      "OBS-002",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Ketersediaan dan distribusi equipment LOTO kepada seluruh pekerja belum optimal."
+    ],
+    [
+      "OBS-003",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Individual_Factor",
+      "Complacency",
+      "Personel mulai terbiasa menggunakan pengendalian administratif tanpa personal lock sebagai barrier individual protection."
+    ],
+    [
+      "OBS-003",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "Komunikasi mengenai mandatory individual LOTO belum dipahami konsisten oleh seluruh personel yang terekspos hazardous energy."
+    ],
+    [
+      "OBS-003",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Task_Demands",
+      "Inadequate Job Design",
+      "Penggunaan chain lock pada valve isolation dilakukan tanpa guidance engineering yang detail terkait efektivitas positive isolation."
+    ],
+    [
+      "OBS-003",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Handwheel valve lockout cover atau universal cable valve lockout yang lebih sesuai belum tersedia memadai."
+    ],
+    [
+      "OBS-004",
+      "GD",
+      "Ground Disturbance or Excavation",
+      "Individual_Factor",
+      "Risk Tolerance",
+      "Pekerjaan excavation tetap dilanjutkan sebelum underground utility teridentifikasi secara lengkap."
+    ],
+    [
+      "OBS-004",
+      "GD",
+      "Ground Disturbance or Excavation",
+      "Organizational_Factor",
+      "Poor Job Planning",
+      "Identifikasi underground utility pada tahap perencanaan dan RA/JSA belum memadai sebelum excavation dimulai."
+    ],
+    [
+      "OBS-004",
+      "GD",
+      "Ground Disturbance or Excavation",
+      "Task_Demands",
+      "Inadequate Job Design",
+      "Kondisi underground cable yang tidak teridentifikasi menciptakan ketidakpastian hazard pada pekerjaan excavation."
+    ],
+    [
+      "OBS-004",
+      "GD",
+      "Ground Disturbance or Excavation",
+      "Work_Environment",
+      "Inadequate Labels / Signs / Display",
+      "Underground cable/utilities tidak memiliki penandaan yang jelas di area excavation."
+    ],
+    [
+      "OBS-005",
+      "WAH",
+      "Work at Height",
+      "Individual_Factor",
+      "Complacency",
+      "Masih ditemukan pekerja belum 100% tie-off saat berpindah posisi pada scaffolding."
+    ],
+    [
+      "OBS-005",
+      "WAH",
+      "Work at Height",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "Personel belum memahami engineering consequence fall arrest system, anchorage strength, dan suspension trauma."
+    ],
+    [
+      "OBS-005",
+      "WAH",
+      "Work at Height",
+      "Task_Demands",
+      "Vague Written Guidance",
+      "Rescue plan, anchorage requirement, dan free fall calculation belum dijelaskan detail pada prosedur dan PTW."
+    ],
+    [
+      "OBS-005",
+      "WAH",
+      "Work at Height",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Rescue equipment dan safety standby support terhadap suspension trauma belum tersedia secara memadai."
+    ],
+    [
+      "OBS-006",
+      "WAH",
+      "Work at Height",
+      "Individual_Factor",
+      "Complacency",
+      "Pekerja/PA terbiasa menggunakan fall arrest tanpa mempertanyakan adequacy fall prevention/fall restraint dan rescue readiness."
+    ],
+    [
+      "OBS-006",
+      "WAH",
+      "Work at Height",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "Pemahaman fall restraint, fall arrest, free fall distance, anchorage strength, dan suspension trauma masih lemah."
+    ],
+    [
+      "OBS-006",
+      "WAH",
+      "Work at Height",
+      "Task_Demands",
+      "Vague Written Guidance",
+      "Prosedur/SWC belum menjelaskan anchor point, free fall calculation, swing fall, dan rescue requirement secara detail."
+    ],
+    [
+      "OBS-006",
+      "WAH",
+      "Work at Height",
+      "Work_Environment",
+      "Inadequate Labels / Signs / Display",
+      "Barricade/marking line of fire terhadap dropped object dari pekerja scaffolding di atas belum tersedia memadai."
+    ],
+    [
+      "OBS-007",
+      "CSE",
+      "Confined Space Entry",
+      "Individual_Factor",
+      "Risk Tolerance",
+      "Pekerjaan di confined space tetap diproses walaupun watch man/rescue readiness dan verification electrical leakage belum lengkap."
+    ],
+    [
+      "OBS-007",
+      "CSE",
+      "Confined Space Entry",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "Pemahaman requirement CSE, penggunaan respiratory protection untuk gas tester, dan rescue readiness belum kuat."
+    ],
+    [
+      "OBS-007",
+      "CSE",
+      "Confined Space Entry",
+      "Task_Demands",
+      "Vague Written Guidance",
+      "Sertifikat CSE/SWC belum secara jelas mengunci requirement watch man, rescue equipment, dan electrical leakage verification."
+    ],
+    [
+      "OBS-007",
+      "CSE",
+      "Confined Space Entry",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Alat bantu/tali untuk menarik personel saat emergency serta respiratory protection untuk gas tester belum tersedia memadai."
+    ],
+    [
+      "OBS-008",
+      "CSE",
+      "Confined Space Entry",
+      "Individual_Factor",
+      "Complacency",
+      "Watchman/HSSE merangkap fungsi dan kondisi ini berpotensi dianggap cukup karena pekerjaan berjalan tanpa insiden."
+    ],
+    [
+      "OBS-008",
+      "CSE",
+      "Confined Space Entry",
+      "Organizational_Factor",
+      "Time Pressure",
+      "Target penyelesaian tanki akhir Juli 2026 dan pergantian tim/permit berulang menurunkan kualitas verification."
+    ],
+    [
+      "OBS-008",
+      "CSE",
+      "Confined Space Entry",
+      "Task_Demands",
+      "Poor Job Planning",
+      "Rescue plan, biological hazard, SCBA, tali penarik, dan dedicated watchman belum direncanakan memadai."
+    ],
+    [
+      "OBS-008",
+      "CSE",
+      "Confined Space Entry",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Hanya tersedia basket stretcher; SCBA, tali penarik, dan rescue equipment lain belum memadai."
+    ],
+    [
+      "OBS-009",
+      "CSE",
+      "Confined Space Entry",
+      "Individual_Factor",
+      "Complacency",
+      "Watchman/HSSE merangkap fungsi dan kondisi ini berpotensi dianggap cukup karena pekerjaan berjalan tanpa insiden."
+    ],
+    [
+      "OBS-009",
+      "CSE",
+      "Confined Space Entry",
+      "Organizational_Factor",
+      "Time Pressure",
+      "Target pekerjaan blasting/painting dan handover PA melalui telepon berpotensi menurunkan kualitas verification."
+    ],
+    [
+      "OBS-009",
+      "CSE",
+      "Confined Space Entry",
+      "Task_Demands",
+      "Poor Job Planning",
+      "Rescue plan, biological hazard, SCBA, tali penarik, dan dedicated watchman belum direncanakan memadai."
+    ],
+    [
+      "OBS-009",
+      "CSE",
+      "Confined Space Entry",
+      "Work_Environment",
+      "Limited Tool Availability",
+      "Hanya tersedia basket stretcher; SCBA, tali penarik, dan rescue equipment lain belum memadai."
+    ],
+    [
+      "OBS-010",
+      "WAH",
+      "Work at Height",
+      "Individual_Factor",
+      "Complacency",
+      "Scaffolding yang belum lengkap tetap digunakan oleh rigger setelah dipertimbangkan operasional lapangan."
+    ],
+    [
+      "OBS-010",
+      "WAH",
+      "Work at Height",
+      "Organizational_Factor",
+      "Inadequate Training",
+      "AA, PA, dan pekerja belum memahami fall restraint vs fall arrest dan free fall clearance."
+    ],
+    [
+      "OBS-010",
+      "WAH",
+      "Work at Height",
+      "Task_Demands",
+      "Poor Job Planning",
+      "Verifikasi Green Tag, toe board, anchorage, dan rescue plan belum dikunci sebelum pekerjaan dimulai."
+    ],
+    [
+      "OBS-010",
+      "WAH",
+      "Work at Height",
+      "Work_Environment",
+      "Inadequate Labels / Signs / Display",
+      "Green Inspection Tag belum dipasang pada scaffolding yang digunakan."
+    ],
+    [
+      "OBS-011",
+      "HW",
+      "Hot Work",
+      "Task_Demands",
+      "High workload, multitasking",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-011",
+      "HW",
+      "Hot Work",
+      "Work_Environment",
+      "Limited tool availability",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-011",
+      "HW",
+      "Hot Work",
+      "Task_Demands",
+      "Inadeautea job design",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-011",
+      "HW",
+      "Hot Work",
+      "Individual_Factor",
+      "Complacency",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-012",
+      "WAH",
+      "Work at Height",
+      "Task_Demands",
+      "Vague written guidance",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-012",
+      "WAH",
+      "Work at Height",
+      "Organizational_Factor",
+      "Inadequate training",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-012",
+      "WAH",
+      "Work at Height",
+      "Work_Environment",
+      "Limited tool availability",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-012",
+      "WAH",
+      "Work at Height",
+      "Individual_Factor",
+      "Complacency",
+      "Checked in source observation checklist"
+    ],
+    [
+      "OBS-013",
+      "GD",
+      "Ground Disturbance or Excavation",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-013."
+    ],
+    [
+      "OBS-014",
+      "WAH",
+      "Work at Height",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-014."
+    ],
+    [
+      "OBS-015",
+      "WAH",
+      "Work at Height",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-015."
+    ],
+    [
+      "OBS-017",
+      "CSE",
+      "Confined Space Entry",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-017."
+    ],
+    [
+      "OBS-018",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-018."
+    ],
+    [
+      "OBS-019",
+      "WAH",
+      "Work at Height",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-019."
+    ],
+    [
+      "OBS-020",
+      "LoF",
+      "Line of Fire",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-020."
+    ],
+    [
+      "OBS-023",
+      "IHE",
+      "Powered System / Isolation of Hazardous Energy",
+      "Individual Factor",
+      "Complacency",
+      "Checked in source observation document OBS-023."
+    ]
+  ]
+}
