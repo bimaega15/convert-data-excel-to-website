@@ -14,7 +14,8 @@ dist-ssr
 *.suo
 *.cache
 .vs/
-appsettings.Development.local.json
+# ---------- Frontend Build Output ----------
+Sifp_Vue.Server/wwwroot/assets/
 
 # ---------- Editors ----------
 .vscode/*
