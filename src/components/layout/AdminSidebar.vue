@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import DashIcon from '../dashboard/DashIcon.vue'
 import { meta } from '../../data/dashboard'
 import { sheetGroups } from '../../data/sheets'
@@ -24,6 +24,42 @@ function showTip(evt, label) {
 function hideTip() {
   tip.value.show = false
 }
+
+// Fade halus di tepi area scroll: hanya muncul kalau memang masih ada menu di
+// atas/bawah, supaya batas daftar tidak terpotong tajam.
+const navEl = ref(null)
+const atTop = ref(true)
+const atBottom = ref(true)
+
+function updateEdges() {
+  const el = navEl.value
+  if (!el) return
+  const max = el.scrollHeight - el.clientHeight
+  atTop.value = el.scrollTop <= 2
+  atBottom.value = max <= 2 || el.scrollTop >= max - 2
+}
+
+let resizeObserver
+
+onMounted(() => {
+  updateEdges()
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(updateEdges)
+    resizeObserver.observe(navEl.value)
+  }
+  window.addEventListener('resize', updateEdges)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', updateEdges)
+})
+
+// lebar berubah saat mode ikon → tinggi konten ikut berubah
+watch(
+  () => props.collapsed,
+  () => nextTick(updateEdges),
+)
 
 // Grup worksheet dibangun otomatis dari manifest hasil konversi Excel, sehingga
 // jumlah & isi menu selalu mengikuti worksheet yang ada di file Excel.
@@ -63,7 +99,12 @@ const menu = [
       </button>
     </div>
 
-    <nav class="sidebar__nav">
+    <nav
+      ref="navEl"
+      class="sidebar__nav"
+      :class="{ 'sidebar__nav--fade-top': !atTop, 'sidebar__nav--fade-bottom': !atBottom }"
+      @scroll.passive="updateEdges"
+    >
       <div v-for="group in menu" :key="group.label" class="sidebar__group">
         <p class="sidebar__group-label">{{ group.label }}</p>
         <router-link
@@ -161,10 +202,81 @@ const menu = [
 }
 
 .sidebar__nav {
+  --fade-top: 0px;
+  --fade-bottom: 0px;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0.9rem 0.75rem;
+  padding: 0.9rem 0.55rem 0.9rem 0.75rem;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  /* daftar memudar di tepi hanya kalau masih ada menu di arah tersebut */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent 100%
+  );
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+.sidebar__nav--fade-top {
+  --fade-top: 26px;
+}
+
+.sidebar__nav--fade-bottom {
+  --fade-bottom: 26px;
+}
+
+/* scrollbar ramping ala overlay, tanpa tombol panah bawaan Windows */
+.sidebar__nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar__nav::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+.sidebar__nav::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+
+.sidebar__nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.2s ease;
+}
+
+.sidebar:hover .sidebar__nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.sidebar__nav::-webkit-scrollbar-thumb:hover,
+.sidebar__nav::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.sidebar:hover .sidebar__nav {
+  scrollbar-color: rgba(255, 255, 255, 0.32) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar__nav {
+    scroll-behavior: auto;
+  }
 }
 
 .sidebar__group + .sidebar__group {
@@ -298,7 +410,11 @@ const menu = [
 
   .sidebar--collapsed .sidebar__nav {
     padding-left: 0.6rem;
-    padding-right: 0.6rem;
+    padding-right: 0.45rem;
+  }
+
+  .sidebar--collapsed .sidebar__nav::-webkit-scrollbar {
+    width: 4px;
   }
 
   .sidebar--collapsed .sidebar__group + .sidebar__group {
@@ -310,6 +426,17 @@ const menu = [
   .sidebar--collapsed .sidebar__link {
     justify-content: center;
     padding: 0.6rem 0;
+  }
+}
+
+/* layar sentuh tidak punya hover, jadi thumb dibuat lebih terbaca sejak awal */
+@media (hover: none) {
+  .sidebar__nav {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+
+  .sidebar__nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
