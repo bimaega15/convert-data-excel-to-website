@@ -1,0 +1,17 @@
+@model InitiativeFormViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["Subtitle"] = "Improvement Initiatives";
+}
+
+<div class="admin-card">
+    <form method="post" asp-action="Create">
+        @Html.AntiForgeryToken()
+        @* Path lengkap: pencarian partial memakai nama controller, bukan folder view. *@
+        <partial name="~/Views/Admin/Initiatives/_Form.cshtml" model="Model" />
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

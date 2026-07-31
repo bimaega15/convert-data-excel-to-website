@@ -1,0 +1,32 @@
+@model ImportBatchDto
+@{
+    ViewData["Title"] = $"Import #{Model.Id}";
+    ViewData["Subtitle"] = Model.FileName;
+}
+
+<div class="admin-card">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <h2 class="admin-card-title mb-0">Detail Batch</h2>
+        <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Kembali</a>
+    </div>
+
+    <dl class="detail-grid">
+        <div><dt>File</dt><dd>@Model.FileName</dd></div>
+        <div><dt>Status</dt><dd><span class="badge status-@Model.Status.ToLowerInvariant()">@Model.Status</span></dd></div>
+        <div><dt>Ukuran</dt><dd>@((Model.FileSizeBytes / 1024.0).ToString("0.#")) KB</dd></div>
+        <div><dt>Jumlah Sheet</dt><dd>@Model.SheetCount</dd></div>
+        <div><dt>Total Baris (klien)</dt><dd>@Model.TotalRows</dd></div>
+        <div><dt>Edit Sel</dt><dd>@Model.EditCount</dd></div>
+        <div><dt>Dibuat</dt><dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm:ss")</dd></div>
+        <div><dt>Selesai</dt><dd>@(Model.CompletedAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm:ss") ?? "-")</dd></div>
+        <div><dt>Oleh</dt><dd>@Model.CreatedBy</dd></div>
+    </dl>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger mt-3 mb-0">
+            <strong>Pesan kesalahan:</strong>
+            <div class="mt-1 small">@Model.ErrorMessage</div>
+        </div>
+    }
+</div>

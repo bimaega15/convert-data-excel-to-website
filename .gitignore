@@ -1,14 +1,25 @@
+# ---------- Node / Vue (sifp_vue.client) ----------
 node_modules
 dist
 dist-ssr
 *.local
 
+# ---------- .NET (Sifp_Vue.Server) ----------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.userosscache
+*.suo
+*.cache
+.vs/
+appsettings.Development.local.json
+
+# ---------- Editors ----------
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
-*.suo
 *.ntvs*
-*.njsproj
-*.sln
 *.sw?

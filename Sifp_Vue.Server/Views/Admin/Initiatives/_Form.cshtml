@@ -1,0 +1,53 @@
+@model InitiativeFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small" role="alert"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Form.ImprovementCode" class="form-label">Improvement ID <span class="text-danger">*</span></label>
+        <input asp-for="Form.ImprovementCode" class="form-control" placeholder="IMP-R4-001" />
+        <span asp-validation-for="Form.ImprovementCode" class="text-danger small"></span>
+    </div>
+    <div class="col-md-8">
+        <label asp-for="Form.Initiative" class="form-label">Nama Inisiatif <span class="text-danger">*</span></label>
+        <input asp-for="Form.Initiative" class="form-control" />
+        <span asp-validation-for="Form.Initiative" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Form.RelatedClsr" class="form-label">CLSR Terkait</label>
+        <input asp-for="Form.RelatedClsr" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.Owner" class="form-label">Owner</label>
+        <input asp-for="Form.Owner" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Form.Status" class="form-label">Status</label>
+        <select asp-for="Form.Status" class="form-select">
+            <option value="Not Started">Not Started</option>
+            <option value="In Progress">In Progress</option>
+            <option value="On Hold">On Hold</option>
+            <option value="Completed">Completed</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Form.ProgressPercent" class="form-label">Progress (%)</label>
+        <input asp-for="Form.ProgressPercent" type="number" min="0" max="100" class="form-control" />
+        <span asp-validation-for="Form.ProgressPercent" class="text-danger small"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Form.ExpectedImpact" class="form-label">Dampak yang Diharapkan</label>
+        <textarea asp-for="Form.ExpectedImpact" class="form-control" rows="2"></textarea>
+    </div>
+    <div class="col-12">
+        <label asp-for="Form.Notes" class="form-label">Catatan</label>
+        <textarea asp-for="Form.Notes" class="form-control" rows="2"></textarea>
+    </div>
+</div>
+
+<div class="form-actions">
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Batal</a>
+</div>

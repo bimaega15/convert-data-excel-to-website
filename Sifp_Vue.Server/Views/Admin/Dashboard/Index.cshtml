@@ -1,0 +1,142 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["Subtitle"] = "Ringkasan data SIFP Assurance Regional 4";
+    var s = Model.Summary;
+}
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total Observasi</span>
+        <span class="stat-value">@s.TotalObservations</span>
+        <span class="stat-hint">@s.ActiveObservations aktif</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Conformance Score</span>
+        <span class="stat-value">@(s.ConformanceScore.HasValue ? $"{s.ConformanceScore:0.##}%" : "-")</span>
+        <span class="stat-hint">@s.ZonesCovered zona tercakup</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">SIF Questions</span>
+        <span class="stat-value">@s.TotalSifQuestions</span>
+        <span class="stat-hint">jawaban terverifikasi</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Temuan</span>
+        <span class="stat-value">@s.TotalFindings</span>
+        <span class="stat-hint">error trap + drift + laten</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Inisiatif</span>
+        <span class="stat-value">@s.TotalInitiatives</span>
+        <span class="stat-hint">@s.OpenInitiatives belum selesai</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Import Terakhir</span>
+        <span class="stat-value stat-value-sm">@(s.LastImportAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "-")</span>
+        <span class="stat-hint text-truncate" title="@s.LastImportFile">@(s.LastImportFile ?? "belum ada import")</span>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-lg-7">
+        <div class="admin-card h-100">
+            <h2 class="admin-card-title">Skor per Zona</h2>
+
+            @if (s.ZonaBreakdown.Count == 0)
+            {
+                <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Skor zona akan muncul setelah workbook diimport.")" />
+            }
+            else
+            {
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Zona</th>
+                            <th class="text-end">Observasi</th>
+                            <th style="width: 45%">Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var bar in s.ZonaBreakdown)
+                        {
+                            <tr>
+                                <td>@bar.Zone</td>
+                                <td class="text-end">@bar.Obs</td>
+                                <td>
+                                    <div class="progress-inline">
+                                        <div class="progress" role="progressbar" aria-valuenow="@bar.Value" aria-valuemin="0" aria-valuemax="100">
+                                            <div class="progress-bar" style="width:@(Math.Clamp(bar.Value, 0, 100).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
+                                        </div>
+                                        <span class="progress-label">@bar.Value.ToString("0.##")%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="admin-card h-100">
+            <h2 class="admin-card-title">Jumlah Baris per Tabel</h2>
+            <table class="table table-sm mb-0">
+                <tbody>
+                    @foreach (var (table, count) in Model.RowCounts)
+                    {
+                        <tr>
+                            <td>@table</td>
+                            <td class="text-end fw-semibold">@count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="admin-card mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="admin-card-title mb-0">Import Terakhir</h2>
+        <a class="btn btn-sm btn-outline-primary" asp-controller="Imports" asp-action="Index">Lihat semua</a>
+    </div>
+
+    @if (Model.RecentImports.Count == 0)
+    {
+        <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Belum ada workbook yang diimport.")" />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th class="text-end">Sheet</th>
+                        <th class="text-end">Edit</th>
+                        <th>Waktu</th>
+                        <th>Oleh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var batch in Model.RecentImports)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Imports" asp-action="Details" asp-route-id="@batch.Id">@batch.FileName</a>
+                            </td>
+                            <td><span class="badge status-@batch.Status.ToLowerInvariant()">@batch.Status</span></td>
+                            <td class="text-end">@batch.SheetCount</td>
+                            <td class="text-end">@batch.EditCount</td>
+                            <td>@batch.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                            <td>@batch.CreatedBy</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

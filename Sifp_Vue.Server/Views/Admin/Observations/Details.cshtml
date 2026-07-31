@@ -1,0 +1,85 @@
+@using Sifp_Vue.Server.Services.Contracts
+@model ObservationDetailDto
+@{
+    var o = Model.Observation;
+    ViewData["Title"] = o.Id;
+    ViewData["Subtitle"] = $"{o.ProtocolName} · {o.Site}";
+
+    // Setiap tabel turunan dirender dengan partial yang sama; kolomnya disusun di sini
+    // supaya urutan dan judulnya terlihat berdampingan.
+    var childTables = new List<ChildTableViewModel>
+    {
+        new()
+        {
+            Title = "SIF Questions",
+            Headers = new List<string> { "Ref", "CCVC ID", "Pertanyaan", "Jawaban", "SIF Exposure", "Critical Safeguard", "Komentar" },
+            Rows = Model.SifQuestions
+                .Select(x => new[] { x.QuestionRef, x.CcvcId, x.Question, x.Answer, x.SifExposure, x.CriticalSafeguard, x.Comments })
+                .ToList()
+        },
+        new()
+        {
+            Title = "Error Traps",
+            Headers = new List<string> { "Kategori", "Error Trap", "Komentar" },
+            Rows = Model.ErrorTraps
+                .Select(x => new[] { x.Category, x.ErrorTrap, x.Comments })
+                .ToList()
+        },
+        new()
+        {
+            Title = "HP Tools",
+            Headers = new List<string> { "Tool", "Tujuan", "Kapan Digunakan", "Cara Pakai", "Catatan Efektivitas" },
+            Rows = Model.HpTools
+                .Select(x => new[] { x.Tool, x.Tujuan, x.KapanDigunakan, x.CaraPakai, x.EffectivenessNotes })
+                .ToList()
+        },
+        new()
+        {
+            Title = "Drift Conditions",
+            Headers = new List<string> { "Situasi", "Level 1", "Kode", "Level 2", "Alasan", "Status" },
+            Rows = Model.DriftConditions
+                .Select(x => new[] { x.Situation, x.Level1, x.Code, x.Level2, x.Reason, x.Status })
+                .ToList()
+        },
+        new()
+        {
+            Title = "Latent Conditions",
+            Headers = new List<string> { "Observasi", "Level 1", "Kode", "Level 2", "Alasan", "Status" },
+            Rows = Model.LatentConditions
+                .Select(x => new[] { x.Observation, x.Level1, x.Code, x.Level2, x.Reason, x.Status })
+                .ToList()
+        }
+    };
+}
+
+<div class="admin-card">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <h2 class="admin-card-title mb-0">Ringkasan Observasi</h2>
+        <div class="text-nowrap">
+            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@o.Key">Edit</a>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Kembali</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div><dt>Obs ID</dt><dd>@o.Id</dd></div>
+        <div><dt>Tanggal</dt><dd>@(o.Date ?? "-")</dd></div>
+        <div><dt>Protokol</dt><dd>@o.ProtocolCode &mdash; @o.ProtocolName</dd></div>
+        <div><dt>Zona</dt><dd>@o.Zona</dd></div>
+        <div><dt>Site</dt><dd>@o.Site</dd></div>
+        <div><dt>Area / Equipment</dt><dd>@o.Area</dd></div>
+        <div><dt>Aktivitas</dt><dd>@o.Activity</dd></div>
+        <div><dt>Perusahaan</dt><dd>@o.Company</dd></div>
+        <div><dt>Observer</dt><dd>@(o.Observers.Count > 0 ? string.Join(", ", o.Observers) : "-")</dd></div>
+        <div><dt>YES / NO / NA</dt><dd>@o.Yes / @o.No / @o.Na</dd></div>
+        <div><dt>Performance</dt><dd>@(o.Performance?.ToString("0.##") ?? "-")%</dd></div>
+        <div><dt>PSIE Eligible</dt><dd>@o.PsieEligible</dd></div>
+        <div><dt>Status</dt><dd>@o.Status</dd></div>
+        <div><dt>Aktif</dt><dd>@o.Active</dd></div>
+    </dl>
+</div>
+
+@foreach (var table in childTables)
+{
+    <partial name="~/Views/Admin/Shared/_ChildTable.cshtml" model="table" />
+}

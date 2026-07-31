@@ -1,0 +1,120 @@
+@model ObservationListViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Subtitle"] = Model.Subtitle;
+    var q = Model.Query;
+}
+
+<div class="admin-card">
+    <form method="get" class="filter-bar">
+        <div class="filter-field flex-grow-1">
+            <label class="form-label">Cari</label>
+            <input type="search" name="search" value="@q.Search" class="form-control form-control-sm"
+                   placeholder="Obs ID, protokol, site, aktivitas, perusahaan…" />
+        </div>
+
+        <div class="filter-field">
+            <label class="form-label">Zona</label>
+            <select name="zona" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                @foreach (var zona in Model.Options.Zonas)
+                {
+                    <option value="@zona" selected="@(q.Zona == zona)">Zona @zona</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label class="form-label">Protokol</label>
+            <select name="protocolCode" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                @foreach (var code in Model.Options.ProtocolCodes)
+                {
+                    <option value="@code" selected="@(q.ProtocolCode == code)">@code</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                @foreach (var status in Model.Options.Statuses)
+                {
+                    <option value="@status" selected="@(q.Status == status)">@status</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-sm btn-primary">Terapkan</button>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">@Model.Result.TotalItems observasi</span>
+        <a class="btn btn-sm btn-primary" asp-action="Create">+ Tambah Observasi</a>
+    </div>
+
+    @if (Model.Result.Items.Count == 0)
+    {
+        <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Tidak ada observasi yang cocok dengan filter.")" />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Obs ID</th>
+                        <th>Tanggal</th>
+                        <th>Protokol</th>
+                        <th>Zona</th>
+                        <th>Site</th>
+                        <th>Aktivitas</th>
+                        <th class="text-end">Y / N / NA</th>
+                        <th class="text-end">Skor</th>
+                        <th>Status</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Result.Items)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@item.Id</td>
+                            <td>@item.Date</td>
+                            <td title="@item.ProtocolName">@item.ProtocolCode</td>
+                            <td>@item.Zona</td>
+                            <td class="cell-clamp" title="@item.Site">@item.Site</td>
+                            <td class="cell-clamp" title="@item.Activity">@item.Activity</td>
+                            <td class="text-end text-nowrap">@item.Yes / @item.No / @item.Na</td>
+                            <td class="text-end">@(item.Performance?.ToString("0.##") ?? "-")%</td>
+                            <td>
+                                <span class="badge @(item.Active == "Y" ? "bg-success-subtle text-success-emphasis" : "bg-secondary-subtle text-secondary-emphasis")">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-link p-0 me-2" asp-action="Details" asp-route-id="@item.Key">Detail</a>
+                                <a class="btn btn-sm btn-link p-0 me-2" asp-action="Edit" asp-route-id="@item.Key">Edit</a>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-danger"
+                                        data-delete-url="@Url.Action("Delete")"
+                                        data-delete-id="@item.Key"
+                                        data-delete-message="Hapus observasi @item.Id beserta seluruh data turunannya?">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <partial name="~/Views/Admin/Shared/_Pagination.cshtml"
+                 model="@((Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalItems, Model.Result.PageSize))" />
+    }
+</div>

@@ -1,0 +1,85 @@
+@model UserListViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Subtitle"] = Model.Subtitle;
+}
+
+<div class="admin-card">
+    <form method="get" class="filter-bar">
+        <div class="filter-field flex-grow-1">
+            <label class="form-label">Cari</label>
+            <input type="search" name="search" value="@Model.Query.Search" class="form-control form-control-sm"
+                   placeholder="Username, nama lengkap, email…" />
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-sm btn-primary">Terapkan</button>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">@Model.Result.TotalItems user</span>
+        <a class="btn btn-sm btn-primary" asp-action="Create">+ Tambah User</a>
+    </div>
+
+    @if (Model.Result.Items.Count == 0)
+    {
+        <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Tidak ada user yang cocok dengan pencarian.")" />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Nama Lengkap</th>
+                        <th>Email</th>
+                        <th>Zona</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Login Terakhir</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Result.Items)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@user.Username</td>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@(user.Zona?.ToString() ?? "-")</td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary-emphasis me-1">@role</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @(user.IsActive ? "bg-success-subtle text-success-emphasis" : "bg-secondary-subtle text-secondary-emphasis")">
+                                    @(user.IsActive ? "Aktif" : "Non-aktif")
+                                </span>
+                            </td>
+                            <td class="text-nowrap">@(user.LastLoginAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm") ?? "-")</td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-link p-0 me-2" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-danger"
+                                        data-delete-url="@Url.Action("Delete")"
+                                        data-delete-id="@user.Id"
+                                        data-delete-message="Hapus user @user.Username?">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <partial name="~/Views/Admin/Shared/_Pagination.cshtml"
+                 model="@((Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalItems, Model.Result.PageSize))" />
+    }
+</div>

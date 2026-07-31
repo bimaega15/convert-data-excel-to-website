@@ -1,0 +1,76 @@
+@model ImportBatchListViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Subtitle"] = Model.Subtitle;
+}
+
+<div class="admin-card">
+    <h2 class="admin-card-title">Unggah Workbook</h2>
+    <p class="text-muted small">
+        Import akan <strong>mengganti seluruh master data</strong> dengan isi workbook baru.
+        Proses berjalan dalam satu transaksi: bila ada sheet wajib yang hilang atau parsing gagal,
+        data lama tetap utuh.
+    </p>
+
+    <form method="post" asp-action="Upload" enctype="multipart/form-data" class="d-flex gap-2 align-items-end flex-wrap">
+        @Html.AntiForgeryToken()
+        <div class="flex-grow-1" style="min-width: 260px;">
+            <label for="file" class="form-label">File Excel (.xlsx / .xlsm)</label>
+            <input type="file" id="file" name="file" accept=".xlsx,.xlsm" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Import</button>
+    </form>
+</div>
+
+<div class="admin-card mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="admin-card-title mb-0">Riwayat Import</h2>
+        <span class="text-muted small">@Model.Result.TotalItems batch</span>
+    </div>
+
+    @if (Model.Result.Items.Count == 0)
+    {
+        <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Belum ada workbook yang pernah diimport.")" />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th class="text-end">Sheet</th>
+                        <th class="text-end">Edit Sel</th>
+                        <th class="text-end">Ukuran</th>
+                        <th>Waktu</th>
+                        <th>Oleh</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var batch in Model.Result.Items)
+                    {
+                        <tr>
+                            <td>@batch.Id</td>
+                            <td class="cell-clamp" title="@batch.FileName">@batch.FileName</td>
+                            <td><span class="badge status-@batch.Status.ToLowerInvariant()">@batch.Status</span></td>
+                            <td class="text-end">@batch.SheetCount</td>
+                            <td class="text-end">@batch.EditCount</td>
+                            <td class="text-end">@((batch.FileSizeBytes / 1024.0).ToString("0.#")) KB</td>
+                            <td class="text-nowrap">@batch.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                            <td>@batch.CreatedBy</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-link p-0" asp-action="Details" asp-route-id="@batch.Id">Detail</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <partial name="~/Views/Admin/Shared/_Pagination.cshtml"
+                 model="@((Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalItems, Model.Result.PageSize))" />
+    }
+</div>

@@ -1,0 +1,46 @@
+@model LoginRequest
+@{
+    ViewData["Title"] = "Masuk";
+    ViewData["BareLayout"] = true;
+}
+
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-brand">
+            <span class="admin-brand-mark">S4</span>
+            <div>
+                <strong>SIFP Assurance</strong>
+                <small>Area Administrasi &middot; Regional 4</small>
+            </div>
+        </div>
+
+        <form method="post" asp-controller="Login" asp-action="Index" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label">Username</label>
+                <input asp-for="Username" class="form-control" autocomplete="username" autofocus />
+                <span asp-validation-for="Username" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">Password</label>
+                <input asp-for="Password" type="password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Masuk</button>
+        </form>
+
+        <p class="login-note">
+            Halaman ini khusus pengelola data. Dashboard publik dapat diakses
+            langsung tanpa login di <a href="/">halaman utama</a>.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

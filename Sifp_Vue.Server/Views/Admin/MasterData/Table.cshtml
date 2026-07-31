@@ -1,0 +1,66 @@
+@model MasterDataTableViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Subtitle"] = Model.Subtitle;
+}
+
+<div class="admin-card">
+    <form method="get" class="filter-bar">
+        <div class="filter-field flex-grow-1">
+            <label class="form-label">Cari</label>
+            <input type="search" name="search" value="@Model.Search" class="form-control form-control-sm"
+                   placeholder="Cari di seluruh kolom teks…" />
+        </div>
+
+        <div class="filter-field">
+            <label class="form-label">Obs ID</label>
+            <input type="text" name="obsCode" value="@Model.ObsCode" class="form-control form-control-sm" placeholder="OBS-001" />
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-sm btn-primary">Terapkan</button>
+            <a class="btn btn-sm btn-outline-secondary" href="@ViewContext.HttpContext.Request.Path">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">@Model.TotalItems baris</span>
+        <span class="badge bg-light text-secondary border">Read-only &mdash; diperbarui lewat import Excel</span>
+    </div>
+
+    @if (Model.Rows.Count == 0)
+    {
+        <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Tidak ada baris yang cocok. Import workbook terlebih dahulu bila tabel masih kosong.")" />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead>
+                    <tr>
+                        @foreach (var column in Model.Columns)
+                        {
+                            <th>@column</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.Rows)
+                    {
+                        <tr>
+                            @foreach (var cell in row)
+                            {
+                                <td class="cell-clamp" title="@cell">@cell</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <partial name="~/Views/Admin/Shared/_Pagination.cshtml"
+                 model="@((Model.Page, Model.TotalPages, Model.TotalItems, Model.PageSize))" />
+    }
+</div>

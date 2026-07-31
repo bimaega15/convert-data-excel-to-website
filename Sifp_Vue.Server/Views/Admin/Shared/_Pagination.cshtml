@@ -1,0 +1,47 @@
+@model (int Page, int TotalPages, int TotalItems, int PageSize)
+@{
+    if (Model.TotalPages <= 1)
+    {
+        return;
+    }
+
+    // Jendela halaman dibatasi 5 nomor agar tidak melebar pada data besar.
+    var start = Math.Max(1, Model.Page - 2);
+    var end = Math.Min(Model.TotalPages, start + 4);
+    start = Math.Max(1, end - 4);
+
+    // Query string saat ini dipertahankan supaya filter tidak hilang saat pindah halaman.
+    var query = ViewContext.HttpContext.Request.Query
+        .Where(q => q.Key != "page")
+        .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+    string Url(int page)
+    {
+        var parts = query.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}").ToList();
+        parts.Add($"page={page}");
+        return $"{ViewContext.HttpContext.Request.Path}?{string.Join("&", parts)}";
+    }
+}
+
+<nav class="admin-pagination" aria-label="Navigasi halaman">
+    <span class="admin-pagination-info">
+        Halaman @Model.Page dari @Model.TotalPages &middot; @Model.TotalItems baris
+    </span>
+
+    <ul class="pagination pagination-sm mb-0">
+        <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url(Math.Max(1, Model.Page - 1))">Sebelumnya</a>
+        </li>
+
+        @for (var i = start; i <= end; i++)
+        {
+            <li class="page-item @(i == Model.Page ? "active" : "")">
+                <a class="page-link" href="@Url(i)">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url(Math.Min(Model.TotalPages, Model.Page + 1))">Berikutnya</a>
+        </li>
+    </ul>
+</nav>

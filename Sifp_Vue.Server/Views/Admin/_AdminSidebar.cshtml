@@ -1,0 +1,52 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var isAdministrator = User.IsInRole(RoleNames.Administrator);
+
+    // Menu ditandai aktif berdasarkan controller, kecuali MasterData yang satu
+    // controller menampung banyak halaman sehingga dibedakan lewat action.
+    string Active(string targetController, string? targetAction = null)
+    {
+        var match = string.Equals(controller, targetController, StringComparison.OrdinalIgnoreCase)
+                    && (targetAction is null || string.Equals(action, targetAction, StringComparison.OrdinalIgnoreCase));
+        return match ? "active" : "";
+    }
+}
+
+<aside class="admin-sidebar">
+    <div class="admin-brand">
+        <span class="admin-brand-mark">S4</span>
+        <span class="admin-brand-text">
+            <strong>SIFP Assurance</strong>
+            <small>Regional 4</small>
+        </span>
+    </div>
+
+    <nav class="admin-nav">
+        <div class="admin-nav-group">Ringkasan</div>
+        <a class="admin-nav-link @Active("Admin")" asp-controller="Admin" asp-action="Index">Dashboard</a>
+
+        <div class="admin-nav-group">Master Data</div>
+        <a class="admin-nav-link @Active("Observations")" asp-controller="Observations" asp-action="Index">Observations</a>
+        <a class="admin-nav-link @Active("MasterData", "SifQuestions")" asp-controller="MasterData" asp-action="SifQuestions">SIF Questions</a>
+        <a class="admin-nav-link @Active("MasterData", "ErrorTraps")" asp-controller="MasterData" asp-action="ErrorTraps">Error Traps</a>
+        <a class="admin-nav-link @Active("MasterData", "HpTools")" asp-controller="MasterData" asp-action="HpTools">HP Tools</a>
+        <a class="admin-nav-link @Active("MasterData", "DriftConditions")" asp-controller="MasterData" asp-action="DriftConditions">Drift Conditions</a>
+        <a class="admin-nav-link @Active("MasterData", "LatentConditions")" asp-controller="MasterData" asp-action="LatentConditions">Latent Conditions</a>
+        <a class="admin-nav-link @Active("MasterData", "CcvcLibrary")" asp-controller="MasterData" asp-action="CcvcLibrary">PSEC &amp; CCVC Library</a>
+        <a class="admin-nav-link @Active("Initiatives")" asp-controller="Initiatives" asp-action="Index">Improvement Initiatives</a>
+
+        <div class="admin-nav-group">Data Management</div>
+        <a class="admin-nav-link @Active("Imports")" asp-controller="Imports" asp-action="Index">Import Excel</a>
+
+        @if (isAdministrator)
+        {
+            <div class="admin-nav-group">Administrasi</div>
+            <a class="admin-nav-link @Active("Users")" asp-controller="Users" asp-action="Index">Users</a>
+        }
+
+        <div class="admin-nav-group">Lainnya</div>
+        <a class="admin-nav-link" href="/swagger" target="_blank" rel="noopener">API Docs</a>
+        <a class="admin-nav-link" href="/" target="_blank" rel="noopener">Buka Aplikasi Vue</a>
+    </nav>
+</aside>

@@ -1,0 +1,104 @@
+@model ObservationFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small" role="alert"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Form.ObsCode" class="form-label">Obs ID <span class="text-danger">*</span></label>
+        <input asp-for="Form.ObsCode" class="form-control" placeholder="OBS-001" />
+        <span asp-validation-for="Form.ObsCode" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.ProtocolCode" class="form-label">Kode Protokol</label>
+        <input asp-for="Form.ProtocolCode" class="form-control" placeholder="WAH" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.ProtocolName" class="form-label">Nama Protokol</label>
+        <input asp-for="Form.ProtocolName" class="form-control" placeholder="Work at Height" />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Form.ObservationDate" class="form-label">Tanggal Observasi</label>
+        <input asp-for="Form.ObservationDate" type="date" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.Zona" class="form-label">Zona</label>
+        <input asp-for="Form.Zona" type="number" min="1" max="99" class="form-control" />
+        <span asp-validation-for="Form.Zona" class="text-danger small"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.ObservationSequence" class="form-label">Urutan</label>
+        <input asp-for="Form.ObservationSequence" type="number" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.Status" class="form-label">Status</label>
+        <input asp-for="Form.Status" class="form-control" placeholder="Baseline" />
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Form.Site" class="form-label">Site</label>
+        <input asp-for="Form.Site" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.AreaEquipment" class="form-label">Area / Equipment</label>
+        <input asp-for="Form.AreaEquipment" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.Company" class="form-label">Perusahaan</label>
+        <input asp-for="Form.Company" class="form-control" />
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Form.Activity" class="form-label">Aktivitas</label>
+        <input asp-for="Form.Activity" class="form-control" />
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Form.Observer1" class="form-label">Observer 1</label>
+        <input asp-for="Form.Observer1" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.Observer2" class="form-label">Observer 2</label>
+        <input asp-for="Form.Observer2" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Form.Observer3" class="form-label">Observer 3</label>
+        <input asp-for="Form.Observer3" class="form-control" />
+    </div>
+
+    <div class="col-md-2">
+        <label asp-for="Form.YesCount" class="form-label">YES</label>
+        <input asp-for="Form.YesCount" type="number" min="0" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Form.NoCount" class="form-label">NO</label>
+        <input asp-for="Form.NoCount" type="number" min="0" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Form.NaCount" class="form-label">NA</label>
+        <input asp-for="Form.NaCount" type="number" min="0" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Form.PerformancePercent" class="form-label">Performance (%)</label>
+        <input asp-for="Form.PerformancePercent" type="number" step="0.01" min="0" max="100" class="form-control" />
+        <span asp-validation-for="Form.PerformancePercent" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <div>
+            <div class="form-check">
+                <input asp-for="Form.PsieEligible" class="form-check-input" type="checkbox" />
+                <label asp-for="Form.PsieEligible" class="form-check-label">PSIE Eligible</label>
+            </div>
+            <div class="form-check">
+                <input asp-for="Form.IsActive" class="form-check-input" type="checkbox" />
+                <label asp-for="Form.IsActive" class="form-check-label">Observasi aktif</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-actions">
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Batal</a>
+</div>

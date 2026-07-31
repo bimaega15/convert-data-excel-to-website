@@ -1,0 +1,46 @@
+@{
+    // Halaman login berdiri sendiri tanpa sidebar; ditandai lewat ViewData
+    // supaya tidak perlu layout terpisah yang menduplikasi <head>.
+    var isBare = ViewData["BareLayout"] as bool? ?? false;
+}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · SIFP Assurance Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="@(isBare ? "admin-bare" : "admin-shell")">
+    @if (isBare)
+    {
+        @RenderBody()
+    }
+    else
+    {
+        <partial name="~/Views/Admin/_AdminSidebar.cshtml" />
+
+        <div class="admin-main">
+            <partial name="~/Views/Admin/_AdminHeader.cshtml" />
+
+            <main class="admin-content">
+                <partial name="~/Views/Admin/Shared/_Alerts.cshtml" />
+                @RenderBody()
+            </main>
+
+            <footer class="admin-footer">
+                SIFP Assurance · Regional 4 &mdash; area administrasi.
+                Aplikasi publik tersedia di <a href="/">halaman utama</a>.
+            </footer>
+        </div>
+
+        <partial name="~/Views/Admin/Shared/_ConfirmModal.cshtml" />
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

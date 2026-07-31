@@ -1,0 +1,93 @@
+@model InitiativeListViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["Subtitle"] = Model.Subtitle;
+}
+
+<div class="admin-card">
+    <form method="get" class="filter-bar">
+        <div class="filter-field flex-grow-1">
+            <label class="form-label">Cari</label>
+            <input type="search" name="search" value="@Model.Query.Search" class="form-control form-control-sm"
+                   placeholder="Improvement ID, inisiatif, CLSR, dampak…" />
+        </div>
+
+        <div class="filter-field">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                @foreach (var status in Model.Statuses)
+                {
+                    <option value="@status" selected="@(Model.Query.Status == status)">@status</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn btn-sm btn-primary">Terapkan</button>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="admin-card mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">@Model.Result.TotalItems inisiatif</span>
+        <a class="btn btn-sm btn-primary" asp-action="Create">+ Tambah Inisiatif</a>
+    </div>
+
+    @if (Model.Result.Items.Count == 0)
+    {
+        <partial name="~/Views/Admin/Shared/_EmptyState.cshtml" model="@("Tidak ada inisiatif yang cocok dengan filter.")" />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Inisiatif</th>
+                        <th>CLSR Terkait</th>
+                        <th>Owner</th>
+                        <th>Status</th>
+                        <th style="width: 18%">Progress</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Result.Items)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@item.Id</td>
+                            <td class="cell-clamp" title="@item.ExpectedImpact">@item.Initiative</td>
+                            <td>@item.RelatedClsr</td>
+                            <td>@item.Owner</td>
+                            <td><span class="badge bg-secondary-subtle text-secondary-emphasis">@item.Status</span></td>
+                            <td>
+                                <div class="progress-inline">
+                                    <div class="progress" role="progressbar" aria-valuenow="@item.Progress" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress-bar" style="width:@Math.Clamp(item.Progress, 0, 100)%"></div>
+                                    </div>
+                                    <span class="progress-label">@item.Progress%</span>
+                                </div>
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-link p-0 me-2" asp-action="Edit" asp-route-id="@item.Key">Edit</a>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-danger"
+                                        data-delete-url="@Url.Action("Delete")"
+                                        data-delete-id="@item.Key"
+                                        data-delete-message="Hapus inisiatif @item.Id?">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <partial name="~/Views/Admin/Shared/_Pagination.cshtml"
+                 model="@((Model.Result.Page, Model.Result.TotalPages, Model.Result.TotalItems, Model.Result.PageSize))" />
+    }
+</div>

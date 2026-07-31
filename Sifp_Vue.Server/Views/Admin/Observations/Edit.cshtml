@@ -1,0 +1,18 @@
+@model ObservationFormViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["Subtitle"] = $"Observations · {Model.Form.ObsCode}";
+}
+
+<div class="admin-card">
+    <form method="post" asp-action="Edit" asp-route-id="@Model.Id">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        @* Path lengkap: pencarian partial memakai nama controller, bukan folder view. *@
+        <partial name="~/Views/Admin/Observations/_Form.cshtml" model="Model" />
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
