@@ -34,8 +34,9 @@ const pagedRows = computed(() => {
 // Urutan navigasi keyboard: baris judul lalu baris data yang sedang tampil.
 const navRows = computed(() => (headerRow.value ? [headerRow.value, ...pagedRows.value] : []))
 
-// Rentang disebut memakai nomor baris Excel yang sama persis dengan kolom
-// nomor di kiri tabel, supaya bisa dicocokkan langsung dengan file aslinya.
+// Footer menghitung baris DATA (ordinal 1..N) untuk navigasi halaman, sedangkan
+// kolom nomor di kiri tabel memakai nomor baris Excel asli (baris judul = 1)
+// supaya sel bisa dicocokkan langsung dengan file & daftar perubahan.
 const rangeInfo = computed(() => {
   const total = bodyRows.value.length
   if (!total) return 'Sheet ini hanya berisi baris judul, tanpa baris data.'
@@ -206,18 +207,18 @@ function colLetter(i) {
         <table class="sp__table">
           <thead>
             <tr class="sp__collabels">
-              <!-- rowspan 2: kolom nomor hanya menomori baris data di tbody,
-                   sehingga tidak ada angka yang muncul di dalam header -->
-              <th
-                class="sp__gutter sp__gutter--head"
-                rowspan="2"
-                title="Nomor baris sesuai file Excel"
-              >
-                #
-              </th>
+              <th class="sp__gutter sp__gutter--head" title="Nomor baris sesuai file Excel">#</th>
               <th v-for="(_, i) in headerRow.cells" :key="`c${i}`">{{ colLetter(i) }}</th>
             </tr>
             <tr>
+              <!-- baris judul = baris Excel pertama; diberi nomor barisnya juga supaya
+                   konsisten dengan nomor baris data dan referensi sel di daftar perubahan -->
+              <th
+                class="sp__gutter sp__gutter--headrow"
+                :title="`Baris Excel: ${headerRow.excelRow}`"
+              >
+                {{ headerRow.excelRow }}
+              </th>
               <th
                 v-for="(_, i) in headerRow.cells"
                 :key="`h${i}`"
@@ -245,7 +246,7 @@ function colLetter(i) {
           </thead>
           <tbody>
             <tr v-for="(row, rowIdx) in pagedRows" :key="row.excelRow">
-              <td class="sp__gutter" :title="`Baris Excel: ${row.excelRow}`">{{ (page - 1) * pageSize + rowIdx + 1 }}</td>
+              <td class="sp__gutter" :title="`Baris data ke-${(page - 1) * pageSize + rowIdx + 1}`">{{ row.excelRow }}</td>
               <td
                 v-for="(_, i) in row.cells"
                 :key="i"
@@ -447,6 +448,12 @@ function colLetter(i) {
   text-align: center;
   background: #e4e9f4;
   border-bottom: 2px solid var(--line);
+}
+
+/* nomor baris untuk baris judul (baris Excel pertama), menempel di bawah label kolom */
+.sp__table thead th.sp__gutter--headrow {
+  top: 22px;
+  z-index: 5;
 }
 
 .sp__table tbody tr:hover td {

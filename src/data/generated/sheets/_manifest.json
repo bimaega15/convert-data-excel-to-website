@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-20T13:52:06.969Z",
+  "generatedAt": "2026-07-21T12:00:07.155Z",
   "sourceFile": "VnV_FULL_DATABASE_09July2026_OBS001-023 ver.Jul2026.xlsx",
-  "sheetCount": 25,
+  "sheetCount": 14,
   "groups": [
     {
       "label": "Data Input",
@@ -88,19 +88,6 @@
           "rowCount": 134,
           "colCount": 11,
           "dataRows": 133
-        },
-        {
-          "name": "DATABASE-DRIFT_LATENT_HP_ERROR",
-          "slug": "database-drift-latent-hp-error",
-          "index": 6,
-          "group": "Database",
-          "label": "DRIFT LATENT HP ERROR",
-          "icon": "book",
-          "route": "/sheet/database-drift-latent-hp-error",
-          "curated": false,
-          "rowCount": 153,
-          "colCount": 13,
-          "dataRows": 152
         }
       ]
     },
@@ -110,7 +97,7 @@
         {
           "name": "ANALYZE-CONFORMANCE_SCORE",
           "slug": "analyze-conformance-score",
-          "index": 7,
+          "index": 6,
           "group": "Analisis",
           "label": "Observations",
           "icon": "clipboard",
@@ -123,7 +110,7 @@
         {
           "name": "ANALYZE-EXECUTIVE_MEASURES",
           "slug": "analyze-executive-measures",
-          "index": 8,
+          "index": 7,
           "group": "Analisis",
           "label": "EXECUTIVE MEASURES",
           "icon": "gear",
@@ -136,7 +123,7 @@
         {
           "name": "ANALYZE-QUICK_FACTS",
           "slug": "analyze-quick-facts",
-          "index": 9,
+          "index": 8,
           "group": "Analisis",
           "label": "QUICK FACTS",
           "icon": "gear",
@@ -149,7 +136,7 @@
         {
           "name": "ANALYZE-CLSR_HEALTH_MAP",
           "slug": "analyze-clsr-health-map",
-          "index": 10,
+          "index": 9,
           "group": "Analisis",
           "label": "CLSR HEALTH MAP",
           "icon": "gear",
@@ -162,7 +149,7 @@
         {
           "name": "ANALYZE-TOP5",
           "slug": "analyze-top5",
-          "index": 11,
+          "index": 10,
           "group": "Analisis",
           "label": "TOP5",
           "icon": "gear",
@@ -175,7 +162,7 @@
         {
           "name": "ANALYZE-TREND_ZONE",
           "slug": "analyze-trend-zone",
-          "index": 12,
+          "index": 11,
           "group": "Analisis",
           "label": "TREND ZONE",
           "icon": "gear",
@@ -188,7 +175,7 @@
         {
           "name": "ANALYZE-IMPROVEMENT_INITIATIVES",
           "slug": "analyze-improvement-initiatives",
-          "index": 13,
+          "index": 12,
           "group": "Analisis",
           "label": "Improvement Initiatives",
           "icon": "target",
@@ -206,7 +193,7 @@
         {
           "name": "CONFIG-DASHBOARD_TEXT",
           "slug": "config-dashboard-text",
-          "index": 14,
+          "index": 13,
           "group": "Konfigurasi",
           "label": "DASHBOARD TEXT",
           "icon": "gear",
@@ -215,156 +202,6 @@
           "rowCount": 6,
           "colCount": 2,
           "dataRows": 5
-        }
-      ]
-    },
-    {
-      "label": "Sumber",
-      "items": [
-        {
-          "name": "SOURCE_OBS06_10",
-          "slug": "source-obs06-10",
-          "index": 18,
-          "group": "Sumber",
-          "label": "OBS06 10",
-          "icon": "file",
-          "route": "/sheet/source-obs06-10",
-          "curated": false,
-          "rowCount": 6,
-          "colCount": 4,
-          "dataRows": 5
-        }
-      ]
-    },
-    {
-      "label": "Audit",
-      "items": [
-        {
-          "name": "AUDIT_OBS013_023",
-          "slug": "audit-obs013-023",
-          "index": 19,
-          "group": "Audit",
-          "label": "OBS013 023",
-          "icon": "shield",
-          "route": "/sheet/audit-obs013-023",
-          "curated": false,
-          "rowCount": 90,
-          "colCount": 21,
-          "dataRows": 89
-        },
-        {
-          "name": "AUDIT-DATA_QUALITY",
-          "slug": "audit-data-quality",
-          "index": 22,
-          "group": "Audit",
-          "label": "DATA QUALITY",
-          "icon": "shield",
-          "route": "/sheet/audit-data-quality",
-          "curated": false,
-          "rowCount": 250,
-          "colCount": 12,
-          "dataRows": 249
-        },
-        {
-          "name": "AUDIT-ACTIVE_LINKAGE",
-          "slug": "audit-active-linkage",
-          "index": 24,
-          "group": "Audit",
-          "label": "ACTIVE LINKAGE",
-          "icon": "shield",
-          "route": "/sheet/audit-active-linkage",
-          "curated": false,
-          "rowCount": 7,
-          "colCount": 3,
-          "dataRows": 6
-        }
-      ]
-    },
-    {
-      "label": "Helper",
-      "items": [
-        {
-          "name": "Helper_Drift",
-          "slug": "helper-drift",
-          "index": 16,
-          "group": "Helper",
-          "label": "Drift",
-          "icon": "layers",
-          "route": "/sheet/helper-drift",
-          "curated": false,
-          "rowCount": 100,
-          "colCount": 5,
-          "dataRows": 99
-        },
-        {
-          "name": "Helper_Latent",
-          "slug": "helper-latent",
-          "index": 17,
-          "group": "Helper",
-          "label": "Latent",
-          "icon": "layers",
-          "route": "/sheet/helper-latent",
-          "curated": false,
-          "rowCount": 100,
-          "colCount": 4,
-          "dataRows": 99
-        },
-        {
-          "name": "Helper_Exposure",
-          "slug": "helper-exposure",
-          "index": 20,
-          "group": "Helper",
-          "label": "Exposure",
-          "icon": "layers",
-          "route": "/sheet/helper-exposure",
-          "curated": false,
-          "rowCount": 11,
-          "colCount": 4,
-          "dataRows": 10
-        },
-        {
-          "name": "Helper_Gaps",
-          "slug": "helper-gaps",
-          "index": 21,
-          "group": "Helper",
-          "label": "Gaps",
-          "icon": "layers",
-          "route": "/sheet/helper-gaps",
-          "curated": false,
-          "rowCount": 100,
-          "colCount": 3,
-          "dataRows": 99
-        },
-        {
-          "name": "Helper_Protocol_Map",
-          "slug": "helper-protocol-map",
-          "index": 23,
-          "group": "Helper",
-          "label": "Protocol Map",
-          "icon": "layers",
-          "route": "/sheet/helper-protocol-map",
-          "curated": false,
-          "rowCount": 11,
-          "colCount": 2,
-          "dataRows": 10
-        }
-      ]
-    },
-    {
-      "label": "Lainnya",
-      "items": [
-        {
-          "name": "ReadMe",
-          "slug": "readme",
-          "index": 15,
-          "group": "Lainnya",
-          "label": "ReadMe",
-          "icon": "file",
-          "route": "/sheet/readme",
-          "curated": false,
-          "rowCount": 19,
-          "colCount": 2,
-          "dataRows": 18
         }
       ]
     }

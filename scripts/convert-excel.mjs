@@ -3,10 +3,10 @@
 //   npm run convert:excel            -> pakai file default di design/
 //   npm run convert:excel -- <path>  -> pakai file lain
 import { createRequire } from 'node:module'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { basename, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { findMissingSheets } from '../src/data/sheet-schema.js'
+import { findMissingSheets, REQUIRED_SHEET_NAMES } from '../src/data/sheet-schema.js'
 
 const require = createRequire(import.meta.url)
 const XLSX = require('xlsx')
@@ -536,11 +536,19 @@ function rawGrid(sheetName) {
   return { rows, colCount }
 }
 
+// Hanya sheet yang dipakai converter (feed dashboard & halaman master) yang masuk
+// sidebar. Sheet tambahan (Helper_*, AUDIT-*, SOURCE, ReadMe, dsb.) hanya bantu
+// internal Excel dan tidak dipakai aplikasi, jadi tidak diikutkan.
+const usedSheets = new Set(REQUIRED_SHEET_NAMES)
+
 const sheetsDir = join(outDir, 'sheets')
+// Bersihkan dulu supaya file sheet lama (mis. sheet tambahan hasil run sebelumnya)
+// tidak tertinggal sebagai berkas mati.
+rmSync(sheetsDir, { recursive: true, force: true })
 mkdirSync(sheetsDir, { recursive: true })
 
 const usedSlugs = new Set()
-const manifestItems = wb.SheetNames.map((name, index) => {
+const manifestItems = wb.SheetNames.filter((name) => usedSheets.has(name)).map((name, index) => {
   let slug = slugify(name)
   while (usedSlugs.has(slug)) slug += '-x'
   usedSlugs.add(slug)
