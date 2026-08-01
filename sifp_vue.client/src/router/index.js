@@ -16,12 +16,6 @@ const routes = [
     meta: { title: 'Import Excel', subtitle: 'Data Management' },
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('../pages/LoginPage.vue'),
-    meta: { title: 'Masuk', subtitle: 'Akun' },
-  },
-  {
     path: '/master/observations',
     name: 'observations',
     component: () => import('../pages/master/ObservationsPage.vue'),

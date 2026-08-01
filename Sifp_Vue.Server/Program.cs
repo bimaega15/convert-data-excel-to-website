@@ -1,8 +1,5 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sifp_Vue.Server.Data;
 using Sifp_Vue.Server.Data.Seeders;
@@ -18,7 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Konfigurasi
 // ---------------------------------------------------------------------------
 
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<SeedOptions>(builder.Configuration.GetSection(SeedOptions.SectionName));
 builder.Services.Configure<ImportOptions>(builder.Configuration.GetSection(ImportOptions.SectionName));
 
@@ -45,7 +41,7 @@ builder.Services.AddDbContext<SifpDbContext>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+builder.Services.AddSingleton<IUserClaimsFactory, UserClaimsFactory>();
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -118,20 +114,6 @@ builder.Services.AddSwaggerGen(c =>
 
     c.CustomSchemaIds(type => type.FullName?.Replace("+", ".") ?? type.Name);
 
-    var securityScheme = new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Description = "Masukkan token JWT hasil POST /api/auth/login (tanpa awalan \"Bearer\").",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-    };
-
-    c.AddSecurityDefinition("Bearer", securityScheme);
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement { [securityScheme] = Array.Empty<string>() });
-
     var xmlPath = Path.Combine(AppContext.BaseDirectory,
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml");
     if (File.Exists(xmlPath))
@@ -141,36 +123,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // ---------------------------------------------------------------------------
-// Autentikasi: JWT untuk /api (klien Vue), cookie untuk /admin (Razor)
+// Autentikasi: cookie untuk /admin (Razor).
+//
+// Endpoint /api sengaja terbuka — klien Vue tidak punya halaman login sendiri.
+// Pembatasan akses aplikasi direncanakan lewat Windows Authentication di IIS
+// perusahaan, sehingga tidak diduplikasi di level aplikasi.
 // ---------------------------------------------------------------------------
-
-var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
-var jwtKey = jwtSection["Key"];
-if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32)
-{
-    throw new InvalidOperationException(
-        "Jwt:Key wajib diisi dan minimal 32 byte. Atur lewat user-secrets atau environment variable Jwt__Key.");
-}
 
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = jwtSection["Issuer"] ?? "Sifp_Vue.Server",
-            ValidateAudience = true,
-            ValidAudience = jwtSection["Audience"] ?? "sifp_vue.client",
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {

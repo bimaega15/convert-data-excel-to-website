@@ -13,13 +13,13 @@ convert-data-excel-to-website/
 ├── Sifp_Vue.Server/            # ASP.NET Core 8 — MVC + Web API + EF Core
 │   ├── Controllers/
 │   │   ├── Admin/              # Halaman Razor  (/admin/*, autentikasi cookie)
-│   │   └── Api/                # REST API       (/api/*,   autentikasi JWT)
+│   │   └── Api/                # REST API       (/api/*,   terbuka tanpa login)
 │   ├── Data/
 │   │   ├── Configurations/     # Fluent API per entity
 │   │   ├── Migrations/         # Migration EF Core
 │   │   ├── Seeders/            # Role, user admin, master data awal
 │   │   └── SifpDbContext.cs
-│   ├── Helpers/                # JWT, password hashing, pembaca Excel, paging
+│   ├── Helpers/                # Claims, password hashing, pembaca Excel, paging
 │   ├── Models/
 │   │   ├── Entities/           # Model database
 │   │   ├── Dtos/               # Kontrak API
@@ -87,7 +87,7 @@ Saat pertama dijalankan, server otomatis:
 | --- | --- | --- |
 | URL | `/` (dev: `localhost:5173`) | `/admin` |
 | Teknologi | Vue 3 + Vite | Razor Pages/MVC + Bootstrap 5 |
-| Autentikasi | JWT Bearer (`/api/auth/login`) | Cookie (`/admin/login`) |
+| Autentikasi | Tidak ada di level aplikasi (rencana: Windows Authentication di IIS) | Cookie (`/admin/login`) |
 | Untuk | Dashboard & viewer worksheet | Pengelolaan data, import, user |
 
 Keduanya memakai service dan database yang sama; hanya cara autentikasi dan
@@ -140,8 +140,8 @@ statis. Sumber tiap bagian:
 | Improvement Initiatives | `GET /api/initiatives/all` |
 | Import Excel | `POST /api/import/excel` |
 
-Endpoint baca terbuka tanpa token (`[AllowAnonymous]`), jadi dashboard dan tabel
-master bisa dibuka tanpa login. Yang memerlukan login hanya import.
+Seluruh endpoint `/api` terbuka tanpa login, termasuk import Excel — lihat
+[Autentikasi](#autentikasi) di bawah.
 
 Data dashboard dan manifest sidebar diambil **sebelum** app di-mount
 (`src/main.js`), karena komponen dashboard dan sidebar membacanya secara sinkron.
@@ -155,12 +155,20 @@ untuk menjalankannya — bukan halaman kosong.
 > data awal untuk `MasterDataSeeder` di backend, bukan lagi sumber data aplikasi.
 > `npm run convert:excel` masih berguna untuk menyegarkan berkas seed itu.
 
-### Login
+### Autentikasi
 
-Aplikasi memakai JWT. Halaman `/login` menukar username & password lewat
-`POST /api/auth/login`, lalu token disimpan di `localStorage` dan otomatis
-dilampirkan pada permintaan yang memerlukannya. Token kedaluwarsa dibuang sendiri
-saat aplikasi dimuat, dan respons 401 langsung mengakhiri sesi.
+Aplikasi Vue tidak punya halaman login. Pembatasan akses direncanakan lewat
+**Windows Authentication di IIS perusahaan**, sehingga tidak diduplikasi di level
+aplikasi: seluruh endpoint `/api` — baca maupun tulis — terbuka.
+
+Konsekuensinya, siapa pun yang bisa membuka aplikasi juga bisa menjalankan import
+Excel, yang **mengganti seluruh master data**. Sampai Windows Authentication aktif,
+jangan menerbitkan aplikasi ini ke jaringan yang lebih luas dari yang dimaksud.
+
+Yang masih memakai login sendiri hanya area `/admin` (cookie, `/admin/login`) dan
+endpoint `GET /api/users` yang mengikutinya. Kolom audit `ImportedBy` terisi
+`"SYSTEM"` selama belum ada identitas; setelah Windows Authentication aktif,
+nilainya otomatis mengikuti akun domain.
 
 ---
 

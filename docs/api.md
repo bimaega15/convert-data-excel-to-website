@@ -64,49 +64,15 @@ Filter tambahan untuk master data: `obsCode`, `zona`, `protocolCode`, `status`, 
 
 ## Autentikasi
 
-Endpoint tulis memakai JWT Bearer:
+Seluruh endpoint `/api` **terbuka tanpa autentikasi**, baca maupun tulis. Klien Vue
+tidak punya halaman login; pembatasan akses direncanakan lewat Windows Authentication
+di IIS perusahaan, sehingga tidak diduplikasi di level aplikasi.
 
-```
-Authorization: Bearer <token>
-```
+Konsekuensinya `POST /api/import/excel` — yang mengganti seluruh master data — juga
+bisa dipanggil siapa pun yang dapat menjangkau server. Batasi di level jaringan/IIS.
 
-Token diperoleh dari `POST /api/auth/login`, berlaku 8 jam (`Jwt:ExpiryMinutes`).
-
-Role: `Administrator` (akses penuh), `Verifier` (baca + tulis data + import),
-`Viewer` (baca saja).
-
----
-
-## Auth
-
-| Method | Endpoint | Akses | Keterangan |
-| --- | --- | --- | --- |
-| POST | `/api/auth/login` | publik | Menukar kredensial dengan token |
-| GET | `/api/auth/me` | token | Profil user dari token aktif |
-
-```bash
-curl -X POST http://localhost:5250/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"Admin#12345"}'
-```
-
-```json
-{
-  "status": "SUCCESS",
-  "message": "Login berhasil.",
-  "data": {
-    "token": "eyJhbGciOi…",
-    "expiresAtUtc": "2026-08-01T00:43:02Z",
-    "user": {
-      "id": 1, "username": "admin", "fullName": "Administrator",
-      "roles": ["Administrator"], "canAccessAdmin": true
-    }
-  }
-}
-```
-
-Kredensial salah menghasilkan **401** dengan pesan yang sama untuk username maupun
-password yang keliru — disengaja agar tidak membocorkan username mana yang terdaftar.
+Satu-satunya pengecualian adalah `/api/users`: masih memerlukan cookie login area
+admin (`/admin/login`) dengan role `Administrator`, karena isinya data akun.
 
 ---
 
@@ -114,8 +80,8 @@ password yang keliru — disengaja agar tidak membocorkan username mana yang ter
 
 | Method | Endpoint | Akses | Keterangan |
 | --- | --- | --- | --- |
-| GET | `/api/dashboard` | publik | Payload dashboard lengkap |
-| GET | `/api/dashboard/summary` | token | Ringkasan angka untuk kartu admin |
+| GET | `/api/dashboard` | terbuka | Payload dashboard lengkap |
+| GET | `/api/dashboard/summary` | terbuka | Ringkasan angka untuk kartu admin |
 
 `GET /api/dashboard` mengembalikan struktur yang **sama persis** dengan
 `sifp_vue.client/src/data/generated/dashboard.json`:
@@ -141,15 +107,15 @@ data.footerNote
 
 | Method | Endpoint | Akses | Keterangan |
 | --- | --- | --- | --- |
-| GET | `/api/observations` | publik | Daftar berhalaman + filter |
-| GET | `/api/observations/all` | publik | Semua baris, bentuk = `observations.json` |
-| GET | `/api/observations/{id}` | publik | Satu observasi |
-| GET | `/api/observations/code/{obsCode}` | publik | Cari berdasarkan `OBS-001` |
-| GET | `/api/observations/{id}/detail` | publik | Observasi + seluruh data turunannya |
-| GET | `/api/observations/filter-options` | publik | Nilai unik untuk dropdown filter |
-| POST | `/api/observations` | Admin, Verifier | Tambah |
-| PUT | `/api/observations/{id}` | Admin, Verifier | Ubah |
-| DELETE | `/api/observations/{id}` | Administrator | Hapus (beserta data turunannya) |
+| GET | `/api/observations` | terbuka | Daftar berhalaman + filter |
+| GET | `/api/observations/all` | terbuka | Semua baris, bentuk = `observations.json` |
+| GET | `/api/observations/{id}` | terbuka | Satu observasi |
+| GET | `/api/observations/code/{obsCode}` | terbuka | Cari berdasarkan `OBS-001` |
+| GET | `/api/observations/{id}/detail` | terbuka | Observasi + seluruh data turunannya |
+| GET | `/api/observations/filter-options` | terbuka | Nilai unik untuk dropdown filter |
+| POST | `/api/observations` | terbuka | Tambah |
+| PUT | `/api/observations/{id}` | terbuka | Ubah |
+| DELETE | `/api/observations/{id}` | terbuka | Hapus (beserta data turunannya) |
 
 Filter khusus: `dateFrom`, `dateTo`, `site`, `company`.
 `sortBy` menerima: `date`, `zona`, `performance`, `site`, `protocol`.
@@ -199,7 +165,7 @@ Diperbarui lewat import Excel, bukan input manual.
 | GET | `/api/master/ccvc-library/{ccvcId}` | Satu entri, mis. `CLSR01-A` |
 | GET | `/api/master/counts` | Jumlah baris per tabel |
 
-Semuanya `[AllowAnonymous]`.
+Semuanya terbuka tanpa autentikasi.
 
 ```bash
 curl "http://localhost:5250/api/master/sif-questions?obsCode=OBS-001&answer=NO"
@@ -211,12 +177,12 @@ curl "http://localhost:5250/api/master/sif-questions?obsCode=OBS-001&answer=NO"
 
 | Method | Endpoint | Akses |
 | --- | --- | --- |
-| GET | `/api/initiatives` | publik |
-| GET | `/api/initiatives/all` | publik |
-| GET | `/api/initiatives/{id}` | publik |
-| POST | `/api/initiatives` | Admin, Verifier |
-| PUT | `/api/initiatives/{id}` | Admin, Verifier |
-| DELETE | `/api/initiatives/{id}` | Administrator |
+| GET | `/api/initiatives` | terbuka |
+| GET | `/api/initiatives/all` | terbuka |
+| GET | `/api/initiatives/{id}` | terbuka |
+| POST | `/api/initiatives` | terbuka |
+| PUT | `/api/initiatives/{id}` | terbuka |
+| DELETE | `/api/initiatives/{id}` | terbuka |
 
 ---
 
@@ -226,8 +192,8 @@ Menggantikan `src/data/generated/sheets/*.json`.
 
 | Method | Endpoint | Akses | Keterangan |
 | --- | --- | --- | --- |
-| GET | `/api/worksheets/manifest` | publik | Daftar worksheet dari import terakhir |
-| GET | `/api/worksheets/{slug}` | publik | Isi mentah satu worksheet |
+| GET | `/api/worksheets/manifest` | terbuka | Daftar worksheet dari import terakhir |
+| GET | `/api/worksheets/{slug}` | terbuka | Isi mentah satu worksheet |
 
 Manifest sudah dikelompokkan sesuai urutan grup sidebar (Data Input, Database,
 Analisis, Konfigurasi, …), jadi jumlah menu di Vue otomatis mengikuti isi workbook:
@@ -262,10 +228,10 @@ dengan `rows` berupa array of array string — baris ke-0 adalah header.
 
 | Method | Endpoint | Akses | Keterangan |
 | --- | --- | --- | --- |
-| POST | `/api/import/excel` | Admin, Verifier | Unggah & proses workbook |
-| GET | `/api/import/batches` | Admin, Verifier | Riwayat import (berhalaman) |
-| GET | `/api/import/batches/{id}` | Admin, Verifier | Detail satu batch |
-| GET | `/api/import/required-sheets` | publik | 14 sheet wajib beserta labelnya |
+| POST | `/api/import/excel` | terbuka | Unggah & proses workbook |
+| GET | `/api/import/batches` | terbuka | Riwayat import (berhalaman) |
+| GET | `/api/import/batches/{id}` | terbuka | Detail satu batch |
+| GET | `/api/import/required-sheets` | terbuka | 14 sheet wajib beserta labelnya |
 
 `POST /api/import/excel` menerima `multipart/form-data` — kontraknya sama dengan
 `submitWorkbook()` di `src/services/excelImport.js`:
@@ -322,7 +288,8 @@ Bila gagal, transaksi di-rollback sehingga **data lama tetap utuh**:
 
 ## Users
 
-Semua endpoint memerlukan role `Administrator`.
+Satu-satunya grup endpoint `/api` yang masih tertutup: memerlukan cookie login
+area admin (`/admin/login`) dengan role `Administrator`.
 
 | Method | Endpoint |
 | --- | --- |
@@ -345,6 +312,6 @@ mengunci dirinya sendiri di luar sistem.
 | 200 | Berhasil |
 | 201 | Dibuat (POST) — header `Location` menunjuk resource baru |
 | 400 | Validasi gagal atau aturan bisnis dilanggar (mis. Obs ID duplikat) |
-| 401 | Token tidak ada / kedaluwarsa / kredensial salah |
-| 403 | Token valid tetapi role tidak mencukupi |
+| 401 | Belum login cookie admin (hanya `/api/users`) |
+| 403 | Sudah login tetapi role bukan `Administrator` (hanya `/api/users`) |
 | 404 | Resource tidak ditemukan |

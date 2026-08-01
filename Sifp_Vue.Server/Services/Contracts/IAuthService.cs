@@ -5,16 +5,11 @@ namespace Sifp_Vue.Server.Services.Contracts
 {
     public interface IAuthService
     {
-        /// <summary>Memvalidasi kredensial dan menerbitkan JWT untuk klien Vue.</summary>
-        Task<ApiResponse<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Memvalidasi kredensial untuk login cookie area admin.
         /// Mengembalikan identity siap sign-in bila user berhak membuka /admin.
         /// </summary>
         Task<ApiResponse<ClaimsIdentity>> AuthenticateForAdminAsync(LoginRequest request, string authenticationScheme, CancellationToken cancellationToken = default);
-
-        Task<UserDto?> GetCurrentUserAsync(int userId, CancellationToken cancellationToken = default);
     }
 
     public interface IUserService

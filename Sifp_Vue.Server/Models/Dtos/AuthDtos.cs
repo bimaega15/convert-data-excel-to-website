@@ -13,13 +13,6 @@ namespace Sifp_Vue.Server.Models.Dtos
         public string Password { get; set; } = string.Empty;
     }
 
-    public class LoginResponse
-    {
-        public string Token { get; set; } = string.Empty;
-        public DateTime ExpiresAtUtc { get; set; }
-        public UserDto User { get; set; } = new();
-    }
-
     public class UserDto
     {
         public int Id { get; set; }

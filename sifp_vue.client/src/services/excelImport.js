@@ -4,21 +4,12 @@
 
 import { REQUIRED_SHEET_NAMES, findMissingSheets } from '../data/sheet-schema'
 import { API_BASE } from './api'
-import { authHeader, isLoggedIn } from './auth'
 
 const ACCEPTED_EXT = ['.xlsx', '.xlsm', '.xls']
 const MAX_SIZE_MB = 25
 
 export class ImportError extends Error {}
 export class EndpointNotConfiguredError extends Error {}
-
-/** Import memerlukan sesi login dengan role Administrator atau Verifier. */
-export class NotAuthenticatedError extends Error {
-  constructor() {
-    super('Anda harus masuk terlebih dahulu untuk mengirim workbook ke server.')
-    this.name = 'NotAuthenticatedError'
-  }
-}
 
 export function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`
@@ -195,7 +186,6 @@ export const IMPORT_ENDPOINT =
  */
 export async function submitWorkbook(file, summary, edits) {
   if (!IMPORT_ENDPOINT) throw new EndpointNotConfiguredError()
-  if (!isLoggedIn.value) throw new NotAuthenticatedError()
 
   const body = new FormData()
   body.append('file', file, file.name)
@@ -206,7 +196,7 @@ export async function submitWorkbook(file, summary, edits) {
   try {
     // Content-Type tidak diisi manual: browser perlu menuliskannya sendiri
     // lengkap dengan boundary multipart.
-    res = await fetch(IMPORT_ENDPOINT, { method: 'POST', body, headers: authHeader() })
+    res = await fetch(IMPORT_ENDPOINT, { method: 'POST', body })
   } catch (err) {
     throw new ImportError(`Tidak dapat menghubungi server: ${err.message}`)
   }
@@ -217,10 +207,6 @@ export async function submitWorkbook(file, summary, edits) {
     payload = text ? JSON.parse(text) : null
   } catch {
     payload = null
-  }
-
-  if (res.status === 401 || res.status === 403) {
-    throw new NotAuthenticatedError()
   }
 
   // Backend membalas amplop { status, message, data } — pesan darinya jauh lebih

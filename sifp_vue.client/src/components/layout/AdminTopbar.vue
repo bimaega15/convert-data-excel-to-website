@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DashIcon from '../dashboard/DashIcon.vue'
 import { meta } from '../../data/dashboard'
-import { currentUser, isLoggedIn, logout, userRoles } from '../../services/auth'
 
 const props = defineProps({
   collapsed: { type: Boolean, default: false },
@@ -15,17 +14,6 @@ const route = useRoute()
 const burgerLabel = computed(() =>
   props.collapsed ? 'Perlebar sidebar' : 'Perkecil sidebar menjadi ikon'
 )
-
-// Inisial dari nama lengkap; jatuh ke dua huruf pertama username bila kosong.
-const initials = computed(() => {
-  const user = currentUser.value
-  if (!user) return 'VV'
-
-  const source = user.fullName?.trim() || user.username || ''
-  const parts = source.split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-  return source.slice(0, 2).toUpperCase() || 'VV'
-})
 </script>
 
 <template>
@@ -51,16 +39,6 @@ const initials = computed(() => {
         <DashIcon name="file" :size="14" />
         <span>{{ meta.sourceFile || 'Belum ada import' }}</span>
       </span>
-
-      <template v-if="isLoggedIn">
-        <button type="button" class="topbar__logout" title="Keluar dari sesi" @click="logout()">
-          Keluar
-        </button>
-        <span class="topbar__avatar" :title="`${currentUser?.fullName || currentUser?.username} · ${userRoles.join(', ')}`">
-          {{ initials }}
-        </span>
-      </template>
-      <RouterLink v-else to="/login" class="topbar__login">Masuk</RouterLink>
     </div>
   </header>
 </template>
@@ -138,41 +116,4 @@ const initials = computed(() => {
   white-space: nowrap;
 }
 
-.topbar__login,
-.topbar__logout {
-  flex: none;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: #fff;
-  padding: 0.3rem 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--ink);
-  font-family: inherit;
-  text-decoration: none;
-  line-height: 1.6;
-}
-
-.topbar__login:hover {
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
-}
-
-.topbar__logout:hover {
-  border-color: #d93025;
-  color: #b3261e;
-}
-
-.topbar__avatar {
-  flex: none;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1e2f83, #1d40b0);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 800;
-}
 </style>

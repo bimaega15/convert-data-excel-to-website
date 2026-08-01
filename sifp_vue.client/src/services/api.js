@@ -5,8 +5,6 @@
 // Modul ini yang membuka amplop itu, sehingga pemanggil cukup menerima `data`
 // dan tidak perlu memeriksa `status` di setiap tempat.
 
-import { authHeader, clearSession } from './auth'
-
 // Kosong = origin yang sama (mode produksi: Vue disajikan dari wwwroot server,
 // dan saat dev vite.config.js mem-proxy /api ke backend).
 export const API_BASE = import.meta.env.VITE_API_BASE ?? ''
@@ -19,11 +17,6 @@ export class ApiError extends Error {
     /** Detail validasi per field, mis. { ObsCode: ["Obs ID wajib diisi."] } */
     this.errors = errors
     this.url = url
-  }
-
-  /** True bila kegagalan berasal dari sesi (belum login / token kedaluwarsa). */
-  get isAuthError() {
-    return this.status === 401 || this.status === 403
   }
 }
 
@@ -48,12 +41,10 @@ function buildUrl(path, params) {
  * Melempar {@link ApiError} untuk semua kegagalan, termasuk gangguan jaringan,
  * supaya pemanggil hanya perlu menangani satu jenis error.
  */
-export async function request(path, { method = 'GET', params, body, auth = false, signal } = {}) {
+export async function request(path, { method = 'GET', params, body, signal } = {}) {
   const url = buildUrl(path, params)
 
   const headers = {}
-  if (auth) Object.assign(headers, authHeader())
-
   let payload
   if (body instanceof FormData) {
     // Content-Type sengaja tidak diisi: browser harus menentukannya sendiri
@@ -70,12 +61,6 @@ export async function request(path, { method = 'GET', params, body, auth = false
   } catch (err) {
     if (err.name === 'AbortError') throw err
     throw new ApiError(`Tidak dapat menghubungi server (${url}). ${err.message}`, { url })
-  }
-
-  // 401 saat memakai token berarti sesi sudah tidak berlaku; dibersihkan di sini
-  // supaya UI tidak terus menampilkan status "sudah login" yang keliru.
-  if (response.status === 401 && auth) {
-    clearSession()
   }
 
   const text = await response.text()

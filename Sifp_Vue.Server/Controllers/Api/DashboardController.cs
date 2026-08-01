@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Services.Contracts;
@@ -21,7 +20,6 @@ namespace Sifp_Vue.Server.Controllers.Api
         /// jadi <c>src/data/dashboard.js</c> cukup mengganti sumber datanya ke sini.
         /// </summary>
         [HttpGet]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(ApiResponse<DashboardDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {

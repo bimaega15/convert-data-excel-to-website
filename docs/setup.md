@@ -142,12 +142,7 @@ Tiga cara, semuanya melewati `ExcelImportService` yang sama:
 **b. REST API** (dipakai halaman Import Excel di Vue):
 
 ```bash
-TOKEN=$(curl -s -X POST http://localhost:5250/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"Admin#12345"}' | jq -r .data.token)
-
 curl -X POST http://localhost:5250/api/import/excel \
-  -H "Authorization: Bearer $TOKEN" \
   -F "file=@workbook.xlsx" \
   -F 'summary={"sheetCount":14}' \
   -F 'edits=[]'
@@ -156,10 +151,8 @@ curl -X POST http://localhost:5250/api/import/excel \
 **c. Dari aplikasi Vue** — halaman `/import`. Tidak perlu konfigurasi tambahan:
 tujuannya sudah otomatis `/api/import/excel`.
 
-Karena import mengubah data di server, halaman itu meminta login lebih dulu
-(`/login`, role `Administrator` atau `Verifier`). Token otomatis dilampirkan pada
-permintaan upload. Setelah import berhasil, dashboard dan menu sidebar langsung
-dimuat ulang mengikuti workbook yang baru.
+Endpoint ini terbuka tanpa login — lihat [Keamanan](#keamanan). Setelah import
+berhasil, dashboard dan menu sidebar langsung dimuat ulang mengikuti workbook baru.
 
 Isi `VITE_IMPORT_ENDPOINT` hanya bila workbook perlu dikirim ke layanan lain.
 
@@ -177,11 +170,25 @@ Isi `VITE_IMPORT_ENDPOINT` hanya bila workbook perlu dikirim ke layanan lain.
 
 ## Keamanan
 
+### Akses aplikasi
+
+Aplikasi Vue **tidak punya halaman login**, dan seluruh endpoint `/api` terbuka —
+termasuk `POST /api/import/excel` yang mengganti seluruh master data. Ini disengaja:
+pembatasan akses direncanakan lewat **Windows Authentication di IIS perusahaan**.
+
+Sampai Windows Authentication aktif, siapa pun yang bisa menjangkau server juga bisa
+menimpa seluruh data. Jangan menerbitkan instance ini ke jaringan yang lebih luas dari
+yang dimaksud; batasi di level jaringan atau IIS.
+
+Area `/admin` tetap memakai login cookie sendiri (`/admin/login`), begitu pula
+`GET /api/users` yang mengikutinya.
+
+### Rahasia konfigurasi
+
 Nilai berikut **wajib** diganti sebelum keluar dari mesin developer:
 
 | Setting | Cara aman |
 | --- | --- |
-| `Jwt:Key` | minimal 32 byte, acak |
 | `Seed:AdminPassword` | password admin awal |
 | `ConnectionStrings:SifpDatabase` | kredensial database |
 
@@ -190,7 +197,6 @@ Gunakan user-secrets saat pengembangan:
 ```bash
 cd Sifp_Vue.Server
 dotnet user-secrets init
-dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 48)"
 dotnet user-secrets set "Seed:AdminPassword" "PasswordKuatAnda"
 dotnet user-secrets set "ConnectionStrings:SifpDatabase" "Server=…"
 ```
@@ -198,13 +204,9 @@ dotnet user-secrets set "ConnectionStrings:SifpDatabase" "Server=…"
 Atau environment variable saat deploy (pemisahnya dua garis bawah):
 
 ```
-Jwt__Key=…
 Seed__AdminPassword=…
 ConnectionStrings__SifpDatabase=…
 ```
-
-Aplikasi menolak start bila `Jwt:Key` kosong atau kurang dari 32 byte — ini disengaja,
-agar tidak ada instance yang berjalan dengan kunci lemah tanpa disadari.
 
 Password disimpan sebagai PBKDF2-HMAC-SHA256, 210.000 iterasi, salt 16 byte acak,
 berformat `iterations.salt.hash` sehingga hash lama tetap terverifikasi ketika
@@ -216,7 +218,6 @@ parameter iterasinya dinaikkan.
 
 | Gejala | Penyebab & solusi |
 | --- | --- |
-| `Jwt:Key wajib diisi dan minimal 32 byte` | Isi `Jwt:Key` di appsettings.Development.json atau user-secrets |
 | `Connection string 'SifpDatabase' belum diatur` | Isi `ConnectionStrings:SifpDatabase` |
 | `No migrations were applied` padahal tabel belum ada | Jalankan `dotnet build` sebelum `database update` |
 | `Folder data hasil konversi tidak ditemukan` | Wajar bila `sifp_vue.client/src/data/generated` kosong — jalankan `npm run convert:excel`, atau abaikan dan import lewat API |
@@ -224,5 +225,4 @@ parameter iterasinya dinaikkan.
 | `.xls` ditolak | ClosedXML hanya membaca format OpenXML; simpan ulang sebagai `.xlsx` |
 | CORS error dari Vue | Hanya terjadi bila `VITE_API_BASE` diisi domain lain — daftarkan domain itu pada `Cors:AllowedOrigins` |
 | Vue menampilkan "Tidak dapat memuat data" | Backend belum jalan atau port-nya bukan 5250; jalankan `dotnet run`, atau sesuaikan `VITE_API_PROXY` |
-| Submit import ditolak "Belum masuk" | Login dulu di `/login` dengan akun ber-role Administrator/Verifier |
 | Sidebar kosong / "Belum ada import" | Belum ada workbook yang berhasil diimport; jalankan seeder atau import lewat `/import` |

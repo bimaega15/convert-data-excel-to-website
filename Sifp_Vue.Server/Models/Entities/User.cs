@@ -1,6 +1,6 @@
 namespace Sifp_Vue.Server.Models.Entities
 {
-    /// <summary>Akun aplikasi. Dipakai login cookie (admin MVC) maupun JWT (API Vue).</summary>
+    /// <summary>Akun aplikasi. Dipakai login cookie area /admin.</summary>
     public class User : AuditableEntity
     {
         public int Id { get; set; }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Services.Contracts;
@@ -10,7 +9,6 @@ namespace Sifp_Vue.Server.Controllers.Api
     /// manifest untuk menu sidebar, dan data mentah untuk viewer worksheet generik.
     /// </summary>
     [Route("api/worksheets")]
-    [AllowAnonymous]
     public class WorksheetsController : ApiControllerBase
     {
         private readonly IWorksheetService _service;

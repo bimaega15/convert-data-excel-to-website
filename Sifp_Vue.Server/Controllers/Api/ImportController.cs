@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
-using Sifp_Vue.Server.Models.Entities;
 using Sifp_Vue.Server.Services.Contracts;
 
 namespace Sifp_Vue.Server.Controllers.Api
@@ -13,7 +11,6 @@ namespace Sifp_Vue.Server.Controllers.Api
     /// <c>summary</c>, dan <c>edits</c>.
     /// </summary>
     [Route("api/import")]
-    [Authorize(Roles = RoleNames.Administrator + "," + RoleNames.Verifier)]
     public class ImportController : ApiControllerBase
     {
         private readonly IExcelImportService _importService;
@@ -68,7 +65,6 @@ namespace Sifp_Vue.Server.Controllers.Api
         /// Klien bisa memakainya untuk validasi awal tanpa menduplikasi daftar di dua tempat.
         /// </summary>
         [HttpGet("required-sheets")]
-        [AllowAnonymous]
         public IActionResult RequiredSheets()
             => Success(Helpers.SheetSchema.RequiredSheets.Select(s => new { name = s.Name, label = s.Label }));
     }

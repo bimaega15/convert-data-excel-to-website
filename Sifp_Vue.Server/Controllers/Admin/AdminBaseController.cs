@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Sifp_Vue.Server.Controllers.Admin
 {
     /// <summary>
-    /// Basis seluruh halaman /admin. Memakai autentikasi cookie (bukan JWT) karena
-    /// area ini dirender server-side dan diakses langsung lewat browser.
+    /// Basis seluruh halaman /admin. Memakai autentikasi cookie karena area ini
+    /// dirender server-side dan diakses langsung lewat browser.
     /// </summary>
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Policy = "AdminOnly")]
     public abstract class AdminBaseController : Controller

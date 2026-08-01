@@ -6,7 +6,6 @@ import DashIcon from '../components/dashboard/DashIcon.vue'
 import {
   EndpointNotConfiguredError,
   IMPORT_ENDPOINT,
-  NotAuthenticatedError,
   buildSummary,
   columnLetter,
   flattenEdits,
@@ -14,7 +13,6 @@ import {
   parseWorkbook,
   submitWorkbook,
 } from '../services/excelImport'
-import { canImport, isLoggedIn } from '../services/auth'
 import { loadDashboard } from '../data/dashboard'
 import { loadSheetManifest } from '../data/sheets'
 
@@ -141,10 +139,7 @@ async function onSubmit() {
       result,
     }
   } catch (err) {
-    let status = 'error'
-    if (err instanceof NotAuthenticatedError) status = 'not-authenticated'
-    else if (err instanceof EndpointNotConfiguredError) status = 'not-configured'
-
+    const status = err instanceof EndpointNotConfiguredError ? 'not-configured' : 'error'
     submit.value = { status, message: err.message }
   }
 }
@@ -309,12 +304,6 @@ const importedRows = computed(() =>
         <span v-if="blockedByMissing" class="submitbar__blocked">
           Submit dinonaktifkan sampai sheet wajib lengkap.
         </span>
-        <span v-else-if="!isLoggedIn" class="submitbar__blocked">
-          <RouterLink to="/login?redirect=/import">Masuk</RouterLink> dulu untuk mengirim ke server.
-        </span>
-        <span v-else-if="!canImport" class="submitbar__blocked">
-          Role Anda tidak berwenang melakukan import.
-        </span>
 
         <button type="button" class="btn-primary" :disabled="!canSubmit" @click="onSubmit">
           {{ submit.status === 'sending' ? 'Mengirim…' : 'Submit ke Server' }}
@@ -339,16 +328,6 @@ const importedRows = computed(() =>
           <p class="notice__line">
             Dashboard dan menu sidebar sudah diperbarui mengikuti workbook ini.
           </p>
-        </div>
-      </div>
-
-      <div v-else-if="submit.status === 'not-authenticated'" class="notice notice--warn" role="alert">
-        <DashIcon name="warning" :size="17" />
-        <div>
-          <strong>Belum masuk — file belum terkirim.</strong>
-          Import mengubah data di server sehingga memerlukan akun dengan role
-          Administrator atau Verifier.
-          <RouterLink to="/login?redirect=/import">Masuk sekarang</RouterLink>, lalu ulangi submit.
         </div>
       </div>
 

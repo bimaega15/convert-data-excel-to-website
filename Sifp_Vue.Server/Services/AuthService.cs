@@ -3,53 +3,32 @@ using Sifp_Vue.Server.Helpers;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Repositories;
 using Sifp_Vue.Server.Services.Contracts;
-using Sifp_Vue.Server.Services.Mappers;
 
 namespace Sifp_Vue.Server.Services
 {
+    /// <summary>
+    /// Login area admin (/admin). Klien Vue tidak memakai service ini: endpoint /api
+    /// terbuka dan pembatasan aksesnya direncanakan lewat Windows Authentication di IIS.
+    /// </summary>
     public class AuthService : IAuthService
     {
         private const string InvalidCredentialsMessage = "Username atau password salah.";
 
         private readonly IUserRepository _users;
         private readonly IPasswordHasher _passwordHasher;
-        private readonly IJwtTokenHandler _tokenHandler;
+        private readonly IUserClaimsFactory _claimsFactory;
         private readonly ILogger<AuthService> _logger;
 
         public AuthService(
             IUserRepository users,
             IPasswordHasher passwordHasher,
-            IJwtTokenHandler tokenHandler,
+            IUserClaimsFactory claimsFactory,
             ILogger<AuthService> logger)
         {
             _users = users;
             _passwordHasher = passwordHasher;
-            _tokenHandler = tokenHandler;
+            _claimsFactory = claimsFactory;
             _logger = logger;
-        }
-
-        public async Task<ApiResponse<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
-        {
-            var user = await ValidateCredentialsAsync(request, cancellationToken);
-            if (user is null)
-            {
-                return ApiResponse<LoginResponse>.Fail(InvalidCredentialsMessage);
-            }
-
-            var roles = user.UserRoles.Where(r => r.Role != null).Select(r => r.Role!.Name).ToList();
-            var (token, expiresAt) = _tokenHandler.CreateToken(user, roles);
-
-            user.LastLoginAt = DateTime.UtcNow;
-            await _users.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Login API berhasil untuk {Username}", user.Username);
-
-            return ApiResponse<LoginResponse>.Ok(new LoginResponse
-            {
-                Token = token,
-                ExpiresAtUtc = expiresAt,
-                User = user.ToDto()
-            }, "Login berhasil.");
         }
 
         public async Task<ApiResponse<ClaimsIdentity>> AuthenticateForAdminAsync(
@@ -73,7 +52,7 @@ namespace Sifp_Vue.Server.Services
             user.LastLoginAt = DateTime.UtcNow;
             await _users.SaveChangesAsync(cancellationToken);
 
-            var identity = _tokenHandler.BuildIdentity(user, roles.Select(r => r.Name), authenticationScheme);
+            var identity = _claimsFactory.BuildIdentity(user, roles.Select(r => r.Name), authenticationScheme);
             _logger.LogInformation("Login admin berhasil untuk {Username}", user.Username);
 
             return ApiResponse<ClaimsIdentity>.Ok(identity, "Login berhasil.");
@@ -111,11 +90,5 @@ namespace Sifp_Vue.Server.Services
         // Hash bernilai tetap untuk membakar waktu verifikasi saat user tidak ditemukan.
         private const string DummyHash =
             "210000.AAAAAAAAAAAAAAAAAAAAAA==.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-
-        public async Task<UserDto?> GetCurrentUserAsync(int userId, CancellationToken cancellationToken = default)
-        {
-            var user = await _users.GetWithRolesAsync(userId, cancellationToken);
-            return user?.ToDto();
-        }
     }
 }

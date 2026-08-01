@@ -3,7 +3,7 @@
 ## Lapisan
 
 ```
-Controllers/Api        Controllers/Admin        ← HTTP: JWT vs cookie, JSON vs Razor
+Controllers/Api        Controllers/Admin        ← HTTP: terbuka vs cookie, JSON vs Razor
         │                      │
         └──────────┬───────────┘
                    ▼
@@ -29,14 +29,19 @@ Aturan yang dipegang konsisten:
   `Services/Mappers/MasterDataMapper.cs` agar bentuk JSON yang dikonsumsi Vue eksplisit
   dan tidak berubah diam-diam saat properti entity diubah namanya.
 
-Dua controller memakai skema autentikasi berbeda dan itu disengaja:
+Dua controller memperlakukan autentikasi secara berbeda dan itu disengaja:
 
 | | `Controllers/Api` | `Controllers/Admin` |
 | --- | --- | --- |
 | Basis | `ApiControllerBase` | `AdminBaseController` |
-| Skema | JWT Bearer | Cookie |
-| Policy | `[Authorize(Roles = …)]` | `AdminOnly` |
+| Skema | tidak ada (terbuka) | Cookie |
+| Policy | – | `AdminOnly` |
 | Balasan gagal | JSON `ApiResponse` | redirect + `TempData` |
+
+`/api` terbuka karena pembatasan akses direncanakan lewat **Windows Authentication di
+IIS perusahaan**, jadi tidak diduplikasi di level aplikasi. Klien Vue tidak punya
+halaman login sendiri. Pengecualiannya `Api/UsersController`, yang tetap dipatok ke
+skema cookie + role `Administrator` karena isinya data akun.
 
 Cookie handler mengembalikan **401/403** alih-alih redirect HTML bila request berupa
 XHR/JSON, supaya kode klien tidak salah menganggap halaman login sebagai keberhasilan.
@@ -221,7 +226,6 @@ flag, `date` untuk tanggal); konversinya terjadi di lapisan mapper.
 
 ```
 services/api.js          fetch wrapper: base URL, buka amplop ApiResponse, ApiError
-services/auth.js         token JWT + profil user, disimpan di localStorage
 composables/useApiResource.js   pola loading/error/reload + pembatalan request
 components/ui/DataState.vue     panel loading / gagal+retry / kosong
 data/dashboard.js        wadah reaktif, diisi loadDashboard()
@@ -259,7 +263,9 @@ perintah untuk menjalankan server — bukan halaman kosong tanpa keterangan.
   dan browser sungguhan: migration dari database kosong, seeder, import workbook
   asli, seluruh endpoint, 17 halaman admin, siklus CRUD penuh, serta render
   headless seluruh halaman Vue.
-- Refresh token belum ada; token berumur 8 jam dan harus login ulang setelahnya.
+- Windows Authentication belum dipasang. Sampai itu ada, seluruh `/api` terbuka —
+  termasuk import Excel yang mengganti seluruh master data — sehingga aksesnya harus
+  dibatasi di level jaringan/IIS.
 - Halaman master mengambil seluruh baris sekaligus. Bila data tumbuh jauh lebih
   besar, paging perlu dipindah ke sisi server (endpoint-nya sudah mendukung).
 - Import hanya bisa dari halaman Vue atau `/admin/imports`; belum ada penjadwalan

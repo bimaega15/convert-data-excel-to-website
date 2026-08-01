@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
@@ -6,8 +7,14 @@ using Sifp_Vue.Server.Services.Contracts;
 
 namespace Sifp_Vue.Server.Controllers.Api
 {
+    /// <summary>
+    /// Pengelolaan akun. Berbeda dengan endpoint /api lain yang terbuka, controller ini
+    /// tetap memerlukan cookie login area admin karena isinya data akun.
+    /// </summary>
     [Route("api/users")]
-    [Authorize(Roles = RoleNames.Administrator)]
+    [Authorize(
+        AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme,
+        Roles = RoleNames.Administrator)]
     public class UsersController : ApiControllerBase
     {
         private readonly IUserService _service;
