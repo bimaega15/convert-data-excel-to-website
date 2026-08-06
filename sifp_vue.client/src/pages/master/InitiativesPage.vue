@@ -5,9 +5,15 @@ import DataTable from '../../components/ui/DataTable.vue'
 import DataState from '../../components/ui/DataState.vue'
 import { api } from '../../services/api'
 import { useApiRows } from '../../composables/useApiResource'
+import { useDeleteRows } from '../../composables/useDeleteRows'
 
 const { rows, loading, error, reload } = useApiRows((signal) =>
   api.get('/api/initiatives/all', { signal })
+)
+
+const { deleting, deleteError, onDelete } = useDeleteRows(
+  (keys) => Promise.all(keys.map((k) => api.delete(`/api/initiatives/${k}`))),
+  reload
 )
 
 const columns = [
@@ -37,7 +43,16 @@ const inProgress = computed(() => rows.value.filter((r) => r.status === 'In Prog
     </PageHeader>
 
     <DataState :loading="loading" :error="error" :empty="!rows.length" @retry="reload">
-      <DataTable :columns="columns" :rows="rows" :initial-sort="{ key: 'id', dir: 'asc' }">
+      <DataTable
+        :columns="columns"
+        :rows="rows"
+        :initial-sort="{ key: 'id', dir: 'asc' }"
+        selectable
+        row-key="key"
+        :deleting="deleting"
+        :error-text="deleteError && deleteError.message"
+        @delete="onDelete"
+      >
         <template #cell-relatedClsr="{ value }">
           <span class="chip">{{ value }}</span>
         </template>

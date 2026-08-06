@@ -3,11 +3,17 @@ import { computed } from 'vue'
 import PageHeader from '../../components/ui/PageHeader.vue'
 import DataTable from '../../components/ui/DataTable.vue'
 import DataState from '../../components/ui/DataState.vue'
-import { fetchAllPages } from '../../services/api'
+import { fetchAllPages, api } from '../../services/api'
 import { useApiRows } from '../../composables/useApiResource'
+import { useDeleteRows } from '../../composables/useDeleteRows'
 
 const { rows, loading, error, reload } = useApiRows((signal) =>
   fetchAllPages('/api/master/ccvc-library', { signal })
+)
+
+const { deleting, deleteError, onDelete } = useDeleteRows(
+  (keys) => api.post('/api/master/ccvc-library/delete', { ids: keys }),
+  reload
 )
 
 const columns = [
@@ -37,7 +43,16 @@ const psecCount = computed(() => new Set(rows.value.map((r) => r.psecId)).size)
     </PageHeader>
 
     <DataState :loading="loading" :error="error" :empty="!rows.length" @retry="reload">
-      <DataTable :columns="columns" :rows="rows" :initial-sort="{ key: 'no', dir: 'asc' }">
+      <DataTable
+        :columns="columns"
+        :rows="rows"
+        :initial-sort="{ key: 'no', dir: 'asc' }"
+        selectable
+        row-key="key"
+        :deleting="deleting"
+        :error-text="deleteError && deleteError.message"
+        @delete="onDelete"
+      >
         <template #cell-psecId="{ value }">
           <span class="chip">{{ value }}</span>
         </template>

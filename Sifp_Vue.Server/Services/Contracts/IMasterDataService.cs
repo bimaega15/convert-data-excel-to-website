@@ -3,8 +3,9 @@ using Sifp_Vue.Server.Models.Dtos;
 namespace Sifp_Vue.Server.Services.Contracts
 {
     /// <summary>
-    /// Query baca untuk tabel master data turunan observasi. CRUD-nya berjalan lewat
-    /// import Excel (bukan input manual), jadi service ini sengaja read-only.
+    /// Query baca untuk tabel master data turunan observasi, plus penghapusan baris
+    /// (single/multiple/all) yang dipicu dari tabel di UI. Penambahan data tetap
+    /// lewat import Excel.
     /// </summary>
     public interface IMasterDataService
     {
@@ -19,6 +20,13 @@ namespace Sifp_Vue.Server.Services.Contracts
 
         /// <summary>Jumlah baris per tabel, dipakai kartu ringkasan di halaman admin.</summary>
         Task<IReadOnlyDictionary<string, int>> GetRowCountsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Menghapus baris pada salah satu tabel master (nama tabel = segmen rute,
+        /// mis. "error-traps"). Menghapus banyak Id sekaligus; "hapus semua" cukup
+        /// mengirim seluruh Id yang ada. Mengembalikan jumlah baris yang terhapus.
+        /// </summary>
+        Task<ApiResponse<int>> DeleteAsync(string table, IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default);
     }
 
     public interface IInitiativeService

@@ -5,9 +5,17 @@ import DataTable from '../../components/ui/DataTable.vue'
 import DataState from '../../components/ui/DataState.vue'
 import { api } from '../../services/api'
 import { useApiRows } from '../../composables/useApiResource'
+import { useDeleteRows } from '../../composables/useDeleteRows'
 
 const { rows, loading, error, reload } = useApiRows((signal) =>
   api.get('/api/observations/all', { signal })
+)
+
+// Observasi punya data turunan; endpoint hapus tunggal sudah menghapus berjenjang,
+// jadi hapus massal cukup memanggilnya untuk tiap baris terpilih.
+const { deleting, deleteError, onDelete } = useDeleteRows(
+  (keys) => Promise.all(keys.map((k) => api.delete(`/api/observations/${k}`))),
+  reload
 )
 
 const columns = [
@@ -44,7 +52,16 @@ const zones = computed(() => new Set(rows.value.map((r) => r.zona)).size)
     </PageHeader>
 
     <DataState :loading="loading" :error="error" :empty="!rows.length" @retry="reload">
-      <DataTable :columns="columns" :rows="rows" :initial-sort="{ key: 'id', dir: 'asc' }">
+      <DataTable
+        :columns="columns"
+        :rows="rows"
+        :initial-sort="{ key: 'id', dir: 'asc' }"
+        selectable
+        row-key="key"
+        :deleting="deleting"
+        :error-text="deleteError && deleteError.message"
+        @delete="onDelete"
+      >
         <template #cell-protocolCode="{ row }">
           <span class="chip" :title="row.protocolName">{{ row.protocolCode }}</span>
         </template>

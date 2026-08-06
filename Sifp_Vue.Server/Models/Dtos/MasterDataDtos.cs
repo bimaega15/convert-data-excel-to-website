@@ -78,6 +78,12 @@ namespace Sifp_Vue.Server.Models.Dtos
         public bool IsActive { get; set; } = true;
     }
 
+    /// <summary>Payload hapus massal: daftar primary key (Key) baris yang dipilih di UI.</summary>
+    public class BulkDeleteRequest
+    {
+        public List<int> Ids { get; set; } = new();
+    }
+
     public class SifQuestionDto
     {
         public int Key { get; set; }

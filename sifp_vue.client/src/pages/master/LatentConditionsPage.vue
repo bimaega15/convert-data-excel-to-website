@@ -3,11 +3,17 @@ import { computed } from 'vue'
 import PageHeader from '../../components/ui/PageHeader.vue'
 import DataTable from '../../components/ui/DataTable.vue'
 import DataState from '../../components/ui/DataState.vue'
-import { fetchAllPages } from '../../services/api'
+import { fetchAllPages, api } from '../../services/api'
 import { useApiRows } from '../../composables/useApiResource'
+import { useDeleteRows } from '../../composables/useDeleteRows'
 
 const { rows, loading, error, reload } = useApiRows((signal) =>
   fetchAllPages('/api/master/latent-conditions', { signal })
+)
+
+const { deleting, deleteError, onDelete } = useDeleteRows(
+  (keys) => api.post('/api/master/latent-conditions/delete', { ids: keys }),
+  reload
 )
 
 const columns = [
@@ -38,7 +44,16 @@ const level1Count = computed(() => new Set(rows.value.map((r) => r.level1)).size
     </PageHeader>
 
     <DataState :loading="loading" :error="error" :empty="!rows.length" @retry="reload">
-      <DataTable :columns="columns" :rows="rows" :initial-sort="{ key: 'obsId', dir: 'asc' }">
+      <DataTable
+        :columns="columns"
+        :rows="rows"
+        :initial-sort="{ key: 'obsId', dir: 'asc' }"
+        selectable
+        row-key="key"
+        :deleting="deleting"
+        :error-text="deleteError && deleteError.message"
+        @delete="onDelete"
+      >
         <template #cell-protocolCode="{ value, row }">
           <span class="chip" :title="row.protocolName">{{ value }}</span>
         </template>

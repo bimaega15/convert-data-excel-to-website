@@ -68,5 +68,16 @@ namespace Sifp_Vue.Server.Controllers.Api
         [HttpGet("counts")]
         public async Task<IActionResult> Counts(CancellationToken cancellationToken)
             => Success(await _service.GetRowCountsAsync(cancellationToken));
+
+        /// <summary>
+        /// POST /api/master/{table}/delete — menghapus baris terpilih pada satu tabel
+        /// master. Body: { "ids": [1,2,3] }. Untuk "hapus semua", kirim seluruh Id.
+        /// table ∈ { sif-questions, error-traps, hp-tools, drift-conditions,
+        /// latent-conditions, ccvc-library }.
+        /// </summary>
+        [HttpPost("{table}/delete")]
+        [ProducesResponseType(typeof(ApiResponse<int>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteRows(string table, [FromBody] BulkDeleteRequest request, CancellationToken cancellationToken)
+            => FromResult(await _service.DeleteAsync(table, request?.Ids ?? new List<int>(), cancellationToken));
     }
 }

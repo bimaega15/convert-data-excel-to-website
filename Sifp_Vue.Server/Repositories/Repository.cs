@@ -52,6 +52,19 @@ namespace Sifp_Vue.Server.Repositories
             return true;
         }
 
+        // ExecuteDelete: satu perintah DELETE ... WHERE Id IN (...) di server, tanpa
+        // memuat baris ke memori. EF.Property dipakai karena Id dideklarasikan di tiap
+        // entitas konkret, bukan di kelas generik T.
+        public virtual Task<int> DeleteByIdsAsync(IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default)
+        {
+            if (ids is null || ids.Count == 0)
+            {
+                return Task.FromResult(0);
+            }
+
+            return Set.Where(e => ids.Contains(EF.Property<int>(e, "Id"))).ExecuteDeleteAsync(cancellationToken);
+        }
+
         // ExecuteDelete: satu perintah DELETE di server, tanpa memuat baris ke memori.
         public virtual Task<int> DeleteAllAsync(CancellationToken cancellationToken = default)
             => Set.ExecuteDeleteAsync(cancellationToken);

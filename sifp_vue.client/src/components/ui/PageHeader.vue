@@ -10,6 +10,7 @@ defineProps({
     <div>
       <h2>{{ title }}</h2>
       <p v-if="subtitle">{{ subtitle }}</p>
+      <slot></slot>
     </div>
     <div class="page-header__right">
       <slot name="right"></slot>

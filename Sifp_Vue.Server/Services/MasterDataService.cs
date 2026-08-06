@@ -61,6 +61,35 @@ namespace Sifp_Vue.Server.Services
             return item?.ToDto();
         }
 
+        public async Task<ApiResponse<int>> DeleteAsync(string table, IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default)
+        {
+            if (ids is null || ids.Count == 0)
+            {
+                return ApiResponse<int>.Fail("Tidak ada baris yang dipilih untuk dihapus.");
+            }
+
+            // Tabel di sini semuanya "daun" (tanpa data turunan), jadi aman dihapus
+            // langsung. Observasi & inisiatif punya endpoint tersendiri.
+            Task<int>? deletion = table switch
+            {
+                "sif-questions" => _sifQuestions.DeleteByIdsAsync(ids, cancellationToken),
+                "error-traps" => _errorTraps.DeleteByIdsAsync(ids, cancellationToken),
+                "hp-tools" => _hpTools.DeleteByIdsAsync(ids, cancellationToken),
+                "drift-conditions" => _driftConditions.DeleteByIdsAsync(ids, cancellationToken),
+                "latent-conditions" => _latentConditions.DeleteByIdsAsync(ids, cancellationToken),
+                "ccvc-library" => _ccvcLibrary.DeleteByIdsAsync(ids, cancellationToken),
+                _ => null
+            };
+
+            if (deletion is null)
+            {
+                return ApiResponse<int>.Fail($"Tabel \"{table}\" tidak dikenal atau tidak mendukung hapus.");
+            }
+
+            var deleted = await deletion;
+            return ApiResponse<int>.Ok(deleted, $"{deleted} baris dihapus.");
+        }
+
         public async Task<IReadOnlyDictionary<string, int>> GetRowCountsAsync(CancellationToken cancellationToken = default)
         {
             return new Dictionary<string, int>

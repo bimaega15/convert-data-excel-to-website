@@ -8,7 +8,19 @@ const props = defineProps({
   rows: { type: Array, required: true },
   initialSort: { type: Object, default: null }, // { key, dir: 'asc'|'desc' }
   pageSizeOptions: { type: Array, default: () => [10, 25, 50, 100] },
+  // Aktifkan kolom checkbox + aksi hapus massal. rowKey = properti unik tiap baris.
+  selectable: { type: Boolean, default: false },
+  rowKey: { type: String, default: 'id' },
+  // Diset true oleh induk selama proses hapus berjalan (menonaktifkan tombol).
+  deleting: { type: Boolean, default: false },
+  // Pesan error hapus (opsional) yang ditampilkan sebagai banner di atas tabel.
+  errorText: { type: String, default: '' },
 })
+
+const emit = defineEmits(['delete'])
+
+const selectedKeys = ref(new Set())
+const confirming = ref(false)
 
 const q = ref('')
 const sortKey = ref(props.initialSort?.key ?? null)
@@ -83,10 +95,55 @@ function toggleSort(col) {
     sortDir.value = 'asc'
   }
 }
+
+/* ===== seleksi & hapus massal ===== */
+
+// Baris yang bisa dipilih = hasil pencarian saat ini (yang terlihat user).
+// Tanpa pencarian, ini berarti seluruh baris -> "pilih semua" = semua data.
+const selectableKeys = computed(() => filtered.value.map((r) => r[props.rowKey]))
+const selectedCount = computed(() => selectedKeys.value.size)
+const allSelected = computed(
+  () => selectableKeys.value.length > 0 && selectableKeys.value.every((k) => selectedKeys.value.has(k))
+)
+const someSelected = computed(
+  () => !allSelected.value && selectableKeys.value.some((k) => selectedKeys.value.has(k))
+)
+
+const isSelected = (key) => selectedKeys.value.has(key)
+
+function toggleRow(key) {
+  const next = new Set(selectedKeys.value)
+  if (next.has(key)) next.delete(key)
+  else next.add(key)
+  selectedKeys.value = next
+}
+
+function toggleAll() {
+  const next = new Set(selectedKeys.value)
+  if (allSelected.value) selectableKeys.value.forEach((k) => next.delete(k))
+  else selectableKeys.value.forEach((k) => next.add(k))
+  selectedKeys.value = next
+}
+
+function clearSelection() {
+  selectedKeys.value = new Set()
+  confirming.value = false
+}
+
+function confirmDelete() {
+  emit('delete', Array.from(selectedKeys.value))
+}
+
+// Data dimuat ulang (mis. setelah hapus berhasil) -> reset seleksi & konfirmasi.
+watch(() => props.rows, clearSelection)
 </script>
 
 <template>
   <div class="panel dt">
+    <div v-if="errorText" class="dt__error" role="alert">
+      <DashIcon name="warning" :size="15" /> {{ errorText }}
+    </div>
+
     <div class="dt__toolbar">
       <label class="dt__search">
         <DashIcon name="search" :size="15" />
@@ -100,10 +157,45 @@ function toggleSort(col) {
       </label>
     </div>
 
+    <!-- bar aksi hapus massal: muncul saat ada baris terpilih -->
+    <div v-if="selectable && selectedCount" class="dt__bulk">
+      <template v-if="!confirming">
+        <span class="dt__bulk-info"><strong>{{ selectedCount }}</strong> baris dipilih</span>
+        <div class="dt__bulk-actions">
+          <button type="button" class="dt__btn dt__btn--danger" @click="confirming = true">
+            <DashIcon name="trash" :size="14" /> Hapus terpilih
+          </button>
+          <button type="button" class="dt__btn dt__btn--ghost" @click="clearSelection">Batal pilih</button>
+        </div>
+      </template>
+      <template v-else>
+        <span class="dt__bulk-info dt__bulk-info--warn">
+          <DashIcon name="warning" :size="14" /> Hapus <strong>{{ selectedCount }}</strong> baris? Tindakan ini permanen.
+        </span>
+        <div class="dt__bulk-actions">
+          <button type="button" class="dt__btn dt__btn--danger" :disabled="deleting" @click="confirmDelete">
+            {{ deleting ? 'Menghapus…' : 'Ya, hapus' }}
+          </button>
+          <button type="button" class="dt__btn dt__btn--ghost" :disabled="deleting" @click="confirming = false">
+            Batal
+          </button>
+        </div>
+      </template>
+    </div>
+
     <div class="dt__scroll">
       <table class="dt__table">
         <thead>
           <tr>
+            <th v-if="selectable" class="dt__check-col">
+              <input
+                type="checkbox"
+                :checked="allSelected"
+                :indeterminate.prop="someSelected"
+                :aria-label="allSelected ? 'Batalkan pilih semua' : 'Pilih semua'"
+                @change="toggleAll"
+              />
+            </th>
             <th
               v-for="col in columns"
               :key="col.key"
@@ -119,7 +211,19 @@ function toggleSort(col) {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, ri) in paged" :key="ri">
+          <tr
+            v-for="(row, ri) in paged"
+            :key="ri"
+            :class="{ 'dt__row--selected': selectable && isSelected(row[rowKey]) }"
+          >
+            <td v-if="selectable" class="dt__check-col">
+              <input
+                type="checkbox"
+                :checked="isSelected(row[rowKey])"
+                :aria-label="`Pilih baris ${(page - 1) * pageSize + ri + 1}`"
+                @change="toggleRow(row[rowKey])"
+              />
+            </td>
             <td
               v-for="col in columns"
               :key="col.key"
@@ -133,7 +237,9 @@ function toggleSort(col) {
             </td>
           </tr>
           <tr v-if="!paged.length">
-            <td :colspan="columns.length" class="dt__empty">Tidak ada data yang cocok dengan pencarian.</td>
+            <td :colspan="columns.length + (selectable ? 1 : 0)" class="dt__empty">
+              Tidak ada data yang cocok dengan pencarian.
+            </td>
           </tr>
         </tbody>
       </table>
@@ -221,6 +327,113 @@ function toggleSort(col) {
   color: var(--ink);
   background: #fff;
   font-family: inherit;
+}
+
+.dt__error {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.9rem;
+  background: #fdeae8;
+  border-bottom: 1px solid #f0bdb8;
+  color: #b3261e;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* ===== bar aksi hapus massal ===== */
+.dt__bulk {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 0.9rem;
+  background: #fdefea;
+  border-bottom: 1px solid #f3c9bd;
+}
+
+.dt__bulk-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.dt__bulk-info strong {
+  color: var(--accent-red);
+}
+
+.dt__bulk-info--warn {
+  color: #b3261e;
+}
+
+.dt__bulk-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dt__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.dt__btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.dt__btn--danger {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+.dt__btn--danger:hover:not(:disabled) {
+  background: #a01b12;
+}
+
+.dt__btn--ghost {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.dt__btn--ghost:hover:not(:disabled) {
+  border-color: var(--ink-muted);
+}
+
+/* ===== kolom checkbox ===== */
+.dt__check-col {
+  width: 42px;
+  text-align: center !important;
+  padding-left: 0.4rem !important;
+  padding-right: 0.4rem !important;
+}
+
+.dt__check-col input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--navy-bar);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.dt__table tbody tr.dt__row--selected {
+  background: #eaf1ff;
+}
+
+.dt__table tbody tr.dt__row--selected:hover {
+  background: #e0eaff;
 }
 
 .dt__scroll {

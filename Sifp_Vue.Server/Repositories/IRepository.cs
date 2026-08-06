@@ -21,6 +21,9 @@ namespace Sifp_Vue.Server.Repositories
         Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
 
+        /// <summary>Menghapus banyak baris sekaligus berdasarkan daftar primary key (Id).</summary>
+        Task<int> DeleteByIdsAsync(IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default);
+
         /// <summary>Menghapus seluruh baris tabel — dipakai saat import mengganti data lama.</summary>
         Task<int> DeleteAllAsync(CancellationToken cancellationToken = default);
 

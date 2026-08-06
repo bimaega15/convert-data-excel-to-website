@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DashIcon from '../dashboard/DashIcon.vue'
-import { meta } from '../../data/dashboard'
+import { currentUser } from '../../data/currentUser'
 
 const props = defineProps({
   collapsed: { type: Boolean, default: false },
@@ -35,9 +35,12 @@ const burgerLabel = computed(() =>
     </div>
 
     <div class="topbar__right">
-      <span class="topbar__chip d-none d-md-inline-flex" :title="meta.sourceFile">
-        <DashIcon name="file" :size="14" />
-        <span>{{ meta.sourceFile || 'Belum ada import' }}</span>
+      <span class="topbar__user" :title="`Login sebagai ${currentUser.name}`">
+        <span class="topbar__user-icon"><DashIcon name="person" :size="16" /></span>
+        <span class="topbar__user-meta d-none d-md-flex">
+          <strong>{{ currentUser.name }}</strong>
+          <small>{{ currentUser.role }}</small>
+        </span>
       </span>
     </div>
   </header>
@@ -97,23 +100,44 @@ const burgerLabel = computed(() =>
   gap: 0.7rem;
 }
 
-.topbar__chip {
+.topbar__user {
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  max-width: 340px;
+  gap: 0.55rem;
   background: #f1f3fa;
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 0.28rem 0.75rem;
-  font-size: 0.64rem;
-  font-weight: 700;
-  color: var(--ink);
+  padding: 0.25rem 0.75rem 0.25rem 0.3rem;
 }
 
-.topbar__chip span {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.topbar__user-icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e2f83, #1d40b0);
+  color: #fff;
+}
+
+.topbar__user-meta {
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.topbar__user-meta strong {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--ink-strong);
   white-space: nowrap;
+}
+
+.topbar__user-meta small {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--ink-muted);
 }
 
 </style>

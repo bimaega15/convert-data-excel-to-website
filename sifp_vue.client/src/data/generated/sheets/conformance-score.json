@@ -1,6 +1,6 @@
 {
-  "name": "ANALYZE-CONFORMANCE_SCORE",
-  "slug": "analyze-conformance-score",
+  "name": "Conformance Score",
+  "slug": "conformance-score",
   "rowCount": 100,
   "colCount": 24,
   "rows": [

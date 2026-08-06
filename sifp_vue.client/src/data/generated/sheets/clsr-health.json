@@ -1,6 +1,6 @@
 {
-  "name": "ANALYZE-CLSR_HEALTH_MAP",
-  "slug": "analyze-clsr-health-map",
+  "name": "CLSR Health",
+  "slug": "clsr-health",
   "rowCount": 11,
   "colCount": 15,
   "rows": [

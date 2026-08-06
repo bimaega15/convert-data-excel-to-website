@@ -6,7 +6,6 @@ import { createRequire } from 'node:module'
 import { mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { basename, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { findMissingSheets, REQUIRED_SHEET_NAMES } from '../src/data/sheet-schema.js'
 
 const require = createRequire(import.meta.url)
 const XLSX = require('xlsx')
@@ -16,15 +15,36 @@ const srcFile =
   process.argv[2] ?? join(root, 'design', 'VnV_FULL_DATABASE_09July2026_OBS001-023 ver.Jul2026.xlsx')
 const outDir = join(root, 'src', 'data', 'generated')
 
+// Data contoh (seed) masih dibaca dari workbook lama yang bernama teknis, TETAPI
+// seluruh OUTPUT (manifest, slug, grup) memakai nama SESUAI TEMPLATE resmi
+// (SifpAssurance_Template.xlsm). Pemetaan legacy -> template di bawah menjaga data
+// seed tetap terisi sekaligus konsisten dengan format yang diupload pengguna.
+const LEGACY_SHEETS = [
+  { legacy: 'INPUT-SIF_Questions', name: 'SIF Questions', group: 'Data Input', curated: { route: '/master/sif-questions', label: 'SIF Questions', icon: 'checklist' } },
+  { legacy: 'INPUT-Error_Traps', name: 'Error Traps', group: 'Data Input', curated: { route: '/master/error-traps', label: 'Error Traps', icon: 'warning' } },
+  { legacy: 'INPUT-HP_Tools', name: 'HP Tools', group: 'Data Input', curated: { route: '/master/hp-tools', label: 'HP Tools', icon: 'gear' } },
+  { legacy: 'INPUT-Drift_Conditions', name: 'Drift Conditions', group: 'Data Input', curated: { route: '/master/drift-conditions', label: 'Drift Conditions', icon: 'refresh' } },
+  { legacy: 'INPUT-Latent_Conditions', name: 'Latent Conditions', group: 'Data Input', curated: { route: '/master/latent-conditions', label: 'Latent Conditions', icon: 'layers' } },
+  { legacy: 'DATABASE_PSEC_CCVC', name: 'PSEC CCVC', group: 'Database', curated: { route: '/master/ccvc-library', label: 'PSEC & CCVC Library', icon: 'book' } },
+  { legacy: 'ANALYZE-CONFORMANCE_SCORE', name: 'Conformance Score', group: 'Analisis', curated: { route: '/master/observations', label: 'Observations', icon: 'clipboard' } },
+  { legacy: 'ANALYZE-EXECUTIVE_MEASURES', name: 'Executive Measures', group: 'Analisis' },
+  { legacy: 'ANALYZE-QUICK_FACTS', name: 'Quick Facts', group: 'Analisis' },
+  { legacy: 'ANALYZE-CLSR_HEALTH_MAP', name: 'CLSR Health', group: 'Analisis' },
+  { legacy: 'ANALYZE-TOP5', name: 'Top 5', group: 'Analisis' },
+  { legacy: 'ANALYZE-TREND_ZONE', name: 'Trend Zone', group: 'Analisis' },
+  { legacy: 'ANALYZE-IMPROVEMENT_INITIATIVES', name: 'Improvement Initiatives', group: 'Analisis', curated: { route: '/master/initiatives', label: 'Improvement Initiatives', icon: 'target' } },
+  { legacy: 'CONFIG-DASHBOARD_TEXT', name: 'Dashboard Text', group: 'Konfigurasi' },
+]
+
 // cellDates dimatikan: serial Excel dikonversi manual berbasis UTC supaya
 // tanggal tidak bergeser oleh penyesuaian zona waktu lokal SheetJS.
 const wb = XLSX.readFile(srcFile)
 
 // Gagal lebih awal dengan pesan jelas, bukan crash saat membaca sheet yang hilang.
-const missing = findMissingSheets(wb.SheetNames)
+const missing = LEGACY_SHEETS.filter((s) => !wb.SheetNames.includes(s.legacy))
 if (missing.length) {
   console.error(`\n✗ Workbook tidak lengkap: ${missing.length} sheet wajib tidak ditemukan.\n`)
-  for (const s of missing) console.error(`  - ${s.name}  (${s.label})`)
+  for (const s of missing) console.error(`  - ${s.legacy}  (-> ${s.name})`)
   console.error(`\nSumber: ${basename(srcFile)}\n`)
   process.exit(1)
 }
@@ -467,45 +487,16 @@ for (const [file, data] of Object.entries(outputs)) {
   console.log(`✓ ${file} (${Array.isArray(data) ? `${count} baris` : `${count} bagian`})`)
 }
 
-// ---------- Manifest + data mentah SEMUA worksheet (untuk viewer generik) ----------
-// Setiap sheet Excel diekspor apa adanya ke sheets/<slug>.json, dan _manifest.json
-// menjadi sumber tunggal daftar menu sidebar -> jumlah menu selalu mengikuti
-// jumlah worksheet di file Excel tanpa perlu mengubah kode.
+// ---------- Manifest + data mentah worksheet (untuk viewer generik & sidebar) ----------
+// Manifest & slug memakai nama SESUAI TEMPLATE; data mentahnya dibaca dari sheet
+// legacy yang sepadan (lihat LEGACY_SHEETS di atas).
 
-// Sheet yang punya halaman kurasi khusus: arahkan menu ke halaman itu, bukan viewer generik.
-const CURATED = {
-  'INPUT-SIF_Questions': { route: '/master/sif-questions', label: 'SIF Questions', icon: 'checklist' },
-  'INPUT-Error_Traps': { route: '/master/error-traps', label: 'Error Traps', icon: 'warning' },
-  'INPUT-HP_Tools': { route: '/master/hp-tools', label: 'HP Tools', icon: 'gear' },
-  'INPUT-Drift_Conditions': { route: '/master/drift-conditions', label: 'Drift Conditions', icon: 'refresh' },
-  'INPUT-Latent_Conditions': { route: '/master/latent-conditions', label: 'Latent Conditions', icon: 'layers' },
-  DATABASE_PSEC_CCVC: { route: '/master/ccvc-library', label: 'PSEC & CCVC Library', icon: 'book' },
-  'ANALYZE-CONFORMANCE_SCORE': { route: '/master/observations', label: 'Observations', icon: 'clipboard' },
-  'ANALYZE-IMPROVEMENT_INITIATIVES': { route: '/master/initiatives', label: 'Improvement Initiatives', icon: 'target' },
-}
-
-// Urutan tampil grup di sidebar; sheet di dalam grup mengikuti urutan aslinya di Excel.
-const GROUP_ORDER = ['Data Input', 'Database', 'Analisis', 'Konfigurasi', 'Sumber', 'Audit', 'Helper', 'Lainnya']
+const GROUP_ORDER = ['Data Input', 'Database', 'Analisis', 'Konfigurasi']
 const GROUP_ICON = {
   'Data Input': 'clipboard',
   Database: 'book',
   Analisis: 'gear',
   Konfigurasi: 'gear',
-  Sumber: 'file',
-  Audit: 'shield',
-  Helper: 'layers',
-  Lainnya: 'file',
-}
-
-function groupOf(name) {
-  if (/^INPUT/i.test(name)) return 'Data Input'
-  if (/^DATABASE/i.test(name)) return 'Database'
-  if (/^ANALYZE/i.test(name)) return 'Analisis'
-  if (/^CONFIG/i.test(name)) return 'Konfigurasi'
-  if (/^SOURCE/i.test(name)) return 'Sumber'
-  if (/^AUDIT/i.test(name)) return 'Audit'
-  if (/^Helper/i.test(name)) return 'Helper'
-  return 'Lainnya'
 }
 
 function slugify(name) {
@@ -513,14 +504,6 @@ function slugify(name) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-}
-
-// Label ringkas untuk sheet non-kurasi: buang token kategori di depan (sudah jadi
-// judul grup) lalu ubah pemisah "_" / "-" menjadi spasi.
-function shortLabel(name) {
-  const stripped = name.replace(/^(INPUT|DATABASE|ANALYZE|CONFIG|SOURCE|AUDIT|Helper)[-_]?/i, '')
-  const words = (stripped || name).replace(/[_-]+/g, ' ').trim()
-  return words || name
 }
 
 // raw:false -> tanggal & persen tampil seperti di Excel, bukan angka serial.
@@ -536,41 +519,29 @@ function rawGrid(sheetName) {
   return { rows, colCount }
 }
 
-// Hanya sheet yang dipakai converter (feed dashboard & halaman master) yang masuk
-// sidebar. Sheet tambahan (Helper_*, AUDIT-*, SOURCE, ReadMe, dsb.) hanya bantu
-// internal Excel dan tidak dipakai aplikasi, jadi tidak diikutkan.
-const usedSheets = new Set(REQUIRED_SHEET_NAMES)
-
 const sheetsDir = join(outDir, 'sheets')
-// Bersihkan dulu supaya file sheet lama (mis. sheet tambahan hasil run sebelumnya)
-// tidak tertinggal sebagai berkas mati.
+// Bersihkan dulu supaya file sheet lama tidak tertinggal sebagai berkas mati.
 rmSync(sheetsDir, { recursive: true, force: true })
 mkdirSync(sheetsDir, { recursive: true })
 
-const usedSlugs = new Set()
-const manifestItems = wb.SheetNames.filter((name) => usedSheets.has(name)).map((name, index) => {
-  let slug = slugify(name)
-  while (usedSlugs.has(slug)) slug += '-x'
-  usedSlugs.add(slug)
-
-  const { rows, colCount } = rawGrid(name)
-  const curated = CURATED[name]
-  const group = groupOf(name)
+const manifestItems = LEGACY_SHEETS.map((sheet, index) => {
+  const slug = slugify(sheet.name)
+  const { rows, colCount } = rawGrid(sheet.legacy)
 
   writeFileSync(
     join(sheetsDir, `${slug}.json`),
-    JSON.stringify({ name, slug, rowCount: rows.length, colCount, rows }, null, 2)
+    JSON.stringify({ name: sheet.name, slug, rowCount: rows.length, colCount, rows }, null, 2)
   )
 
   return {
-    name,
+    name: sheet.name,
     slug,
     index,
-    group,
-    label: curated?.label ?? shortLabel(name),
-    icon: curated?.icon ?? GROUP_ICON[group],
-    route: curated?.route ?? `/sheet/${slug}`,
-    curated: Boolean(curated),
+    group: sheet.group,
+    label: sheet.curated?.label ?? sheet.name,
+    icon: sheet.curated?.icon ?? GROUP_ICON[sheet.group] ?? 'file',
+    route: sheet.curated?.route ?? `/sheet/${slug}`,
+    curated: Boolean(sheet.curated),
     rowCount: rows.length,
     colCount,
     dataRows: Math.max(0, rows.length - 1),
