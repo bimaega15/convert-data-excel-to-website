@@ -71,6 +71,18 @@ namespace Sifp_Vue.Server.Services
                 .OrderByDescending(x => x.CompletedAt ?? x.CreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
+            // Ambil bulan terbaru dari observation_date untuk dipakai di subtitle dashboard.
+            // Ini menggantikan teks hard-coded "July 2026" — setiap kali ada data baru
+            // yang diimport, nama bulan otomatis ikut berubah tanpa perlu edit manual.
+            var maxObsDate = await _context.Observations.AsNoTracking()
+                .Where(x => x.ObservationDate.HasValue)
+                .MaxAsync(x => (DateOnly?)x.ObservationDate, cancellationToken);
+
+            var maxMonthLabel = maxObsDate.HasValue
+                ? maxObsDate.Value.ToDateTime(TimeOnly.MinValue)
+                    .ToString("MMMM yyyy", CultureInfo.InvariantCulture)
+                : "–";
+
             var conformanceTarget = measures.GetValueOrDefault("CONF")?.TargetPercent ?? 80m;
 
             return new DashboardDto
@@ -78,7 +90,7 @@ namespace Sifp_Vue.Server.Services
                 Meta = new DashboardMetaDto
                 {
                     Title = "REGIONAL 4 SIFP ASSURANCE DASHBOARD",
-                    Subtitle = "Executive Dashboard – Full Database (July 2026)",
+                    Subtitle = $"Executive Dashboard \u2013 Full Database ({maxMonthLabel})",
                     Draft = true,
                     SourceFile = lastBatch?.FileName,
                     GeneratedAt = lastBatch?.CompletedAt ?? lastBatch?.CreatedAt ?? DateTime.UtcNow
