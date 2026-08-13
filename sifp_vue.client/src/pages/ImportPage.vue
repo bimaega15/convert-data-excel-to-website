@@ -13,6 +13,7 @@ import {
   parseWorkbook,
   submitWorkbook,
 } from '../services/excelImport'
+import { loadGoogleSheet } from '../services/googleSheetImport'
 import { loadDashboard } from '../data/dashboard'
 import { loadSheetManifest } from '../data/sheets'
 // Template Excel kosong untuk diunduh pengguna, diisi, lalu diunggah kembali.
@@ -28,6 +29,11 @@ const errorMsg = ref('')
 const dragging = ref(false)
 const reviewed = ref(false)
 const submit = ref({ status: 'idle', message: '' })
+
+// State untuk input Google Sheets URL
+const gsUrl = ref('')
+const gsFetching = ref(false)
+const gsError = ref('')
 
 // Perubahan sel disimpan terpisah dari data hasil parse, supaya nilai asli file
 // selalu bisa dibandingkan dan dikembalikan.
@@ -93,10 +99,26 @@ function reset() {
   parsed.value = null
   activeIndex.value = 0
   errorMsg.value = ''
+  gsError.value = ''
   reviewed.value = false
   edits.value = {}
   submit.value = { status: 'idle', message: '' }
   if (fileInput.value) fileInput.value.value = ''
+}
+
+async function handleGoogleSheetUrl() {
+  const url = gsUrl.value.trim()
+  if (!url || gsFetching.value) return
+
+  reset()
+  gsFetching.value = true
+  try {
+    parsed.value = await loadGoogleSheet(url)
+  } catch (err) {
+    gsError.value = err.message
+  } finally {
+    gsFetching.value = false
+  }
 }
 
 async function handleFiles(files) {
@@ -181,17 +203,18 @@ const importedRows = computed(() =>
     <section
       v-if="!parsed"
       class="panel dz"
-      :class="{ 'dz--over': dragging, 'dz--busy': parsing }"
+      :class="{ 'dz--over': dragging, 'dz--busy': parsing || gsFetching }"
       @dragover.prevent="dragging = true"
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
     >
+      <!-- Dropzone area -->
       <span class="dz__icon"><DashIcon name="upload" :size="34" /></span>
       <p class="dz__title">
         {{ parsing ? 'Membaca workbook…' : 'Tarik file Excel ke sini' }}
       </p>
       <p class="dz__hint">Format .xlsx, .xlsm, atau .xls — maksimal 25 MB</p>
-      <button type="button" class="dz__btn" :disabled="parsing" @click="fileInput.click()">
+      <button type="button" class="dz__btn" :disabled="parsing || gsFetching" @click="fileInput.click()">
         Pilih file
       </button>
       <input
@@ -204,20 +227,79 @@ const importedRows = computed(() =>
       <p v-if="errorMsg" class="dz__error">
         <DashIcon name="warning" :size="15" /> {{ errorMsg }}
       </p>
+
+      <!-- Separator -->
+      <div class="dz__sep"><span>atau</span></div>
+
+      <!-- Google Sheets URL input -->
+      <div class="dz__gs">
+        <p class="dz__gs-label">
+          <DashIcon name="sheets" :size="15" />
+          Paste link Google Sheets (publik):
+        </p>
+        <div class="dz__gs-row">
+          <input
+            id="gs-url-input"
+            v-model="gsUrl"
+            type="url"
+            class="dz__gs-input"
+            placeholder="https://docs.google.com/spreadsheets/d/…"
+            :disabled="parsing || gsFetching"
+            @keydown.enter="handleGoogleSheetUrl"
+          />
+          <button
+            type="button"
+            class="dz__btn dz__gs-btn"
+            :disabled="!gsUrl.trim() || gsFetching || parsing"
+            @click="handleGoogleSheetUrl"
+          >
+            <DashIcon v-if="gsFetching" name="refresh" :size="14" class="dz__gs-spin" />
+            {{ gsFetching ? 'Memuat…' : 'Load' }}
+          </button>
+        </div>
+        <p v-if="gsError" class="dz__error dz__gs-error">
+          <DashIcon name="warning" :size="15" /> {{ gsError }}
+        </p>
+      </div>
     </section>
 
     <!-- langkah 2: preview -->
     <template v-else>
+      <!-- Filebar: tampilan berbeda untuk Google Sheet vs file Excel -->
       <section class="panel filebar">
-        <span class="filebar__icon"><DashIcon name="file" :size="20" /></span>
-        <div class="filebar__id">
-          <strong :title="parsed.fileName">{{ parsed.fileName }}</strong>
-          <small>
-            {{ formatBytes(parsed.fileSize) }} · {{ parsed.sheets.length }} sheet ·
-            {{ parsed.totalRows }} baris
-          </small>
-        </div>
-        <button type="button" class="btn-ghost" @click="reset">Ganti file</button>
+        <!-- Mode Google Sheet -->
+        <template v-if="parsed.isGoogleSheet">
+          <span class="filebar__icon filebar__icon--gs"><DashIcon name="sheets" :size="20" /></span>
+          <div class="filebar__id">
+            <strong>Google Sheets — Preview</strong>
+            <small>
+              {{ parsed.sheets.length }} sheet · {{ parsed.totalRows }} baris ·
+              <em>read-only, tidak dapat disubmit</em>
+            </small>
+          </div>
+          <a
+            :href="parsed.spreadsheetUrl"
+            target="_blank"
+            rel="noopener"
+            class="btn-ghost"
+          >
+            <DashIcon name="link" :size="13" /> Buka di Google
+          </a>
+          <button type="button" class="btn-ghost" @click="reset">Ganti sumber</button>
+        </template>
+
+        <!-- Mode file Excel (existing) -->
+        <template v-else>
+          <span class="filebar__icon"><DashIcon name="file" :size="20" /></span>
+          <div class="filebar__id">
+            <strong :title="parsed.fileName">{{ parsed.fileName }}</strong>
+            <small>
+              {{ formatBytes(parsed.fileSize) }} · {{ parsed.sheets.length }} sheet ·
+              {{ parsed.totalRows }} baris
+            </small>
+          </div>
+          <button type="button" class="btn-ghost" @click="reset">Ganti file</button>
+        </template>
       </section>
 
       <div
@@ -303,67 +385,80 @@ const importedRows = computed(() =>
         </ul>
       </section>
 
-      <!-- langkah 3: submit -->
-      <section class="panel submitbar">
-        <label class="submitbar__check" :class="{ 'is-disabled': blockedByMissing }">
-          <input v-model="reviewed" type="checkbox" :disabled="blockedByMissing" />
-          <span>
-            Saya sudah memeriksa preview seluruh sheet dan data sudah benar<template v-if="editCount">
-              , termasuk {{ editCount }} sel yang saya ubah</template
-            >.
+      <!-- langkah 3: submit — hanya tampil untuk file Excel, bukan Google Sheet -->
+      <template v-if="!parsed.isGoogleSheet">
+        <section class="panel submitbar">
+          <label class="submitbar__check" :class="{ 'is-disabled': blockedByMissing }">
+            <input v-model="reviewed" type="checkbox" :disabled="blockedByMissing" />
+            <span>
+              Saya sudah memeriksa preview seluruh sheet dan data sudah benar<template v-if="editCount">
+                , termasuk {{ editCount }} sel yang saya ubah</template
+              >.
+            </span>
+          </label>
+
+          <span v-if="blockedByMissing" class="submitbar__blocked">
+            Submit dinonaktifkan sampai sheet wajib lengkap.
           </span>
-        </label>
 
-        <span v-if="blockedByMissing" class="submitbar__blocked">
-          Submit dinonaktifkan sampai sheet wajib lengkap.
-        </span>
+          <button type="button" class="btn-primary" :disabled="!canSubmit" @click="onSubmit">
+            {{ submit.status === 'sending' ? 'Mengirim…' : 'Submit ke Server' }}
+          </button>
+        </section>
 
-        <button type="button" class="btn-primary" :disabled="!canSubmit" @click="onSubmit">
-          {{ submit.status === 'sending' ? 'Mengirim…' : 'Submit ke Server' }}
-        </button>
-      </section>
+        <div v-if="submit.status === 'success'" class="notice notice--ok">
+          <DashIcon name="shield" :size="17" />
+          <div>
+            <strong>{{ submit.message }}</strong>
+            <p v-if="submit.result?.editsApplied" class="notice__line">
+              {{ submit.result.editsApplied }} perubahan sel diterapkan ke workbook asli di server.
+            </p>
+            <ul v-if="importedRows.length" class="notice__rows">
+              <li v-for="[table, count] in importedRows" :key="table">
+                <span>{{ table }}</span><strong>{{ count }}</strong>
+              </li>
+            </ul>
+            <p v-if="submit.result?.warnings?.length" class="notice__line">
+              Peringatan: {{ submit.result.warnings.join(' ') }}
+            </p>
+            <p class="notice__line">
+              Dashboard dan menu sidebar sudah diperbarui mengikuti workbook ini.
+            </p>
+          </div>
+        </div>
 
-      <div v-if="submit.status === 'success'" class="notice notice--ok">
-        <DashIcon name="shield" :size="17" />
+        <div v-else-if="submit.status === 'error'" class="notice notice--err" role="alert">
+          <DashIcon name="warning" :size="17" />
+          <div>{{ submit.message }}</div>
+        </div>
+
+        <div v-else-if="submit.status === 'not-configured'" class="notice notice--warn" role="alert">
+          <DashIcon name="warning" :size="17" />
+          <div>
+            <strong>Endpoint import belum dikonfigurasi — file belum terkirim.</strong>
+            Secara bawaan workbook dikirim ke <code>/api/import/excel</code> pada backend.
+            Isi <code>VITE_IMPORT_ENDPOINT</code> di file <code>.env</code> hanya bila
+            tujuannya berbeda, lalu jalankan ulang dev server.
+          </div>
+        </div>
+        <p class="submitbar__note">
+          File dikirim ke <code>{{ IMPORT_ENDPOINT }}</code> sebagai
+          <code>multipart/form-data</code> dengan field <code>file</code>,
+          <code>summary</code>, dan <code>edits</code>. Server yang menerapkan perubahan sel
+          ke workbook asli, sehingga rumus dan format di file tidak hilang.
+        </p>
+      </template>
+
+      <!-- Info read-only untuk mode Google Sheet -->
+      <div v-else class="notice notice--gs">
+        <DashIcon name="sheets" :size="17" />
         <div>
-          <strong>{{ submit.message }}</strong>
-          <p v-if="submit.result?.editsApplied" class="notice__line">
-            {{ submit.result.editsApplied }} perubahan sel diterapkan ke workbook asli di server.
-          </p>
-          <ul v-if="importedRows.length" class="notice__rows">
-            <li v-for="[table, count] in importedRows" :key="table">
-              <span>{{ table }}</span><strong>{{ count }}</strong>
-            </li>
-          </ul>
-          <p v-if="submit.result?.warnings?.length" class="notice__line">
-            Peringatan: {{ submit.result.warnings.join(' ') }}
-          </p>
-          <p class="notice__line">
-            Dashboard dan menu sidebar sudah diperbarui mengikuti workbook ini.
-          </p>
+          <strong>Mode Preview — Google Sheets</strong>
+          Data ditampilkan langsung dari Google Sheets dan bersifat read-only.
+          Untuk mengirim data ke server, unduh file Excel dari Google Sheets lalu unggah
+          menggunakan Pilih file di atas.
         </div>
       </div>
-
-      <div v-else-if="submit.status === 'error'" class="notice notice--err" role="alert">
-        <DashIcon name="warning" :size="17" />
-        <div>{{ submit.message }}</div>
-      </div>
-
-      <div v-else-if="submit.status === 'not-configured'" class="notice notice--warn" role="alert">
-        <DashIcon name="warning" :size="17" />
-        <div>
-          <strong>Endpoint import belum dikonfigurasi — file belum terkirim.</strong>
-          Secara bawaan workbook dikirim ke <code>/api/import/excel</code> pada backend.
-          Isi <code>VITE_IMPORT_ENDPOINT</code> di file <code>.env</code> hanya bila
-          tujuannya berbeda, lalu jalankan ulang dev server.
-        </div>
-      </div>
-      <p class="submitbar__note">
-        File dikirim ke <code>{{ IMPORT_ENDPOINT }}</code> sebagai
-        <code>multipart/form-data</code> dengan field <code>file</code>,
-        <code>summary</code>, dan <code>edits</code>. Server yang menerapkan perubahan sel
-        ke workbook asli, sehingga rumus dan format di file tidak hilang.
-      </p>
     </template>
   </div>
 </template>
@@ -399,7 +494,7 @@ const importedRows = computed(() =>
 /* ===== dropzone ===== */
 .dz {
   align-items: center;
-  padding: 3rem 1.5rem;
+  padding: 2.5rem 1.5rem;
   text-align: center;
   border-style: dashed;
   border-width: 2px;
@@ -413,6 +508,92 @@ const importedRows = computed(() =>
 
 .dz--busy {
   opacity: 0.75;
+}
+
+/* Separator "atau" */
+.dz__sep {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 1.4rem auto 0;
+  gap: 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dz__sep::before,
+.dz__sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* Google Sheets URL input area */
+.dz__gs {
+  width: 100%;
+  max-width: 480px;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.dz__gs-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.dz__gs-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dz__gs-input {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.dz__gs-input:focus {
+  border-color: var(--accent-blue);
+}
+
+.dz__gs-input::placeholder {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+.dz__gs-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dz__gs-error {
+  margin-top: 0.5rem;
+  text-align: left;
+}
+
+.dz__gs-spin {
+  animation: dash-spin 0.8s linear infinite;
 }
 
 .dz__icon {
@@ -461,6 +642,8 @@ const importedRows = computed(() =>
   font-size: 0.76rem;
   font-weight: 800;
   padding: 0.55rem 1.4rem;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
 .dz__btn:hover:not(:disabled),
@@ -468,8 +651,10 @@ const importedRows = computed(() =>
   background: var(--ink-strong);
 }
 
-.btn-primary:disabled {
+.btn-primary:disabled,
+.dz__btn:disabled {
   background: #aab3c9;
+  cursor: not-allowed;
 }
 
 .btn-ghost {
@@ -482,6 +667,11 @@ const importedRows = computed(() =>
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.4rem 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
 }
 
 .btn-ghost:hover {
@@ -507,6 +697,11 @@ const importedRows = computed(() =>
   border-radius: 10px;
   background: #eef1fb;
   color: var(--navy-bar);
+}
+
+.filebar__icon--gs {
+  background: #e6f4ea;
+  color: #1a7340;
 }
 
 .filebar__id {
@@ -567,6 +762,12 @@ const importedRows = computed(() =>
   background: #fdeae8;
   border-color: #f0bdb8;
   color: #b3261e;
+}
+
+.notice--gs {
+  background: #e8f5e9;
+  border-color: #a5d6a7;
+  color: #2e7d32;
 }
 
 .notice a {
@@ -888,5 +1089,8 @@ const importedRows = computed(() =>
   .sheetlist {
     max-height: 240px;
   }
+}
+@keyframes dash-spin {
+  to { transform: rotate(360deg); }
 }
 </style>
