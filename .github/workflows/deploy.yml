@@ -1,0 +1,53 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: sifp_vue.client/package-lock.json
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: sifp_vue.client
+
+      - name: Configure deploy SSH key
+        env:
+          DEPLOY_SSH_KEY_CONTENT: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$DEPLOY_SSH_KEY_CONTENT" ]; then
+            echo "::error::Secret DEPLOY_SSH_KEY is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          mkdir -p "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY_CONTENT" > "$HOME/.ssh/deploy_key"
+          chmod 600 "$HOME/.ssh/deploy_key"
+          ssh-keyscan -p "${DEPLOY_PORT:-22}" "${DEPLOY_HOST:-103.253.244.37}" >> "$HOME/.ssh/known_hosts" 2>/dev/null
+          echo "DEPLOY_SSH_KEY=$HOME/.ssh/deploy_key" >> "$GITHUB_ENV"
+
+      - name: Deploy to production
+        run: npm run deploy:production

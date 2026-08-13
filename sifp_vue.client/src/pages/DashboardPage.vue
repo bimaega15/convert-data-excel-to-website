@@ -14,10 +14,11 @@ import { kpis, topPanels, footerNote } from '../data/dashboard'
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
 
 const scale = ref(1)
-const isAutoFit = ref(true)
+const isAutoFit = ref(false)
 const contentHeight = ref(1200)
 const contentWidth = ref(1760)
 const dashRef = ref(null)
+const dashWrapperRef = ref(null)
 const showSettings = ref(false)
 
 const defaultVisibility = {
@@ -47,24 +48,33 @@ watch(visibleCards, (newVal) => {
   }
 }, { deep: true })
 
-const calculateScale = async () => {
-  if (!dashRef.value) return
+// Mengukur ulang lebar & tinggi asli konten (pada scale berapa pun, karena
+// transform:scale() tidak mempengaruhi layout box).
+// PENTING: jangan ambil lebar dari dashRef.clientWidth, karena elemen itu
+// berada di dalam .dash-scaler yang ukurannya sendiri dihitung dari
+// contentWidth*scale — itu akan membuat loop yang mengecilkan/membesarkan
+// contentWidth setiap kali di-resize/di-measure.
+// Padding wrapper (muncul saat mode manual/is-scrollable) dikurangi secara
+// eksplisit karena clientWidth ikut menghitung padding sebagai bagian dari
+// dirinya, padahal children hanya punya ruang di content-box saja.
+const measureContent = async () => {
+  if (!dashRef.value || !dashWrapperRef.value) return
 
-  // Simpan tinggi dan lebar konten asli meskipun sedang mode manual
+  const wrapperEl = dashWrapperRef.value
+  const wrapperStyle = window.getComputedStyle(wrapperEl)
+  const paddingX = parseFloat(wrapperStyle.paddingLeft) + parseFloat(wrapperStyle.paddingRight)
+
+  contentWidth.value = Math.min(wrapperEl.clientWidth - paddingX, 1760)
+  await nextTick()
+
   contentHeight.value = dashRef.value.scrollHeight
-  contentWidth.value = dashRef.value.clientWidth // Menggunakan clientWidth agar dinamis mengikuti layar
+}
 
+const calculateScale = async () => {
+  await measureContent()
   if (!isAutoFit.value) return
 
-  // 1. Reset scale sementara untuk mendapatkan dimensi aslinya
-  scale.value = 1
-  await nextTick() 
-  
-  // 2. Ambil ukuran asli dari konten dashboard saat ini
-  contentHeight.value = dashRef.value.scrollHeight
-  contentWidth.value = dashRef.value.clientWidth
-
-  const availableWidth = window.innerWidth - 80 
+  const availableWidth = window.innerWidth - 80
   const availableHeight = window.innerHeight - 75
 
   const scaleX = availableWidth / contentWidth.value
@@ -76,11 +86,13 @@ const calculateScale = async () => {
 const zoomIn = () => {
   isAutoFit.value = false
   scale.value = Math.min(scale.value + 0.1, 2)
+  nextTick(() => measureContent())
 }
 
 const zoomOut = () => {
   isAutoFit.value = false
   scale.value = Math.max(scale.value - 0.1, 0.3)
+  nextTick(() => measureContent())
 }
 
 const toggleAutoFit = () => {
@@ -107,8 +119,9 @@ const handleZoomInput = (e) => {
     
     isAutoFit.value = false
     scale.value = num / 100
+    nextTick(() => measureContent())
   }
-  
+
   // Jika input invalid, value akan kembali karena reactivity dari Vue
   // (atau kita set manual untuk memastikan UI terupdate)
   e.target.value = isAutoFit.value ? 'Auto' : Math.round(scale.value * 100) + '%'
@@ -123,33 +136,43 @@ const scalerStyle = computed(() => {
   }
 })
 
+let wrapperResizeObserver = null
+
 onMounted(() => {
   // Matikan scroll global, kita handle scroll di wrapper
   document.body.style.overflow = 'hidden'
-  
+
   // Hitung skala saat pertama kali dimuat
   calculateScale()
-  
-  // Hitung ulang jika user meresize browser
-  window.addEventListener('resize', calculateScale)
+
+  // Pakai ResizeObserver (bukan cuma window 'resize') karena lebar wrapper
+  // juga berubah akibat hal-hal di luar resize browser, misalnya animasi
+  // collapse sidebar di App.vue yang baru settle setelah DashboardPage
+  // mount duluan — window 'resize' tidak pernah terpicu untuk kasus itu,
+  // sehingga contentWidth bisa nyangkut di pengukuran yang terlalu awal/sempit.
+  wrapperResizeObserver = new ResizeObserver(() => {
+    calculateScale()
+  })
+  if (dashWrapperRef.value) wrapperResizeObserver.observe(dashWrapperRef.value)
 })
 
 onUnmounted(() => {
   // Kembalikan scroll saat pindah halaman
   document.body.style.overflow = ''
-  window.removeEventListener('resize', calculateScale)
+  wrapperResizeObserver?.disconnect()
 })
 </script>
 
 <template>
-  <div class="dash-wrapper" :class="{ 'is-scrollable': !isAutoFit }">
+  <div class="dash-wrapper" ref="dashWrapperRef" :class="{ 'is-scrollable': !isAutoFit }">
     <div class="dash-scaler" :style="scalerStyle">
-      <div 
-        class="dash" 
-        ref="dashRef" 
-        :style="{ 
-          transform: `scale(${scale})`, 
-          transformOrigin: isAutoFit ? 'top center' : 'top left' 
+      <div
+        class="dash"
+        ref="dashRef"
+        :style="{
+          width: `${contentWidth}px`,
+          transform: `scale(${scale})`,
+          transformOrigin: isAutoFit ? 'top center' : 'top left'
         }"
       >
         <DashboardHeader />
@@ -189,6 +212,15 @@ onUnmounted(() => {
     <div class="zoom-controls">
       <button class="zoom-btn" @click="showSettings = true" title="Dashboard Settings">
         <DashIcon name="gear" :size="16" />
+      </button>
+      <div class="zoom-divider"></div>
+      <button
+        class="zoom-btn"
+        :class="{ 'zoom-btn--active': isAutoFit }"
+        @click="toggleAutoFit"
+        title="Auto Fit to Screen"
+      >
+        <DashIcon name="auto" :size="16" />
       </button>
       <div class="zoom-divider"></div>
       <button class="zoom-btn" @click="zoomOut" title="Zoom Out">
@@ -244,7 +276,8 @@ onUnmounted(() => {
 <style scoped>
 .dash-wrapper {
   display: flex;
-  /* justify-content dan align-items dihapus, kita pakai margin auto di child */
+  /* horizontal: margin auto di child. vertical: safe center (fallback ke start jika overflow, agar tidak terpotong) */
+  align-items: safe center;
   height: calc(100vh - 70px);
   width: 100%;
   overflow: hidden;
@@ -253,7 +286,6 @@ onUnmounted(() => {
 
 .dash-wrapper.is-scrollable {
   overflow: auto;
-  padding: 1rem;
 }
 
 .dash-scaler {
@@ -263,7 +295,6 @@ onUnmounted(() => {
 }
 
 .dash {
-  width: 100%;
   max-width: 1760px;
   transform-origin: top center;
   transition: transform 0.2s ease-out;
@@ -355,6 +386,15 @@ onUnmounted(() => {
 
 .zoom-btn:hover {
   background: #f1f5f9;
+}
+
+.zoom-btn--active {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.zoom-btn--active:hover {
+  background: #dbeafe;
 }
 
 .zoom-input {
