@@ -12,6 +12,7 @@ import ExecutiveSummary from '../components/dashboard/ExecutiveSummary.vue'
 import DashIcon from '../components/dashboard/DashIcon.vue'
 import { kpis, topPanels, footerNote } from '../data/dashboard'
 import { ref, onMounted, onUnmounted, nextTick, computed, watch } from 'vue'
+import html2canvas from 'html2canvas'
 
 const scale = ref(1)
 const isAutoFit = ref(false)
@@ -20,6 +21,7 @@ const contentWidth = ref(1760)
 const dashRef = ref(null)
 const dashWrapperRef = ref(null)
 const showSettings = ref(false)
+const isCapturing = ref(false)
 
 const defaultVisibility = {
   psec: true,
@@ -127,6 +129,38 @@ const handleZoomInput = (e) => {
   e.target.value = isAutoFit.value ? 'Auto' : Math.round(scale.value * 100) + '%'
 }
 
+const captureDashboard = async () => {
+  if (!dashRef.value || isCapturing.value) return
+
+  isCapturing.value = true
+  try {
+    const canvas = await html2canvas(dashRef.value, {
+      backgroundColor: '#edf0f7',
+      scale: 2,
+      useCORS: true,
+      // Ambil pada ukuran asli (bukan hasil scale zoom saat ini), supaya hasil
+      // capture selalu utuh & konsisten resolusinya berapa pun level zoom-nya.
+      onclone: (clonedDoc) => {
+        const clonedDash = clonedDoc.querySelector('.dash')
+        if (clonedDash) clonedDash.style.transform = 'none'
+      },
+    })
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+    if (!blob) return
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+    link.href = url
+    link.download = `regional4-sifp-dashboard-${timestamp}.png`
+    link.click()
+    URL.revokeObjectURL(url)
+  } finally {
+    isCapturing.value = false
+  }
+}
+
 // Menghitung ukuran container agar scrollbar asli (native) bekerja saat di-zoom
 const scalerStyle = computed(() => {
   if (isAutoFit.value) return { width: '100%', height: '100%' }
@@ -210,6 +244,15 @@ onUnmounted(() => {
 
     <!-- Zoom & Settings Controls Floating -->
     <div class="zoom-controls">
+      <button
+        class="zoom-btn"
+        :disabled="isCapturing"
+        @click="captureDashboard"
+        :title="isCapturing ? 'Menyiapkan gambar...' : 'Capture Dashboard'"
+      >
+        <DashIcon :name="isCapturing ? 'refresh' : 'camera'" :size="16" />
+      </button>
+      <div class="zoom-divider"></div>
       <button class="zoom-btn" @click="showSettings = true" title="Dashboard Settings">
         <DashIcon name="gear" :size="16" />
       </button>
@@ -395,6 +438,23 @@ onUnmounted(() => {
 
 .zoom-btn--active:hover {
   background: #dbeafe;
+}
+
+.zoom-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.zoom-btn:disabled:hover {
+  background: transparent;
+}
+
+.zoom-btn:disabled svg {
+  animation: dash-spin 0.8s linear infinite;
+}
+
+@keyframes dash-spin {
+  to { transform: rotate(360deg); }
 }
 
 .zoom-input {
