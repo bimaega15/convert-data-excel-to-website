@@ -1,0 +1,9 @@
+{
+  "name": "sifp-vue-deploy",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Deploy orchestration for Sifp_Vue (frontend + backend) — see scripts/deploy-production.mjs",
+  "scripts": {
+    "deploy:production": "node scripts/deploy-production.mjs"
+  }
+}

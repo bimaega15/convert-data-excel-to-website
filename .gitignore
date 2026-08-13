@@ -17,6 +17,9 @@ dist-ssr
 # ---------- Frontend Build Output ----------
 Sifp_Vue.Server/wwwroot/assets/
 
+# ---------- Deploy ----------
+/build/
+
 # ---------- Editors ----------
 .vscode/*
 !.vscode/extensions.json
