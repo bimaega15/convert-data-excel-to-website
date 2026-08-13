@@ -42,6 +42,30 @@ const defaultVisibility = {
 
 const visibleCards = ref(JSON.parse(localStorage.getItem('dashboardVisibility')) || defaultVisibility)
 
+// Computed untuk mengecek apakah setiap baris memiliki minimal 1 card yang visible
+// sehingga baris kosong dihapus dari DOM (tidak ada ruang kosong saat di-capture)
+const showKpiRow = computed(() =>
+  visibleCards.value.psec ||
+  visibleCards.value.ccvc ||
+  visibleCards.value.psie ||
+  visibleCards.value.conformance ||
+  visibleCards.value.quickFacts
+)
+
+const showMidRow = computed(() =>
+  visibleCards.value.healthMap ||
+  visibleCards.value.topPanel1 ||
+  visibleCards.value.topPanel2 ||
+  visibleCards.value.topPanel3 ||
+  visibleCards.value.topPanel4
+)
+
+const showChartsRow = computed(() =>
+  visibleCards.value.trendChart ||
+  visibleCards.value.zonaChart ||
+  visibleCards.value.initiatives
+)
+
 watch(visibleCards, (newVal) => {
   localStorage.setItem('dashboardVisibility', JSON.stringify(newVal))
   // Recalculate scale whenever visibility changes, as content height might change
@@ -211,7 +235,7 @@ onUnmounted(() => {
       >
         <DashboardHeader />
 
-    <div class="dash-row dash-row--kpi">
+    <div v-if="showKpiRow" class="dash-row dash-row--kpi">
       <GaugeCard v-if="visibleCards.psec" :kpi="kpis[0]" class="flex-1" />
       <GaugeCard v-if="visibleCards.ccvc" :kpi="kpis[1]" class="flex-1" />
       <GaugeCard v-if="visibleCards.psie" :kpi="kpis[2]" class="flex-1" />
@@ -219,7 +243,7 @@ onUnmounted(() => {
       <QuickFacts v-if="visibleCards.quickFacts" class="flex-1-2" />
     </div>
 
-    <div class="dash-row dash-row--mid">
+    <div v-if="showMidRow" class="dash-row dash-row--mid">
       <HealthMap v-if="visibleCards.healthMap" class="dash-healthmap flex-1-85" />
       <TopFivePanel v-if="visibleCards.topPanel1" :panel="topPanels[0]" class="flex-1" />
       <TopFivePanel v-if="visibleCards.topPanel2" :panel="topPanels[1]" class="flex-1" />
@@ -227,7 +251,7 @@ onUnmounted(() => {
       <TopFivePanel v-if="visibleCards.topPanel4" :panel="topPanels[3]" class="flex-1" />
     </div>
 
-    <div class="dash-row dash-row--charts">
+    <div v-if="showChartsRow" class="dash-row dash-row--charts">
       <TrendChart v-if="visibleCards.trendChart" class="flex-1-15" />
       <ZonaChart v-if="visibleCards.zonaChart" class="flex-0-95" />
       <InitiativesTable v-if="visibleCards.initiatives" class="dash-initiatives flex-1-55" />
@@ -334,6 +358,7 @@ onUnmounted(() => {
 .dash-scaler {
   transition: width 0.2s, height 0.2s;
   display: flex;
+  align-items: flex-start; /* Cegah .dash stretch mengisi full tinggi wrapper */
   margin: 0 auto; /* Trik agar center tapi tidak terpotong saat overflow (safe center) */
 }
 
