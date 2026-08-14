@@ -276,11 +276,11 @@ namespace Sifp_Vue.Server.Services
             await _context.DashboardTexts.ExecuteDeleteAsync(cancellationToken);
         }
 
-        // ---------- Sheet Conformance Score ----------
+        // ---------- Sheet ANALYZE-CONFORMANCE_SCORE ----------
 
         private async Task<int> ImportObservationsAsync(WorkbookAccessor wb, int batchId, CancellationToken cancellationToken)
         {
-            var rows = wb.ObjectRows("Conformance Score");
+            var rows = wb.ObjectRows("ANALYZE-CONFORMANCE_SCORE");
             var entities = new List<Observation>();
 
             foreach (var r in rows)
@@ -324,16 +324,16 @@ namespace Sifp_Vue.Server.Services
             return entities.Count;
         }
 
-        // ---------- Sheet input observasi (SIF/ErrorTrap/HP/Drift/Latent) ----------
+        // ---------- Sheet INPUT-* ----------
 
         private int ImportSifQuestions(WorkbookAccessor wb, int batchId, IReadOnlyDictionary<string, int> obsIds, ICollection<string> warnings)
         {
             var entities = new List<SifQuestion>();
 
-            foreach (var r in wb.ObjectRows("SIF Questions"))
+            foreach (var r in wb.ObjectRows("INPUT-SIF_Questions"))
             {
                 var obsCode = Text(Cell(r, "Obs_ID"));
-                if (!TryResolve(obsCode, obsIds, "SIF Questions", warnings, out var observationId))
+                if (!TryResolve(obsCode, obsIds, "INPUT-SIF_Questions", warnings, out var observationId))
                 {
                     continue;
                 }
@@ -377,10 +377,10 @@ namespace Sifp_Vue.Server.Services
             // Sheet ini punya header ganda ("Protocols" dua kali) sehingga dibaca per indeks kolom.
             var entities = new List<ErrorTrap>();
 
-            foreach (var r in wb.GridRows("Error Traps").Skip(1))
+            foreach (var r in wb.GridRows("INPUT-Error_Traps").Skip(1))
             {
                 var obsCode = Text(At(r, 0));
-                if (!TryResolve(obsCode, obsIds, "Error Traps", warnings, out var observationId))
+                if (!TryResolve(obsCode, obsIds, "INPUT-Error_Traps", warnings, out var observationId))
                 {
                     continue;
                 }
@@ -405,10 +405,10 @@ namespace Sifp_Vue.Server.Services
         {
             var entities = new List<HpTool>();
 
-            foreach (var r in wb.GridRows("HP Tools").Skip(1))
+            foreach (var r in wb.GridRows("INPUT-HP_Tools").Skip(1))
             {
                 var obsCode = Text(At(r, 0));
-                if (!TryResolve(obsCode, obsIds, "HP Tools", warnings, out var observationId))
+                if (!TryResolve(obsCode, obsIds, "INPUT-HP_Tools", warnings, out var observationId))
                 {
                     continue;
                 }
@@ -435,10 +435,10 @@ namespace Sifp_Vue.Server.Services
         {
             var entities = new List<DriftCondition>();
 
-            foreach (var r in wb.GridRows("Drift Conditions").Skip(1))
+            foreach (var r in wb.GridRows("INPUT-Drift_Conditions").Skip(1))
             {
                 var obsCode = Text(At(r, 0));
-                if (!TryResolve(obsCode, obsIds, "Drift Conditions", warnings, out var observationId))
+                if (!TryResolve(obsCode, obsIds, "INPUT-Drift_Conditions", warnings, out var observationId))
                 {
                     continue;
                 }
@@ -468,11 +468,11 @@ namespace Sifp_Vue.Server.Services
         {
             var entities = new List<LatentCondition>();
 
-            // Template: kolom sequence/status/active ada di indeks 8-10 (sama seperti sheet drift).
-            foreach (var r in wb.GridRows("Latent Conditions").Skip(1))
+            // Kolom sequence/status/active ada di indeks 10-12 (bukan 8-10 seperti sheet drift).
+            foreach (var r in wb.GridRows("INPUT-Latent_Conditions").Skip(1))
             {
                 var obsCode = Text(At(r, 0));
-                if (!TryResolve(obsCode, obsIds, "Latent Conditions", warnings, out var observationId))
+                if (!TryResolve(obsCode, obsIds, "INPUT-Latent_Conditions", warnings, out var observationId))
                 {
                     continue;
                 }
@@ -487,9 +487,9 @@ namespace Sifp_Vue.Server.Services
                     Code = Truncate(Text(At(r, 5)), 50),
                     Level2 = Truncate(Text(At(r, 6)), 200),
                     Reason = Text(At(r, 7)),
-                    Sequence = Int(At(r, 8)),
-                    Status = Truncate(Text(At(r, 9)), 50),
-                    IsActive = YesNo(At(r, 10)),
+                    Sequence = Int(At(r, 10)),
+                    Status = Truncate(Text(At(r, 11)), 50),
+                    IsActive = YesNo(At(r, 12)),
                     ImportBatchId = batchId
                 });
             }
@@ -505,7 +505,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<CcvcLibraryItem>();
             var seen = new HashSet<string>(StringComparer.Ordinal);
 
-            foreach (var r in wb.ObjectRows("PSEC CCVC"))
+            foreach (var r in wb.ObjectRows("DATABASE_PSEC_CCVC"))
             {
                 var ccvcId = Text(Cell(r, "CCVC_ID"));
                 // CcvcId unik di database; duplikat di workbook diambil kemunculan pertama.
@@ -538,7 +538,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<ImprovementInitiative>();
             var seen = new HashSet<string>(StringComparer.Ordinal);
 
-            foreach (var r in wb.ObjectRows("Improvement Initiatives"))
+            foreach (var r in wb.ObjectRows("ANALYZE-IMPROVEMENT_INITIATIVES"))
             {
                 var code = Text(Cell(r, "Improvement_ID"));
                 if (string.IsNullOrEmpty(code) || !seen.Add(code))
@@ -569,7 +569,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<ExecutiveMeasure>();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var r in wb.ObjectRows("Executive Measures"))
+            foreach (var r in wb.ObjectRows("ANALYZE-EXECUTIVE_MEASURES"))
             {
                 var code = Text(Cell(r, "Metric_Code"));
                 if (string.IsNullOrEmpty(code) || !seen.Add(code))
@@ -600,7 +600,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<QuickFact>();
             var order = 0;
 
-            foreach (var r in wb.ObjectRows("Quick Facts"))
+            foreach (var r in wb.ObjectRows("ANALYZE-QUICK_FACTS"))
             {
                 var name = Text(Cell(r, "Fact_Name"));
                 if (string.IsNullOrEmpty(name))
@@ -637,7 +637,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<ClsrHealthMapRow>();
             var order = 0;
 
-            foreach (var r in wb.ObjectRows("CLSR Health"))
+            foreach (var r in wb.ObjectRows("ANALYZE-CLSR_HEALTH_MAP"))
             {
                 var clsrId = Text(Cell(r, "CLSR_ID"));
                 if (string.IsNullOrEmpty(clsrId))
@@ -673,7 +673,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<TopFiveItem>();
             var order = 0;
 
-            foreach (var r in wb.ObjectRows("Top 5"))
+            foreach (var r in wb.ObjectRows("ANALYZE-TOP5"))
             {
                 var category = Text(Cell(r, "Category"));
                 if (string.IsNullOrEmpty(category))
@@ -704,7 +704,7 @@ namespace Sifp_Vue.Server.Services
             var entities = new List<DashboardText>();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var r in wb.ObjectRows("Dashboard Text"))
+            foreach (var r in wb.ObjectRows("CONFIG-DASHBOARD_TEXT"))
             {
                 var section = Text(Cell(r, "Section"));
                 if (string.IsNullOrEmpty(section) || !seen.Add(section))
@@ -738,7 +738,7 @@ namespace Sifp_Vue.Server.Services
             var seenMonths = new HashSet<DateOnly>();
             var seenZonas = new HashSet<int>();
 
-            foreach (var r in wb.GridRows("Trend Zone").Skip(1))
+            foreach (var r in wb.GridRows("ANALYZE-TREND_ZONE").Skip(1))
             {
                 var month = Date(At(r, 0));
                 if (month.HasValue && seenMonths.Add(month.Value))
@@ -764,15 +764,15 @@ namespace Sifp_Vue.Server.Services
                     }
                 }
 
-                var zona = Int(At(r, 7));
+                var zona = Int(At(r, 8));
                 if (zona.HasValue && seenZonas.Add(zona.Value))
                 {
                     zonaScores.Add(new ZonaScore
                     {
                         Zona = zona.Value,
                         ZonaLabel = $"Zona {zona.Value}",
-                        ScorePercent = Percent(At(r, 11)) ?? 0m,
-                        ObservationCount = IntOrZero(At(r, 12)),
+                        ScorePercent = Percent(At(r, 12)) ?? 0m,
+                        ObservationCount = IntOrZero(At(r, 13)),
                         DisplayOrder = zonaOrder++,
                         ImportBatchId = batchId
                     });
@@ -891,7 +891,7 @@ namespace Sifp_Vue.Server.Services
 
             if (!obsIds.TryGetValue(obsCode, out observationId))
             {
-                var message = $"{sheetName}: Obs_ID \"{obsCode}\" tidak ada di Conformance Score, baris dilewati.";
+                var message = $"{sheetName}: Obs_ID \"{obsCode}\" tidak ada di ANALYZE-CONFORMANCE_SCORE, baris dilewati.";
                 if (!warnings.Contains(message))
                 {
                     warnings.Add(message);

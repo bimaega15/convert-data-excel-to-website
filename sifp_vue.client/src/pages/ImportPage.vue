@@ -16,9 +16,6 @@ import {
 import { loadGoogleSheet } from '../services/googleSheetImport'
 import { loadDashboard } from '../data/dashboard'
 import { loadSheetManifest } from '../data/sheets'
-// Template Excel kosong untuk diunduh pengguna, diisi, lalu diunggah kembali.
-// ?url: Vite menyalin berkas apa adanya dan mengembalikan URL-nya.
-import templateUrl from '../../design/SifpAssurance_Template.xlsm?url'
 
 const fileInput = ref(null)
 const rawFile = shallowRef(null)
@@ -180,16 +177,6 @@ const importedRows = computed(() =>
       title="Import Excel"
       subtitle="Unggah workbook V&V, periksa seluruh sheet pada preview, lalu kirim ke server. Data belum dikirim sebelum Anda menekan tombol submit."
     >
-      <a
-        class="template-download"
-        :href="templateUrl"
-        download="SifpAssurance_Template.xlsm"
-        title="Unduh template Excel kosong untuk diisi lalu diunggah"
-      >
-        <DashIcon name="download" :size="15" />
-        <span>File to Upload</span>
-      </a>
-
       <template #right>
         <span v-if="parsed" class="stat-chip">Sheet <strong>{{ parsed.sheets.length }}</strong></span>
         <span v-if="parsed" class="stat-chip">Total baris <strong>{{ parsed.totalRows }}</strong></span>
@@ -464,33 +451,6 @@ const importedRows = computed(() =>
 </template>
 
 <style scoped>
-/* ===== tombol unduh template ===== */
-.template-download {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: 0.6rem;
-  padding: 0.45rem 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
-  color: var(--ink);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
-}
-
-.template-download:hover {
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
-  background: #f4f7ff;
-}
-
-.template-download svg {
-  flex: none;
-}
-
 /* ===== dropzone ===== */
 .dz {
   align-items: center;

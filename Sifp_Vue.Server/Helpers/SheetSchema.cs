@@ -14,24 +14,22 @@ namespace Sifp_Vue.Server.Helpers
     /// </summary>
     public static class SheetSchema
     {
-        // Nama sheet mengikuti template resmi (SifpAssurance_Template.xlsm) yang wajib
-        // diupload. Harus identik dengan sifp_vue.client/src/data/sheet-schema.js.
         public static readonly IReadOnlyList<SheetDefinition> RequiredSheets = new List<SheetDefinition>
         {
-            new("SIF Questions", "Jawaban pertanyaan verifikasi SIF"),
-            new("Error Traps", "Error traps per observasi"),
-            new("HP Tools", "Human Performance Tools"),
-            new("Drift Conditions", "Kondisi drift"),
-            new("Latent Conditions", "Kondisi laten"),
-            new("PSEC CCVC", "Master library PSEC & CCVC"),
-            new("Conformance Score", "Rekap observasi & skor"),
-            new("Executive Measures", "KPI PSEC / CCVC / PSIE / Conformance"),
-            new("Quick Facts", "Quick facts dashboard"),
-            new("CLSR Health", "Health map CLSR × Zona"),
-            new("Top 5", "Top 5 (exposure, gap, drift, systemic)"),
-            new("Trend Zone", "Tren bulanan & skor per zona"),
-            new("Improvement Initiatives", "Inisiatif perbaikan"),
-            new("Dashboard Text", "Teks naratif dashboard"),
+            new("INPUT-SIF_Questions", "Jawaban pertanyaan verifikasi SIF"),
+            new("INPUT-Error_Traps", "Error traps per observasi"),
+            new("INPUT-HP_Tools", "Human Performance Tools"),
+            new("INPUT-Drift_Conditions", "Kondisi drift"),
+            new("INPUT-Latent_Conditions", "Kondisi laten"),
+            new("DATABASE_PSEC_CCVC", "Master library PSEC & CCVC"),
+            new("ANALYZE-CONFORMANCE_SCORE", "Rekap observasi & skor"),
+            new("ANALYZE-EXECUTIVE_MEASURES", "KPI PSEC / CCVC / PSIE / Conformance"),
+            new("ANALYZE-QUICK_FACTS", "Quick facts dashboard"),
+            new("ANALYZE-CLSR_HEALTH_MAP", "Health map CLSR × Zona"),
+            new("ANALYZE-TOP5", "Top 5 (exposure, gap, drift, systemic)"),
+            new("ANALYZE-TREND_ZONE", "Tren bulanan & skor per zona"),
+            new("ANALYZE-IMPROVEMENT_INITIATIVES", "Inisiatif perbaikan"),
+            new("CONFIG-DASHBOARD_TEXT", "Teks naratif dashboard"),
         };
 
         public static readonly IReadOnlySet<string> RequiredSheetNames =
@@ -41,37 +39,14 @@ namespace Sifp_Vue.Server.Helpers
         public static readonly IReadOnlyDictionary<string, CuratedSheet> Curated =
             new Dictionary<string, CuratedSheet>(StringComparer.Ordinal)
             {
-                ["SIF Questions"] = new("/master/sif-questions", "SIF Questions", "checklist"),
-                ["Error Traps"] = new("/master/error-traps", "Error Traps", "warning"),
-                ["HP Tools"] = new("/master/hp-tools", "HP Tools", "gear"),
-                ["Drift Conditions"] = new("/master/drift-conditions", "Drift Conditions", "refresh"),
-                ["Latent Conditions"] = new("/master/latent-conditions", "Latent Conditions", "layers"),
-                ["PSEC CCVC"] = new("/master/ccvc-library", "PSEC & CCVC Library", "book"),
-                ["Conformance Score"] = new("/master/observations", "Observations", "clipboard"),
-                ["Improvement Initiatives"] = new("/master/initiatives", "Improvement Initiatives", "target"),
-            };
-
-        /// <summary>
-        /// Grup sidebar per sheet. Nama template tidak lagi berawalan kategori
-        /// (INPUT-/ANALYZE-/…), jadi grup dipetakan eksplisit di sini.
-        /// </summary>
-        public static readonly IReadOnlyDictionary<string, string> SheetGroups =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["SIF Questions"] = "Data Input",
-                ["Error Traps"] = "Data Input",
-                ["HP Tools"] = "Data Input",
-                ["Drift Conditions"] = "Data Input",
-                ["Latent Conditions"] = "Data Input",
-                ["PSEC CCVC"] = "Database",
-                ["Conformance Score"] = "Analisis",
-                ["Executive Measures"] = "Analisis",
-                ["Quick Facts"] = "Analisis",
-                ["CLSR Health"] = "Analisis",
-                ["Top 5"] = "Analisis",
-                ["Trend Zone"] = "Analisis",
-                ["Improvement Initiatives"] = "Analisis",
-                ["Dashboard Text"] = "Konfigurasi",
+                ["INPUT-SIF_Questions"] = new("/master/sif-questions", "SIF Questions", "checklist"),
+                ["INPUT-Error_Traps"] = new("/master/error-traps", "Error Traps", "warning"),
+                ["INPUT-HP_Tools"] = new("/master/hp-tools", "HP Tools", "gear"),
+                ["INPUT-Drift_Conditions"] = new("/master/drift-conditions", "Drift Conditions", "refresh"),
+                ["INPUT-Latent_Conditions"] = new("/master/latent-conditions", "Latent Conditions", "layers"),
+                ["DATABASE_PSEC_CCVC"] = new("/master/ccvc-library", "PSEC & CCVC Library", "book"),
+                ["ANALYZE-CONFORMANCE_SCORE"] = new("/master/observations", "Observations", "clipboard"),
+                ["ANALYZE-IMPROVEMENT_INITIATIVES"] = new("/master/initiatives", "Improvement Initiatives", "target"),
             };
 
         /// <summary>Urutan grup di sidebar. Sheet di dalam grup mengikuti urutan aslinya di Excel.</summary>
@@ -98,8 +73,17 @@ namespace Sifp_Vue.Server.Helpers
             return RequiredSheets.Where(s => !present.Contains(s.Name)).ToList();
         }
 
-        public static string GroupOf(string name) =>
-            SheetGroups.TryGetValue(name, out var group) ? group : "Lainnya";
+        public static string GroupOf(string name)
+        {
+            if (name.StartsWith("INPUT", StringComparison.OrdinalIgnoreCase)) return "Data Input";
+            if (name.StartsWith("DATABASE", StringComparison.OrdinalIgnoreCase)) return "Database";
+            if (name.StartsWith("ANALYZE", StringComparison.OrdinalIgnoreCase)) return "Analisis";
+            if (name.StartsWith("CONFIG", StringComparison.OrdinalIgnoreCase)) return "Konfigurasi";
+            if (name.StartsWith("SOURCE", StringComparison.OrdinalIgnoreCase)) return "Sumber";
+            if (name.StartsWith("AUDIT", StringComparison.OrdinalIgnoreCase)) return "Audit";
+            if (name.StartsWith("Helper", StringComparison.OrdinalIgnoreCase)) return "Helper";
+            return "Lainnya";
+        }
 
         public static string IconForGroup(string group) =>
             GroupIcons.TryGetValue(group, out var icon) ? icon : "file";
@@ -112,12 +96,15 @@ namespace Sifp_Vue.Server.Helpers
         }
 
         /// <summary>
-        /// Label ringkas untuk sheet non-kurasi. Nama template sudah rapi (mis.
-        /// "Executive Measures"), jadi cukup normalkan pemisah "_"/"-" menjadi spasi.
+        /// Label ringkas untuk sheet non-kurasi: token kategori di depan dibuang
+        /// (sudah menjadi judul grup), lalu "_" / "-" diubah menjadi spasi.
         /// </summary>
         public static string ShortLabel(string name)
         {
-            var words = Regex.Replace(name, "[_-]+", " ").Trim();
+            var stripped = Regex.Replace(name, "^(INPUT|DATABASE|ANALYZE|CONFIG|SOURCE|AUDIT|Helper)[-_]?", string.Empty,
+                RegexOptions.IgnoreCase);
+
+            var words = Regex.Replace(string.IsNullOrEmpty(stripped) ? name : stripped, "[_-]+", " ").Trim();
             return string.IsNullOrEmpty(words) ? name : words;
         }
 

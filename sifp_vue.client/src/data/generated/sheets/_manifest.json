@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-06T17:00:47.587Z",
+  "generatedAt": "2026-08-14T01:04:00.816Z",
   "sourceFile": "VnV_FULL_DATABASE_09July2026_OBS001-023 ver.Jul2026.xlsx",
   "sheetCount": 14,
   "groups": [
@@ -7,8 +7,8 @@
       "label": "Data Input",
       "items": [
         {
-          "name": "SIF Questions",
-          "slug": "sif-questions",
+          "name": "INPUT-SIF_Questions",
+          "slug": "input-sif-questions",
           "index": 0,
           "group": "Data Input",
           "label": "SIF Questions",
@@ -20,8 +20,8 @@
           "dataRows": 299
         },
         {
-          "name": "Error Traps",
-          "slug": "error-traps",
+          "name": "INPUT-Error_Traps",
+          "slug": "input-error-traps",
           "index": 1,
           "group": "Data Input",
           "label": "Error Traps",
@@ -33,8 +33,8 @@
           "dataRows": 56
         },
         {
-          "name": "HP Tools",
-          "slug": "hp-tools",
+          "name": "INPUT-HP_Tools",
+          "slug": "input-hp-tools",
           "index": 2,
           "group": "Data Input",
           "label": "HP Tools",
@@ -46,8 +46,8 @@
           "dataRows": 39
         },
         {
-          "name": "Drift Conditions",
-          "slug": "drift-conditions",
+          "name": "INPUT-Drift_Conditions",
+          "slug": "input-drift-conditions",
           "index": 3,
           "group": "Data Input",
           "label": "Drift Conditions",
@@ -59,8 +59,8 @@
           "dataRows": 299
         },
         {
-          "name": "Latent Conditions",
-          "slug": "latent-conditions",
+          "name": "INPUT-Latent_Conditions",
+          "slug": "input-latent-conditions",
           "index": 4,
           "group": "Data Input",
           "label": "Latent Conditions",
@@ -77,8 +77,8 @@
       "label": "Database",
       "items": [
         {
-          "name": "PSEC CCVC",
-          "slug": "psec-ccvc",
+          "name": "DATABASE_PSEC_CCVC",
+          "slug": "database-psec-ccvc",
           "index": 5,
           "group": "Database",
           "label": "PSEC & CCVC Library",
@@ -95,8 +95,8 @@
       "label": "Analisis",
       "items": [
         {
-          "name": "Conformance Score",
-          "slug": "conformance-score",
+          "name": "ANALYZE-CONFORMANCE_SCORE",
+          "slug": "analyze-conformance-score",
           "index": 6,
           "group": "Analisis",
           "label": "Observations",
@@ -108,73 +108,73 @@
           "dataRows": 99
         },
         {
-          "name": "Executive Measures",
-          "slug": "executive-measures",
+          "name": "ANALYZE-EXECUTIVE_MEASURES",
+          "slug": "analyze-executive-measures",
           "index": 7,
           "group": "Analisis",
-          "label": "Executive Measures",
+          "label": "EXECUTIVE MEASURES",
           "icon": "gear",
-          "route": "/sheet/executive-measures",
+          "route": "/sheet/analyze-executive-measures",
           "curated": false,
           "rowCount": 5,
           "colCount": 8,
           "dataRows": 4
         },
         {
-          "name": "Quick Facts",
-          "slug": "quick-facts",
+          "name": "ANALYZE-QUICK_FACTS",
+          "slug": "analyze-quick-facts",
           "index": 8,
           "group": "Analisis",
-          "label": "Quick Facts",
+          "label": "QUICK FACTS",
           "icon": "gear",
-          "route": "/sheet/quick-facts",
+          "route": "/sheet/analyze-quick-facts",
           "curated": false,
           "rowCount": 9,
           "colCount": 3,
           "dataRows": 8
         },
         {
-          "name": "CLSR Health",
-          "slug": "clsr-health",
+          "name": "ANALYZE-CLSR_HEALTH_MAP",
+          "slug": "analyze-clsr-health-map",
           "index": 9,
           "group": "Analisis",
-          "label": "CLSR Health",
+          "label": "CLSR HEALTH MAP",
           "icon": "gear",
-          "route": "/sheet/clsr-health",
+          "route": "/sheet/analyze-clsr-health-map",
           "curated": false,
           "rowCount": 11,
           "colCount": 15,
           "dataRows": 10
         },
         {
-          "name": "Top 5",
-          "slug": "top-5",
+          "name": "ANALYZE-TOP5",
+          "slug": "analyze-top5",
           "index": 10,
           "group": "Analisis",
-          "label": "Top 5",
+          "label": "TOP5",
           "icon": "gear",
-          "route": "/sheet/top-5",
+          "route": "/sheet/analyze-top5",
           "curated": false,
           "rowCount": 21,
           "colCount": 8,
           "dataRows": 20
         },
         {
-          "name": "Trend Zone",
-          "slug": "trend-zone",
+          "name": "ANALYZE-TREND_ZONE",
+          "slug": "analyze-trend-zone",
           "index": 11,
           "group": "Analisis",
-          "label": "Trend Zone",
+          "label": "TREND ZONE",
           "icon": "gear",
-          "route": "/sheet/trend-zone",
+          "route": "/sheet/analyze-trend-zone",
           "curated": false,
           "rowCount": 13,
           "colCount": 17,
           "dataRows": 12
         },
         {
-          "name": "Improvement Initiatives",
-          "slug": "improvement-initiatives",
+          "name": "ANALYZE-IMPROVEMENT_INITIATIVES",
+          "slug": "analyze-improvement-initiatives",
           "index": 12,
           "group": "Analisis",
           "label": "Improvement Initiatives",
@@ -191,13 +191,13 @@
       "label": "Konfigurasi",
       "items": [
         {
-          "name": "Dashboard Text",
-          "slug": "dashboard-text",
+          "name": "CONFIG-DASHBOARD_TEXT",
+          "slug": "config-dashboard-text",
           "index": 13,
           "group": "Konfigurasi",
-          "label": "Dashboard Text",
+          "label": "DASHBOARD TEXT",
           "icon": "gear",
-          "route": "/sheet/dashboard-text",
+          "route": "/sheet/config-dashboard-text",
           "curated": false,
           "rowCount": 6,
           "colCount": 2,
