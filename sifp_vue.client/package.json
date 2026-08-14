@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "convert:excel": "node scripts/convert-excel.mjs",
-    "deploy:production": "dotnet publish ../Sifp_Vue.Server -c Release -o ../publish"
+    "convert:excel": "node scripts/convert-excel.mjs"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
