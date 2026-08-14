@@ -5,24 +5,19 @@ using Sifp_Vue.Server.Models.Dtos;
 namespace Sifp_Vue.Server.Controllers.Api
 {
     /// <summary>
-    /// Basis seluruh endpoint /api.
-    ///
-    /// Endpoint /api terbuka tanpa login: klien Vue tidak punya halaman login sendiri
-    /// karena pembatasan akses direncanakan lewat Windows Authentication di IIS
-    /// perusahaan. Area /admin tetap memakai cookie login sendiri.
+    /// Basis seluruh endpoint /api. Sebagian besar controller mengharuskan token
+    /// bearer JWT (lihat AuthController: /api/auth/login, /windows, /me); UsersController
+    /// tetap memakai cookie admin karena isinya data akun.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
     public abstract class ApiControllerBase : ControllerBase
     {
-        /// <summary>
-        /// Nama user untuk kolom audit. Saat Windows Authentication aktif, nilainya
-        /// terisi otomatis dari akun domain; sebelum itu jatuh ke "SYSTEM".
-        /// </summary>
+        /// <summary>Nama user untuk kolom audit, terisi dari token bearer atau cookie admin.</summary>
         protected string CurrentUserName => User.Identity?.Name ?? "SYSTEM";
 
-        /// <summary>Id user; hanya terisi pada endpoint yang masih memakai cookie admin.</summary>
+        /// <summary>Id user, terisi dari token bearer atau cookie admin.</summary>
         protected int? CurrentUserId =>
             int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
 

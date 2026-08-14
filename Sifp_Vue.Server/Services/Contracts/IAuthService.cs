@@ -10,6 +10,15 @@ namespace Sifp_Vue.Server.Services.Contracts
         /// Mengembalikan identity siap sign-in bila user berhak membuka /admin.
         /// </summary>
         Task<ApiResponse<ClaimsIdentity>> AuthenticateForAdminAsync(LoginRequest request, string authenticationScheme, CancellationToken cancellationToken = default);
+
+        /// <summary>Login manual (username/password) untuk klien Vue. Mengembalikan token bearer.</summary>
+        Task<ApiResponse<LoginResultDto>> AuthenticateForApiAsync(LoginRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Menukar identitas Windows (hasil Negotiate, mis. <c>DOMAIN\username</c>) dengan token bearer
+        /// bila ada akun aplikasi yang username-nya cocok.
+        /// </summary>
+        Task<ApiResponse<LoginResultDto>> AuthenticateWindowsUserAsync(string windowsIdentityName, CancellationToken cancellationToken = default);
     }
 
     public interface IUserService

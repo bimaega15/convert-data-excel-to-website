@@ -1,5 +1,9 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sifp_Vue.Server.Data;
 using Sifp_Vue.Server.Data.Seeders;
@@ -8,6 +12,19 @@ using Sifp_Vue.Server.Models.Entities;
 using Sifp_Vue.Server.Repositories;
 using Sifp_Vue.Server.Services;
 using Sifp_Vue.Server.Services.Contracts;
+
+// ---------------------------------------------------------------------------
+// Perintah CLI: migrate / migrate:fresh / seed (lihat "npm run migrate" dkk
+// di package.json root). Diambil sebelum CreateBuilder karena argumen posisi
+// tanpa awalan "-" bikin CommandLineConfigurationProvider bawaan ASP.NET Core
+// melempar FormatException.
+// ---------------------------------------------------------------------------
+string? cliCommand = null;
+if (args.Length > 0 && !args[0].StartsWith('-'))
+{
+    cliCommand = args[0];
+    args = args[1..];
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +59,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 builder.Services.AddSingleton<IUserClaimsFactory, UserClaimsFactory>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -114,6 +132,24 @@ builder.Services.AddSwaggerGen(c =>
 
     c.CustomSchemaIds(type => type.FullName?.Replace("+", ".") ?? type.Name);
 
+    // Memungkinkan endpoint /api yang kini berpagar [Authorize] dicoba langsung dari Swagger UI.
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Token dari POST /api/auth/login, mis. \"eyJhbGci...\" (tanpa awalan \"Bearer \")."
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
+            Array.Empty<string>()
+        }
+    });
+
     var xmlPath = Path.Combine(AppContext.BaseDirectory,
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml");
     if (File.Exists(xmlPath))
@@ -123,12 +159,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // ---------------------------------------------------------------------------
-// Autentikasi: cookie untuk /admin (Razor).
-//
-// Endpoint /api sengaja terbuka — klien Vue tidak punya halaman login sendiri.
-// Pembatasan akses aplikasi direncanakan lewat Windows Authentication di IIS
-// perusahaan, sehingga tidak diduplikasi di level aplikasi.
+// Autentikasi: cookie untuk /admin (Razor), token bearer JWT + Windows/Negotiate
+// SSO untuk /api (klien Vue) lewat AuthController (/api/auth/login, /windows, /me).
+// Skema default tetap cookie supaya area /admin tidak berubah; endpoint /api
+// menegaskan skemanya sendiri lewat [Authorize(AuthenticationSchemes = ...)].
 // ---------------------------------------------------------------------------
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var jwtSigningKey = jwtSection["SigningKey"];
 
 builder.Services.AddAuthentication(options =>
     {
@@ -136,6 +174,23 @@ builder.Services.AddAuthentication(options =>
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidateAudience = true,
+            ValidAudience = jwtSection["Audience"],
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = string.IsNullOrWhiteSpace(jwtSigningKey)
+                ? null
+                : new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)),
+            ClockSkew = TimeSpan.FromSeconds(30),
+        };
+    })
+    .AddNegotiate()
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.Cookie.Name = "Sifp.Admin.Auth";
@@ -206,11 +261,32 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // ---------------------------------------------------------------------------
-// Migration + seeding
+// Perintah CLI eksplisit: jalankan lalu keluar tanpa menyalakan Kestrel.
 // ---------------------------------------------------------------------------
 
-using (var scope = app.Services.CreateScope())
+if (cliCommand is not null)
 {
+    if (!await TryRunCliCommandAsync(app, cliCommand))
+    {
+        Console.Error.WriteLine(
+            $"Perintah '{cliCommand}' tidak dikenal. Yang tersedia: migrate, migrate:fresh, seed.");
+        Environment.ExitCode = 1;
+    }
+
+    return;
+}
+
+// ---------------------------------------------------------------------------
+// Migration + seeding otomatis. Hanya di luar Development supaya deploy
+// (systemctl start, tanpa langkah "npm run migrate" terpisah) tetap
+// ter-migrate otomatis seperti sebelumnya. Saat dev, `dotnet run` polos
+// sekarang cuma menyalakan backend — pakai `npm run migrate` / `npm run seed`
+// dari root secara eksplisit (lihat package.json).
+// ---------------------------------------------------------------------------
+
+if (!app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     await seeder.RunAsync();
 }
@@ -284,3 +360,63 @@ static bool IsApiRequest(HttpRequest request) =>
     request.Path.StartsWithSegments("/api") ||
     request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
     request.Headers.Accept.ToString().Contains("application/json", StringComparison.OrdinalIgnoreCase);
+
+// Setara `php artisan migrate` / `migrate:fresh` / `db:seed`, dipanggil lewat
+// `npm run migrate` dkk. `migrate:fresh` hanya reset skema (tidak seed) supaya
+// simetris dengan perintah `seed` terpisah — data awal tetap terisi otomatis
+// begitu aplikasi dijalankan normal (lihat DatabaseSeeder.RunAsync di atas).
+static async Task<bool> TryRunCliCommandAsync(WebApplication app, string command)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var db = services.GetRequiredService<SifpDbContext>();
+
+    switch (command)
+    {
+        case "migrate":
+        {
+            var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
+            if (pending.Count == 0)
+            {
+                logger.LogInformation("Database sudah pada versi migration terbaru.");
+            }
+            else
+            {
+                logger.LogInformation("Menjalankan {Count} migration: {Names}", pending.Count, string.Join(", ", pending));
+                await db.Database.MigrateAsync();
+            }
+            return true;
+        }
+
+        case "migrate:fresh":
+        {
+            logger.LogWarning("Menghapus seluruh database dan menjalankan ulang semua migration dari awal...");
+            await db.Database.EnsureDeletedAsync();
+            await db.Database.MigrateAsync();
+            logger.LogInformation("Database sudah di-reset. Jalankan 'npm run seed' atau start aplikasi untuk mengisi data awal.");
+            return true;
+        }
+
+        case "seed":
+        {
+            var seeders = services.GetServices<IDataSeeder>();
+            foreach (var seeder in seeders.OrderBy(s => s.Order))
+            {
+                try
+                {
+                    await seeder.SeedAsync();
+                    logger.LogInformation("Seeder {Name} selesai.", seeder.Name);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Seeder {Name} gagal", seeder.Name);
+                }
+            }
+            return true;
+        }
+
+        default:
+            return false;
+    }
+}

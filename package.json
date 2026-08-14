@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "Deploy orchestration for Sifp_Vue (frontend + backend) — see scripts/deploy-production.mjs",
   "scripts": {
-    "deploy:production": "node scripts/deploy-production.mjs"
+    "deploy:production": "node scripts/deploy-production.mjs",
+    "migrate": "dotnet run --project Sifp_Vue.Server -- migrate",
+    "migrate:fresh": "dotnet run --project Sifp_Vue.Server -- migrate:fresh",
+    "seed": "dotnet run --project Sifp_Vue.Server -- seed"
   }
 }

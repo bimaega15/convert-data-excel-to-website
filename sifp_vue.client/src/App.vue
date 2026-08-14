@@ -29,7 +29,8 @@ function toggleSidebar() {
 </script>
 
 <template>
-  <div class="admin" :class="{ 'admin--collapsed': collapsed }">
+  <router-view v-if="route.meta.public" />
+  <div v-else class="admin" :class="{ 'admin--collapsed': collapsed }">
     <AdminSidebar :collapsed="collapsed" :open="mobileOpen" @close="mobileOpen = false" />
     <div v-if="mobileOpen" class="admin__backdrop d-lg-none" @click="mobileOpen = false"></div>
 

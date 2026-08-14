@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Services.Contracts;
@@ -5,6 +7,7 @@ using Sifp_Vue.Server.Services.Contracts;
 namespace Sifp_Vue.Server.Controllers.Api
 {
     [Route("api/dashboard")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DashboardController : ApiControllerBase
     {
         private readonly IDashboardService _dashboardService;

@@ -5,6 +5,8 @@
 // Modul ini yang membuka amplop itu, sehingga pemanggil cukup menerima `data`
 // dan tidak perlu memeriksa `status` di setiap tempat.
 
+import { authState, clearSession } from './auth'
+
 // Kosong = origin yang sama (mode produksi: Vue disajikan dari wwwroot server,
 // dan saat dev vite.config.js mem-proxy /api ke backend).
 export const API_BASE = import.meta.env.VITE_API_BASE ?? ''
@@ -55,6 +57,12 @@ export async function request(path, { method = 'GET', params, body, signal } = {
     payload = JSON.stringify(body)
   }
 
+  // Hanya dikirim bila ada sesi; endpoint login sendiri (anonymous) tidak butuh ini.
+  const hadToken = Boolean(authState.token)
+  if (hadToken) {
+    headers['Authorization'] = `Bearer ${authState.token}`
+  }
+
   let response
   try {
     response = await fetch(url, { method, headers, body: payload, signal })
@@ -74,6 +82,13 @@ export async function request(path, { method = 'GET', params, body, signal } = {
   }
 
   if (!response.ok) {
+    // Token yang tadinya valid di klien ditolak server (kedaluwarsa/dicabut) ->
+    // sesi dibersihkan dan pengguna dikembalikan ke halaman login.
+    if (response.status === 401 && hadToken) {
+      clearSession()
+      window.location.href = '/login'
+    }
+
     throw new ApiError(
       envelope?.message ?? `Server membalas HTTP ${response.status}.`,
       { status: response.status, errors: envelope?.errors ?? null, url }

@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DashIcon from '../dashboard/DashIcon.vue'
-import { currentUser } from '../../data/currentUser'
+import { authState, clearSession } from '../../services/auth'
 
 const props = defineProps({
   collapsed: { type: Boolean, default: false },
@@ -10,10 +10,19 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle'])
 const route = useRoute()
+const router = useRouter()
 
 const burgerLabel = computed(() =>
   props.collapsed ? 'Perlebar sidebar' : 'Perkecil sidebar menjadi ikon'
 )
+
+const displayName = computed(() => authState.user?.fullName || authState.user?.username || 'Pengguna')
+const displayRole = computed(() => authState.user?.roles?.[0] ?? '')
+
+function logout() {
+  clearSession()
+  router.push({ name: 'login' })
+}
 </script>
 
 <template>
@@ -35,13 +44,24 @@ const burgerLabel = computed(() =>
     </div>
 
     <div class="topbar__right">
-      <span class="topbar__user" :title="`Login sebagai ${currentUser.name}`">
-        <span class="topbar__user-icon"><DashIcon name="person" :size="16" /></span>
-        <span class="topbar__user-meta d-none d-md-flex">
-          <strong>{{ currentUser.name }}</strong>
-          <small>{{ currentUser.role }}</small>
-        </span>
-      </span>
+      <div class="dropdown">
+        <button
+          type="button"
+          class="topbar__user"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          :title="`Login sebagai ${displayName}`"
+        >
+          <span class="topbar__user-icon"><DashIcon name="person" :size="16" /></span>
+          <span class="topbar__user-meta d-none d-md-flex">
+            <strong>{{ displayName }}</strong>
+            <small>{{ displayRole }}</small>
+          </span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><button type="button" class="dropdown-item" @click="logout">Keluar</button></li>
+        </ul>
+      </div>
     </div>
   </header>
 </template>
@@ -108,6 +128,14 @@ const burgerLabel = computed(() =>
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 0.25rem 0.75rem 0.25rem 0.3rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.topbar__user:hover,
+.topbar__user[aria-expanded='true'] {
+  background: #e6eaf6;
+  border-color: var(--accent-blue);
 }
 
 .topbar__user-icon {

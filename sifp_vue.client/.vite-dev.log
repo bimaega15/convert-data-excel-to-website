@@ -1,0 +1,23 @@
+
+> convert-data-excel-to-website@0.0.1 dev C:\bima\convert-data-excel-to-website\sifp_vue.client
+> vite
+
+[2m10.18.23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because vite config has changed
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+Port 5175 is in use, trying another one...
+
+  [32m[1mVITE[22m v8.2.0[39m  [2mready in [0m[1m568[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5176[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+npm ERR! code ELIFECYCLE
+npm ERR! errno 4294967295
+npm ERR! convert-data-excel-to-website@0.0.1 dev: `vite`
+npm ERR! Exit status 4294967295
+npm ERR! 
+npm ERR! Failed at the convert-data-excel-to-website@0.0.1 dev script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\phron\AppData\Roaming\npm-cache\_logs\2026-08-14T03_23_34_480Z-debug.log

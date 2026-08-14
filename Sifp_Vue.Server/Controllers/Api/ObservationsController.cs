@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Services.Contracts;
@@ -6,6 +8,7 @@ namespace Sifp_Vue.Server.Controllers.Api
 {
     /// <summary>CRUD observasi.</summary>
     [Route("api/observations")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ObservationsController : ApiControllerBase
     {
         private readonly IObservationService _service;

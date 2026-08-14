@@ -4,13 +4,33 @@ import bootstrap from './plugins/bootstrap'
 import router from './router'
 import { loadDashboard } from './data/dashboard'
 import { loadSheetManifest } from './data/sheets'
+import { ApiError } from './services/api'
+import { isTokenValid, clearSession } from './services/auth'
 import './assets/dashboard.css'
 
 // Dashboard dan sidebar membaca datanya secara sinkron saat komponen dibuat,
 // jadi keduanya diambil lebih dulu dan app baru di-mount setelah data siap.
 // Ini juga membuat halaman tidak sempat "berkedip" dari kosong ke terisi.
+//
+// Tanpa sesi yang valid, data ini tidak diambil sama sekali (endpointnya kini
+// berpagar token) - app langsung di-mount dan router guard yang mengarahkan
+// pengguna ke /login. Data dashboard/manifest baru diambil setelah login,
+// oleh LoginPage.
 async function start() {
-  await Promise.all([loadDashboard(), loadSheetManifest()])
+  if (isTokenValid()) {
+    try {
+      await Promise.all([loadDashboard(), loadSheetManifest()])
+    } catch (err) {
+      // Token ternyata tidak valid lagi di server -> bersihkan dan biarkan
+      // router guard mengarahkan ke /login, bukan menampilkan boot-error.
+      if (err instanceof ApiError && err.status === 401) {
+        clearSession()
+      } else {
+        throw err
+      }
+    }
+  }
+
   createApp(App).use(bootstrap).use(router).mount('#app')
 }
 

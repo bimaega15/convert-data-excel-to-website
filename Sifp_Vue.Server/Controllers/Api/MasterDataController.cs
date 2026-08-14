@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Services.Contracts;
@@ -9,6 +11,7 @@ namespace Sifp_Vue.Server.Controllers.Api
     /// dipakai bersama karena bentuk query dan responsnya seragam.
     /// </summary>
     [Route("api/master")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MasterDataController : ApiControllerBase
     {
         private readonly IMasterDataService _service;

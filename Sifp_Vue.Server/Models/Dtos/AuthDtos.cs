@@ -11,6 +11,17 @@ namespace Sifp_Vue.Server.Models.Dtos
         [Required(ErrorMessage = "Password wajib diisi.")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+
+        /// <summary>Login API Vue saja; cookie admin selalu pakai masa berlaku tetap.</summary>
+        public bool RememberMe { get; set; }
+    }
+
+    /// <summary>Hasil login berhasil untuk klien Vue: token bearer + data user.</summary>
+    public class LoginResultDto
+    {
+        public string Token { get; set; } = string.Empty;
+        public DateTime ExpiresAtUtc { get; set; }
+        public UserDto User { get; set; } = null!;
     }
 
     public class UserDto

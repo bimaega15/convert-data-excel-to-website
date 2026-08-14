@@ -1,7 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { sheetBySlug } from '../data/sheets'
+import { isTokenValid } from '../services/auth'
 
 const routes = [
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../pages/LoginPage.vue'),
+    meta: { title: 'Masuk', subtitle: 'SIFP Assurance', public: true },
+  },
   {
     path: '/',
     name: 'dashboard',
@@ -76,6 +83,23 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior: () => ({ top: 0 }),
+})
+
+// Tanpa token yang masih berlaku, semua route selain /login diarahkan ke sana;
+// sebaliknya /login tidak boleh dibuka lagi kalau sesi masih valid.
+router.beforeEach((to) => {
+  const authed = isTokenValid()
+
+  if (to.meta.public) {
+    if (authed) return { name: 'dashboard' }
+    return true
+  }
+
+  if (!authed) {
+    return { name: 'login', query: { returnUrl: to.fullPath } }
+  }
+
+  return true
 })
 
 // Route worksheet memakai satu definisi untuk semua sheet, jadi judul topbar

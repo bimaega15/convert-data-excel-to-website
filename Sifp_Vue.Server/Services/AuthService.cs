@@ -3,31 +3,36 @@ using Sifp_Vue.Server.Helpers;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Repositories;
 using Sifp_Vue.Server.Services.Contracts;
+using Sifp_Vue.Server.Services.Mappers;
 
 namespace Sifp_Vue.Server.Services
 {
     /// <summary>
-    /// Login area admin (/admin). Klien Vue tidak memakai service ini: endpoint /api
-    /// terbuka dan pembatasan aksesnya direncanakan lewat Windows Authentication di IIS.
+    /// Login area admin (/admin, cookie) dan login klien Vue (/api/auth, token bearer).
     /// </summary>
     public class AuthService : IAuthService
     {
         private const string InvalidCredentialsMessage = "Username atau password salah.";
+        private const string WindowsAccountNotFoundMessage =
+            "Akun Windows ini belum terdaftar di aplikasi SIFP Assurance. Gunakan login manual atau hubungi admin.";
 
         private readonly IUserRepository _users;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUserClaimsFactory _claimsFactory;
+        private readonly IJwtTokenService _jwtTokenService;
         private readonly ILogger<AuthService> _logger;
 
         public AuthService(
             IUserRepository users,
             IPasswordHasher passwordHasher,
             IUserClaimsFactory claimsFactory,
+            IJwtTokenService jwtTokenService,
             ILogger<AuthService> logger)
         {
             _users = users;
             _passwordHasher = passwordHasher;
             _claimsFactory = claimsFactory;
+            _jwtTokenService = jwtTokenService;
             _logger = logger;
         }
 
@@ -56,6 +61,54 @@ namespace Sifp_Vue.Server.Services
             _logger.LogInformation("Login admin berhasil untuk {Username}", user.Username);
 
             return ApiResponse<ClaimsIdentity>.Ok(identity, "Login berhasil.");
+        }
+
+        public async Task<ApiResponse<LoginResultDto>> AuthenticateForApiAsync(
+            LoginRequest request, CancellationToken cancellationToken = default)
+        {
+            var user = await ValidateCredentialsAsync(request, cancellationToken);
+            if (user is null)
+            {
+                return ApiResponse<LoginResultDto>.Fail(InvalidCredentialsMessage);
+            }
+
+            var roles = user.UserRoles.Where(r => r.Role != null).Select(r => r.Role!.Name).ToList();
+
+            user.LastLoginAt = DateTime.UtcNow;
+            await _users.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Login API berhasil untuk {Username}", user.Username);
+            return ApiResponse<LoginResultDto>.Ok(IssueToken(user, roles, request.RememberMe), "Login berhasil.");
+        }
+
+        public async Task<ApiResponse<LoginResultDto>> AuthenticateWindowsUserAsync(
+            string windowsIdentityName, CancellationToken cancellationToken = default)
+        {
+            // Identitas Negotiate datang berformat "DOMAIN\username"; hanya bagian
+            // username yang dicocokkan karena tabel User belum punya kolom domain terpisah.
+            var separatorIndex = windowsIdentityName.IndexOf('\\');
+            var username = separatorIndex >= 0 ? windowsIdentityName[(separatorIndex + 1)..] : windowsIdentityName;
+
+            var user = await _users.GetByUsernameWithRolesAsync(username.Trim(), cancellationToken);
+            if (user is null || !user.IsActive)
+            {
+                _logger.LogWarning("Login Windows ditolak: {WindowsIdentity} tidak cocok dengan akun aktif manapun", windowsIdentityName);
+                return ApiResponse<LoginResultDto>.Fail(WindowsAccountNotFoundMessage);
+            }
+
+            var roles = user.UserRoles.Where(r => r.Role != null).Select(r => r.Role!.Name).ToList();
+
+            user.LastLoginAt = DateTime.UtcNow;
+            await _users.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Login Windows berhasil untuk {Username} ({WindowsIdentity})", user.Username, windowsIdentityName);
+            return ApiResponse<LoginResultDto>.Ok(IssueToken(user, roles), "Login berhasil.");
+        }
+
+        private LoginResultDto IssueToken(Models.Entities.User user, List<string> roles, bool rememberMe = false)
+        {
+            var (token, expiresAtUtc) = _jwtTokenService.GenerateToken(user, roles, rememberMe);
+            return new LoginResultDto { Token = token, ExpiresAtUtc = expiresAtUtc, User = user.ToDto() };
         }
 
         /// <summary>
