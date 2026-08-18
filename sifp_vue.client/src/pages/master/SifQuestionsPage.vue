@@ -18,14 +18,20 @@ const { deleting, deleteError, onDelete } = useDeleteRows(
 
 const columns = [
   { key: 'obsId', label: 'Obs ID', nowrap: true },
+  { key: 'protocolCode', label: 'Protocol', nowrap: true },
+  { key: 'protocolName', label: 'Nama Protocol', nowrap: true },
+  { key: 'questionRef', label: 'Ref', nowrap: true },
   { key: 'ccvcId', label: 'CCVC ID', nowrap: true },
   { key: 'question', label: 'Pertanyaan Observasi', clamp: true },
   { key: 'answer', label: 'Jawaban', align: 'center' },
   { key: 'criticalSafeguard', label: 'Critical Safeguard', nowrap: true },
   { key: 'sifExposure', label: 'SIF Exposure', nowrap: true },
   { key: 'comments', label: 'Komentar', clamp: true },
+  { key: 'date', label: 'Tanggal', nowrap: true },
   { key: 'zona', label: 'Zona', align: 'center' },
   { key: 'site', label: 'Site', nowrap: true },
+  { key: 'activity', label: 'Aktivitas', clamp: true },
+  { key: 'company', label: 'Perusahaan', clamp: true },
 ]
 
 const answerPill = { YES: 'pill--yes', NO: 'pill--no', NA: 'pill--na' }

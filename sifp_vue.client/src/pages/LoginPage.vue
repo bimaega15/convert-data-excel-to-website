@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashIcon from '../components/dashboard/DashIcon.vue'
 import { api } from '../services/api'
@@ -16,12 +16,24 @@ const rememberMe = ref(true)
 const showPassword = ref(false)
 const showForgotNotice = ref(false)
 
-const windowsLoading = ref(false)
 const manualLoading = ref(false)
-const windowsError = ref('')
+const ssoError = ref('')
 const manualError = ref('')
 
+// Origin backend untuk alur SSO (redirect penuh, bukan XHR). Saat dev backend
+// berada di :5250 sehingga tombol harus menuju ke sana langsung (bukan lewat
+// proxy Vite); di produksi Vue & API satu origin, jadi cukup path relatif.
+const backendOrigin = import.meta.env.DEV ? 'http://localhost:5250' : ''
+
 const year = new Date().getFullYear()
+
+// Backend mengembalikan kegagalan SSO sebagai query ?ssoError=... di halaman login.
+onMounted(() => {
+  const err = route.query.ssoError
+  if (typeof err === 'string' && err) {
+    ssoError.value = err
+  }
+})
 
 const features = [
   { icon: 'refresh', title: 'Real-time Monitoring', text: 'Live data & insights' },
@@ -45,17 +57,12 @@ async function afterLogin(result) {
   router.push(destination())
 }
 
-async function loginWithWindows() {
-  windowsLoading.value = true
-  windowsError.value = ''
-  try {
-    const result = await api.get('/api/auth/windows')
-    await afterLogin(result)
-  } catch (err) {
-    windowsError.value = err.message ?? 'Login Windows gagal.'
-  } finally {
-    windowsLoading.value = false
-  }
+function loginWithMicrosoft() {
+  // OIDC memerlukan navigasi penuh (redirect ke halaman Microsoft), bukan fetch.
+  const returnUrl = destination()
+  const target = `${backendOrigin}/api/auth/microsoft/login` +
+    (returnUrl && returnUrl !== '/' ? `?returnUrl=${encodeURIComponent(returnUrl)}` : '')
+  window.location.href = target
 }
 
 async function loginManual() {
@@ -140,16 +147,16 @@ async function loginManual() {
         <h2 class="login-title">Welcome Back</h2>
         <p class="login-subtitle">Sign in to continue to SIFP Assurance Dashboard</p>
 
-        <button type="button" class="btn-windows" :disabled="windowsLoading" @click="loginWithWindows">
+        <button type="button" class="btn-windows" @click="loginWithMicrosoft">
           <svg class="windows-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-            <rect x="0" y="0" width="7" height="7" fill="currentColor" />
-            <rect x="8" y="0" width="8" height="7" fill="currentColor" />
-            <rect x="0" y="8" width="7" height="8" fill="currentColor" />
-            <rect x="8" y="8" width="8" height="8" fill="currentColor" />
+            <rect x="0" y="0" width="7" height="7" fill="#f25022" />
+            <rect x="8" y="0" width="8" height="7" fill="#7fba00" />
+            <rect x="0" y="8" width="7" height="8" fill="#00a4ef" />
+            <rect x="8" y="8" width="8" height="8" fill="#ffb900" />
           </svg>
-          {{ windowsLoading ? 'Checking Windows account…' : 'Sign in with Windows Account' }}
+          Sign in with Microsoft
         </button>
-        <p v-if="windowsError" class="login-error">{{ windowsError }}</p>
+        <p v-if="ssoError" class="login-error">{{ ssoError }}</p>
 
         <div class="login-divider"><span>OR</span></div>
 

@@ -438,12 +438,16 @@ watch(() => props.rows, clearSelection)
 
 .dt__scroll {
   overflow-x: auto;
+  /* menahan scroll horizontal tetap di dalam panel, bukan meluber ke halaman */
+  max-width: 100%;
 }
 
 .dt__table {
-  width: 100%;
+  /* melebar mengikuti konten kolom (tidak menyempit), minimal selebar panel;
+     kombinasi ini memunculkan scroll horizontal di .dt__scroll saat kolom banyak */
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
-  min-width: 760px;
 }
 
 .dt__table th {

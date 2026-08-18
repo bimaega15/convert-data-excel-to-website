@@ -15,10 +15,12 @@ namespace Sifp_Vue.Server.Services.Contracts
         Task<ApiResponse<LoginResultDto>> AuthenticateForApiAsync(LoginRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Menukar identitas Windows (hasil Negotiate, mis. <c>DOMAIN\username</c>) dengan token bearer
-        /// bila ada akun aplikasi yang username-nya cocok.
+        /// Menukar email hasil login eksternal (Microsoft Entra ID) dengan token bearer aplikasi.
+        /// Email wajib berada di domain yang diizinkan (mis. @pertamina.com). Bila
+        /// Auth:AutoProvision aktif, akun yang belum ada dibuat otomatis dengan role default;
+        /// bila tidak, hanya akun terdaftar dan aktif yang diterima.
         /// </summary>
-        Task<ApiResponse<LoginResultDto>> AuthenticateWindowsUserAsync(string windowsIdentityName, CancellationToken cancellationToken = default);
+        Task<ApiResponse<LoginResultDto>> AuthenticateExternalEmailAsync(string email, string? displayName = null, CancellationToken cancellationToken = default);
     }
 
     public interface IUserService

@@ -1,8 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sifp_Vue.Server.Data;
@@ -34,6 +36,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<SeedOptions>(builder.Configuration.GetSection(SeedOptions.SectionName));
 builder.Services.Configure<ImportOptions>(builder.Configuration.GetSection(ImportOptions.SectionName));
+builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection(AuthOptions.SectionName));
+builder.Services.Configure<AzureAdOptions>(builder.Configuration.GetSection(AzureAdOptions.SectionName));
 
 var connectionString = builder.Configuration.GetConnectionString("SifpDatabase");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -159,16 +163,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // ---------------------------------------------------------------------------
-// Autentikasi: cookie untuk /admin (Razor), token bearer JWT + Windows/Negotiate
-// SSO untuk /api (klien Vue) lewat AuthController (/api/auth/login, /windows, /me).
+// Autentikasi: cookie untuk /admin (Razor), token bearer JWT untuk /api (klien
+// Vue) lewat AuthController (/api/auth/login, /me), dan "Sign in with Microsoft"
+// (Microsoft Entra ID / OpenID Connect) lewat MicrosoftAuthController.
 // Skema default tetap cookie supaya area /admin tidak berubah; endpoint /api
 // menegaskan skemanya sendiri lewat [Authorize(AuthenticationSchemes = ...)].
 // ---------------------------------------------------------------------------
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var jwtSigningKey = jwtSection["SigningKey"];
+var azureAd = builder.Configuration.GetSection(AzureAdOptions.SectionName).Get<AzureAdOptions>() ?? new AzureAdOptions();
 
-builder.Services.AddAuthentication(options =>
+var authBuilder = builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -189,8 +195,57 @@ builder.Services.AddAuthentication(options =>
                 : new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey)),
             ClockSkew = TimeSpan.FromSeconds(30),
         };
-    })
-    .AddNegotiate()
+    });
+
+// "Sign in with Microsoft" hanya diaktifkan bila App registration sudah diisi
+// (AzureAd:TenantId + ClientId). Bila belum, skema tidak didaftarkan dan tombol
+// SSO membalas pesan "belum dikonfigurasi" alih-alih membuat server gagal start.
+if (azureAd.IsConfigured)
+{
+    authBuilder
+        // Cookie sementara penampung hasil OIDC selama handshake redirect.
+        .AddCookie(AzureAdOptions.OidcCookieScheme, options =>
+        {
+            options.Cookie.Name = "Sifp.Oidc";
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+        })
+        .AddOpenIdConnect(AzureAdOptions.OidcScheme, options =>
+        {
+            options.Authority = azureAd.Authority;
+            options.ClientId = azureAd.ClientId;
+            options.ClientSecret = azureAd.ClientSecret;
+            options.CallbackPath = azureAd.CallbackPath;
+            options.SignInScheme = AzureAdOptions.OidcCookieScheme;
+
+            // Authorization Code flow dengan response_mode=query supaya cookie
+            // korelasi (SameSite=Lax) tetap terkirim saat Microsoft me-redirect
+            // balik lewat navigasi GET — bekerja di dev (http) maupun prod (https).
+            options.ResponseType = OpenIdConnectResponseType.Code;
+            options.ResponseMode = OpenIdConnectResponseMode.Query;
+            options.UsePkce = true;
+            options.SaveTokens = false;
+
+            options.Scope.Clear();
+            options.Scope.Add("openid");
+            options.Scope.Add("profile");
+            options.Scope.Add("email");
+
+            options.GetClaimsFromUserInfoEndpoint = true;
+            options.CallbackPath = azureAd.CallbackPath;
+
+            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.NonceCookie.SameSite = SameSiteMode.Lax;
+            options.NonceCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+            options.TokenValidationParameters.NameClaimType = "preferred_username";
+        });
+}
+
+authBuilder
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.Cookie.Name = "Sifp.Admin.Auth";

@@ -20,6 +20,7 @@ const columns = [
   { key: 'no', label: 'No', align: 'center' },
   { key: 'psecId', label: 'PSEC ID', nowrap: true },
   { key: 'psecName', label: 'SIF Exposure (PSEC)', nowrap: true },
+  { key: 'exposureType', label: 'Tipe Exposure', nowrap: true },
   { key: 'ccvcId', label: 'CCVC ID', nowrap: true },
   { key: 'questionCode', label: 'Kode', align: 'center' },
   { key: 'questionSummary', label: 'Ringkasan Pertanyaan', clamp: true },

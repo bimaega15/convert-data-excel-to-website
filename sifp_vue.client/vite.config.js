@@ -15,6 +15,8 @@ export default defineConfig(({ mode }) => {
       // Permintaan /api diteruskan ke backend supaya klien dan API berada pada
       // origin yang sama saat dev — persis seperti di produksi (Vue disajikan
       // dari wwwroot server), jadi tidak ada perbedaan perilaku antar mode.
+      // Catatan: alur "Sign in with Microsoft" (OIDC) sengaja menuju backend
+      // :5250 langsung, tidak lewat proxy ini.
       proxy: {
         '/api': { target, changeOrigin: true },
       },

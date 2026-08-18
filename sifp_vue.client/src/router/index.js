@@ -10,6 +10,13 @@ const routes = [
     meta: { title: 'Masuk', subtitle: 'SIFP Assurance', public: true },
   },
   {
+    // Transit setelah login Microsoft (OIDC) — menerima token lalu meneruskan.
+    path: '/auth/callback',
+    name: 'auth-callback',
+    component: () => import('../pages/AuthCallbackPage.vue'),
+    meta: { title: 'Masuk', subtitle: 'SIFP Assurance', public: true },
+  },
+  {
     path: '/',
     name: 'dashboard',
     component: () => import('../pages/DashboardPage.vue'),

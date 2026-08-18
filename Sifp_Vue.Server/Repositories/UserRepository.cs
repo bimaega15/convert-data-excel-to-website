@@ -13,6 +13,9 @@ namespace Sifp_Vue.Server.Repositories
         /// <summary>Dipakai saat login: memuat role sekaligus agar claim bisa langsung disusun.</summary>
         Task<User?> GetByUsernameWithRolesAsync(string username, CancellationToken cancellationToken = default);
 
+        /// <summary>Dipakai saat login Microsoft (Entra ID): mencari akun berdasar email + memuat role.</summary>
+        Task<User?> GetByEmailWithRolesAsync(string email, CancellationToken cancellationToken = default);
+
         Task<User?> GetWithRolesAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> UsernameExistsAsync(string username, int? exceptId = null, CancellationToken cancellationToken = default);
         Task ReplaceRolesAsync(int userId, IEnumerable<int> roleIds, string assignedBy, CancellationToken cancellationToken = default);
@@ -41,6 +44,13 @@ namespace Sifp_Vue.Server.Repositories
             => Context.Users
                 .Include(x => x.UserRoles).ThenInclude(x => x.Role)
                 .FirstOrDefaultAsync(x => x.Username == username, cancellationToken);
+
+        // Perbandingan email memakai collation default SQL Server (case-insensitive),
+        // jadi "User@Pertamina.com" tetap cocok dengan "user@pertamina.com".
+        public Task<User?> GetByEmailWithRolesAsync(string email, CancellationToken cancellationToken = default)
+            => Context.Users
+                .Include(x => x.UserRoles).ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
 
         public Task<User?> GetWithRolesAsync(int id, CancellationToken cancellationToken = default)
             => Query()

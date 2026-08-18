@@ -19,11 +19,15 @@ const { deleting, deleteError, onDelete } = useDeleteRows(
 const columns = [
   { key: 'obsId', label: 'Obs ID', nowrap: true },
   { key: 'protocolCode', label: 'Protocol', nowrap: true },
+  { key: 'protocolName', label: 'Nama Protocol', nowrap: true },
   { key: 'code', label: 'Kode', nowrap: true },
   { key: 'level1', label: 'Drift Level 1', nowrap: true },
   { key: 'level2', label: 'Drift Level 2', nowrap: true },
   { key: 'situation', label: 'Situasi Drift', clamp: true },
   { key: 'reason', label: 'Alasan / Penjelasan', clamp: true },
+  { key: 'sequence', label: 'Seq', align: 'center' },
+  { key: 'status', label: 'Status', nowrap: true },
+  { key: 'active', label: 'Aktif', align: 'center' },
 ]
 
 const obsCount = computed(() => new Set(rows.value.map((r) => r.obsId)).size)

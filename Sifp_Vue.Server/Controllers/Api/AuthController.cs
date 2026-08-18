@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sifp_Vue.Server.Models.Dtos;
@@ -8,9 +7,11 @@ using Sifp_Vue.Server.Services.Contracts;
 namespace Sifp_Vue.Server.Controllers.Api
 {
     /// <summary>
-    /// Login klien Vue: token bearer lewat username/password atau Windows SSO (Negotiate).
+    /// Login klien Vue: token bearer lewat username/password. Login "Sign in with
+    /// Microsoft" (Entra ID / OpenID Connect) ditangani terpisah oleh
+    /// <see cref="MicrosoftAuthController"/> karena memakai redirect, bukan JSON.
     /// Sengaja tidak memakai [AllowAnonymous] di level controller supaya skema auth
-    /// per-action (Negotiate untuk /windows, JwtBearer untuk /me) benar-benar ditegakkan.
+    /// per-action (JwtBearer untuk /me) benar-benar ditegakkan.
     /// </summary>
     [Route("api/auth")]
     public class AuthController : ApiControllerBase
@@ -35,24 +36,6 @@ namespace Sifp_Vue.Server.Controllers.Api
             }
 
             return FromResult(await _authService.AuthenticateForApiAsync(request, cancellationToken), StatusCodes.Status401Unauthorized);
-        }
-
-        /// <summary>
-        /// GET /api/auth/windows — login SSO. Browser menegosiasikan identitas Windows
-        /// yang sedang login lewat NTLM/Kerberos sebelum action ini dijalankan.
-        /// </summary>
-        [HttpGet("windows")]
-        [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-        [ProducesResponseType(typeof(ApiResponse<LoginResultDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Windows(CancellationToken cancellationToken)
-        {
-            var windowsIdentityName = User.Identity?.Name;
-            if (string.IsNullOrWhiteSpace(windowsIdentityName))
-            {
-                return Failure<LoginResultDto>("Identitas Windows tidak terbaca dari browser.", StatusCodes.Status401Unauthorized);
-            }
-
-            return FromResult(await _authService.AuthenticateWindowsUserAsync(windowsIdentityName, cancellationToken), StatusCodes.Status401Unauthorized);
         }
 
         /// <summary>GET /api/auth/me — data user pemilik token bearer yang sedang dipakai.</summary>

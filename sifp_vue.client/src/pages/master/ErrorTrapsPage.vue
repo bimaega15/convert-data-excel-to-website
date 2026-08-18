@@ -19,6 +19,7 @@ const { deleting, deleteError, onDelete } = useDeleteRows(
 const columns = [
   { key: 'obsId', label: 'Obs ID', nowrap: true },
   { key: 'protocolCode', label: 'Protocol', nowrap: true },
+  { key: 'protocolName', label: 'Nama Protocol', nowrap: true },
   { key: 'category', label: 'Kategori', nowrap: true },
   { key: 'errorTrap', label: 'Error Trap', nowrap: true },
   { key: 'comments', label: 'Penjelasan', clamp: true },

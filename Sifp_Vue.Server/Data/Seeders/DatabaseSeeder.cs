@@ -19,7 +19,7 @@ namespace Sifp_Vue.Server.Data.Seeders
         public string GeneratedDataPath { get; set; } = "../sifp_vue.client/src/data/generated";
 
         public string AdminUsername { get; set; } = "admin";
-        public string AdminEmail { get; set; } = "admin@sifp.local";
+        public string AdminEmail { get; set; } = "admin@pertamina.com";
         public string AdminFullName { get; set; } = "Administrator";
 
         /// <summary>

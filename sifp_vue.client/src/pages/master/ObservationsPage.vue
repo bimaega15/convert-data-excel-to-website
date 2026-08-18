@@ -22,15 +22,21 @@ const columns = [
   { key: 'id', label: 'Obs ID', nowrap: true },
   { key: 'date', label: 'Tanggal', nowrap: true },
   { key: 'protocolCode', label: 'Protocol', nowrap: true },
+  { key: 'protocolName', label: 'Nama Protocol', nowrap: true },
   { key: 'zona', label: 'Zona', align: 'center' },
   { key: 'site', label: 'Site', nowrap: true },
+  { key: 'area', label: 'Area / Equipment', clamp: true },
   { key: 'activity', label: 'Aktivitas', clamp: true },
   { key: 'company', label: 'Perusahaan', clamp: true },
+  { key: 'observers', label: 'Observer', nowrap: true },
   { key: 'yes', label: 'YES', align: 'center' },
   { key: 'no', label: 'NO', align: 'center' },
   { key: 'na', label: 'NA', align: 'center' },
   { key: 'performance', label: 'Score', align: 'center' },
+  { key: 'sequence', label: 'Seq', align: 'center' },
+  { key: 'psieEligible', label: 'PSIE', align: 'center' },
   { key: 'status', label: 'Status', align: 'center' },
+  { key: 'active', label: 'Aktif', align: 'center' },
 ]
 
 const band = (v) => (v < 50 ? 'failed' : v < 80 ? 'degraded' : 'effective')
@@ -65,6 +71,7 @@ const zones = computed(() => new Set(rows.value.map((r) => r.zona)).size)
         <template #cell-protocolCode="{ row }">
           <span class="chip" :title="row.protocolName">{{ row.protocolCode }}</span>
         </template>
+        <template #cell-observers="{ value }">{{ (value || []).join(', ') || '-' }}</template>
         <template #cell-zona="{ value }">
           <span class="chip">Z{{ value }}</span>
         </template>
