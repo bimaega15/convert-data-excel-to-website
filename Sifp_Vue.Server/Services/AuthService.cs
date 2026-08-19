@@ -22,8 +22,12 @@ namespace Sifp_Vue.Server.Services
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUserClaimsFactory _claimsFactory;
         private readonly IJwtTokenService _jwtTokenService;
+        private readonly ITotpService _totp;
+        private readonly IMfaChallengeTokenService _mfaChallengeTokens;
         private readonly AuthOptions _authOptions;
         private readonly ILogger<AuthService> _logger;
+
+        private const string MfaIssuerName = "SIFP Assurance";
 
         public AuthService(
             IUserRepository users,
@@ -31,6 +35,8 @@ namespace Sifp_Vue.Server.Services
             IPasswordHasher passwordHasher,
             IUserClaimsFactory claimsFactory,
             IJwtTokenService jwtTokenService,
+            ITotpService totp,
+            IMfaChallengeTokenService mfaChallengeTokens,
             IOptions<AuthOptions> authOptions,
             ILogger<AuthService> logger)
         {
@@ -39,6 +45,8 @@ namespace Sifp_Vue.Server.Services
             _passwordHasher = passwordHasher;
             _claimsFactory = claimsFactory;
             _jwtTokenService = jwtTokenService;
+            _totp = totp;
+            _mfaChallengeTokens = mfaChallengeTokens;
             _authOptions = authOptions.Value;
             _logger = logger;
         }
@@ -83,36 +91,33 @@ namespace Sifp_Vue.Server.Services
             return ApiResponse<ClaimsIdentity>.Ok(identity, "Login berhasil.");
         }
 
-        public async Task<ApiResponse<LoginResultDto>> AuthenticateForApiAsync(
+        public async Task<ApiResponse<LoginChallengeDto>> AuthenticateForApiAsync(
             LoginRequest request, CancellationToken cancellationToken = default)
         {
             var user = await ValidateCredentialsAsync(request, cancellationToken);
             if (user is null)
             {
-                return ApiResponse<LoginResultDto>.Fail(InvalidCredentialsMessage);
+                return ApiResponse<LoginChallengeDto>.Fail(InvalidCredentialsMessage);
             }
 
             if (!_authOptions.IsEmailDomainAllowed(user.Email))
             {
                 _logger.LogWarning("Login API ditolak: email {Email} di luar domain yang diizinkan", user.Email);
-                return ApiResponse<LoginResultDto>.Fail(EmailDomainRejectedMessage());
+                return ApiResponse<LoginChallengeDto>.Fail(EmailDomainRejectedMessage());
             }
 
-            var roles = user.UserRoles.Where(r => r.Role != null).Select(r => r.Role!.Name).ToList();
-
-            user.LastLoginAt = DateTime.UtcNow;
-            await _users.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Login API berhasil untuk {Username}", user.Username);
-            return ApiResponse<LoginResultDto>.Ok(IssueToken(user, roles, request.RememberMe), "Login berhasil.");
+            // LastLoginAt & role belum disentuh di sini secara sengaja — login baru
+            // benar-benar selesai setelah kode MFA terverifikasi (VerifyMfaAsync).
+            _logger.LogInformation("Password valid untuk {Username}, menunggu verifikasi MFA", user.Username);
+            return ApiResponse<LoginChallengeDto>.Ok(BuildMfaChallenge(user, request.RememberMe), "Verifikasi MFA diperlukan.");
         }
 
-        public async Task<ApiResponse<LoginResultDto>> AuthenticateExternalEmailAsync(
+        public async Task<ApiResponse<LoginChallengeDto>> AuthenticateExternalEmailAsync(
             string email, string? displayName = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
-                return ApiResponse<LoginResultDto>.Fail("Email tidak terbaca dari akun Microsoft.");
+                return ApiResponse<LoginChallengeDto>.Fail("Email tidak terbaca dari akun Microsoft.");
             }
 
             email = email.Trim();
@@ -122,7 +127,7 @@ namespace Sifp_Vue.Server.Services
             if (!_authOptions.IsEmailDomainAllowed(email))
             {
                 _logger.LogWarning("Login Microsoft ditolak: email {Email} di luar domain yang diizinkan", email);
-                return ApiResponse<LoginResultDto>.Fail(EmailDomainRejectedMessage());
+                return ApiResponse<LoginChallengeDto>.Fail(EmailDomainRejectedMessage());
             }
 
             var user = await _users.GetByEmailWithRolesAsync(email, cancellationToken);
@@ -132,13 +137,13 @@ namespace Sifp_Vue.Server.Services
                 if (!_authOptions.AutoProvision)
                 {
                     _logger.LogWarning("Login Microsoft ditolak: email {Email} belum terdaftar (AutoProvision nonaktif)", email);
-                    return ApiResponse<LoginResultDto>.Fail(ExternalAccountNotFoundMessage);
+                    return ApiResponse<LoginChallengeDto>.Fail(ExternalAccountNotFoundMessage);
                 }
 
                 var provisioned = await ProvisionExternalUserAsync(email, displayName, cancellationToken);
                 if (provisioned is null)
                 {
-                    return ApiResponse<LoginResultDto>.Fail(
+                    return ApiResponse<LoginChallengeDto>.Fail(
                         $"Role default '{_authOptions.AutoProvisionRole}' tidak ditemukan. Hubungi admin.");
                 }
                 user = provisioned;
@@ -146,7 +151,45 @@ namespace Sifp_Vue.Server.Services
             else if (!user.IsActive)
             {
                 _logger.LogWarning("Login Microsoft ditolak: akun {Email} non-aktif", email);
-                return ApiResponse<LoginResultDto>.Fail("Akun Anda dinonaktifkan. Hubungi admin.");
+                return ApiResponse<LoginChallengeDto>.Fail("Akun Anda dinonaktifkan. Hubungi admin.");
+            }
+
+            _logger.LogInformation("Login Microsoft valid untuk {Username} ({Email}), menunggu verifikasi MFA", user.Username, email);
+            return ApiResponse<LoginChallengeDto>.Ok(BuildMfaChallenge(user, rememberMe: false), "Verifikasi MFA diperlukan.");
+        }
+
+        public async Task<ApiResponse<LoginResultDto>> VerifyMfaAsync(
+            MfaVerifyRequest request, CancellationToken cancellationToken = default)
+        {
+            const string ChallengeInvalidMessage = "Sesi verifikasi MFA sudah kedaluwarsa. Silakan login ulang.";
+
+            var payload = _mfaChallengeTokens.Validate(request.ChallengeToken);
+            if (payload is null)
+            {
+                return ApiResponse<LoginResultDto>.Fail(ChallengeInvalidMessage);
+            }
+
+            var user = await _users.GetByIdWithRolesTrackedAsync(payload.UserId, cancellationToken);
+            if (user is null || !user.IsActive)
+            {
+                return ApiResponse<LoginResultDto>.Fail(ChallengeInvalidMessage);
+            }
+
+            // Mode setup: secret belum pernah tersimpan, jadi diambil dari klaim
+            // token (lihat MfaChallengeTokenService.Issue). Mode biasa: pakai secret
+            // yang sudah tersimpan di akun.
+            var secretToCheck = payload.SetupRequired ? payload.PendingSecret : user.MfaSecret;
+            if (string.IsNullOrWhiteSpace(secretToCheck) || !_totp.ValidateCode(secretToCheck, request.Code))
+            {
+                _logger.LogWarning("Kode MFA salah untuk {Username}", user.Username);
+                return ApiResponse<LoginResultDto>.Fail("Kode MFA salah atau sudah kedaluwarsa.");
+            }
+
+            if (payload.SetupRequired)
+            {
+                user.MfaSecret = secretToCheck;
+                user.MfaEnabled = true;
+                _logger.LogInformation("MFA diaktifkan untuk {Username}", user.Username);
             }
 
             var roles = user.UserRoles.Where(r => r.Role != null).Select(r => r.Role!.Name).ToList();
@@ -154,8 +197,44 @@ namespace Sifp_Vue.Server.Services
             user.LastLoginAt = DateTime.UtcNow;
             await _users.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("Login Microsoft berhasil untuk {Username} ({Email})", user.Username, email);
-            return ApiResponse<LoginResultDto>.Ok(IssueToken(user, roles), "Login berhasil.");
+            _logger.LogInformation("Login berhasil (MFA terverifikasi) untuk {Username}", user.Username);
+            return ApiResponse<LoginResultDto>.Ok(IssueToken(user, roles, payload.RememberMe), "Login berhasil.");
+        }
+
+        /// <summary>
+        /// Menyusun tantangan MFA untuk user yang kredensialnya (password/SSO) sudah
+        /// terbukti benar. Akun yang belum pernah mengaktifkan MFA mendapat secret baru
+        /// + QR code setup; akun yang sudah aktif cukup diminta kode berikutnya.
+        /// </summary>
+        private LoginChallengeDto BuildMfaChallenge(Models.Entities.User user, bool rememberMe)
+        {
+            if (user.MfaEnabled && !string.IsNullOrWhiteSpace(user.MfaSecret))
+            {
+                return new LoginChallengeDto
+                {
+                    ChallengeToken = _mfaChallengeTokens.Issue(user.Id, setupRequired: false, pendingSecret: null, rememberMe),
+                    SetupRequired = false,
+                };
+            }
+
+            var secret = _totp.GenerateSecret();
+            var otpAuthUri = _totp.BuildOtpAuthUri(secret, user.Username, MfaIssuerName);
+
+            return new LoginChallengeDto
+            {
+                ChallengeToken = _mfaChallengeTokens.Issue(user.Id, setupRequired: true, pendingSecret: secret, rememberMe),
+                SetupRequired = true,
+                QrCodeDataUri = _totp.GenerateQrCodeDataUri(otpAuthUri),
+                ManualEntryKey = FormatSecretForDisplay(secret),
+            };
+        }
+
+        /// <summary>Dipecah tiap 4 karakter ("ABCD EFGH ...") supaya gampang diketik manual bila QR tidak bisa di-scan.</summary>
+        private static string FormatSecretForDisplay(string secret)
+        {
+            var chunks = Enumerable.Range(0, (secret.Length + 3) / 4)
+                .Select(i => secret.Substring(i * 4, Math.Min(4, secret.Length - i * 4)));
+            return string.Join(' ', chunks);
         }
 
         /// <summary>

@@ -10,11 +10,13 @@ const routes = [
     meta: { title: 'Masuk', subtitle: 'SIFP Assurance', public: true },
   },
   {
-    // Transit setelah login Microsoft (OIDC) — menerima token lalu meneruskan.
-    path: '/auth/callback',
-    name: 'auth-callback',
-    component: () => import('../pages/AuthCallbackPage.vue'),
-    meta: { title: 'Masuk', subtitle: 'SIFP Assurance', public: true },
+    // Langkah kedua login (kode 6 digit authenticator app) — dibuka dari
+    // LoginPage.vue setelah password benar, atau lewat redirect Microsoft
+    // (login/callback SSO juga wajib lewat MFA, lihat MicrosoftAuthController).
+    path: '/auth/mfa',
+    name: 'mfa',
+    component: () => import('../pages/MfaPage.vue'),
+    meta: { title: 'Verifikasi MFA', subtitle: 'SIFP Assurance', public: true },
   },
   {
     path: '/',

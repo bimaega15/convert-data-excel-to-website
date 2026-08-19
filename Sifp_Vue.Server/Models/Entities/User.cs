@@ -18,6 +18,12 @@ namespace Sifp_Vue.Server.Models.Entities
         public bool IsActive { get; set; } = true;
         public DateTime? LastLoginAt { get; set; }
 
+        /// <summary>True setelah user berhasil memverifikasi kode pertama saat setup MFA.</summary>
+        public bool MfaEnabled { get; set; }
+
+        /// <summary>Secret TOTP (Base32), diisi begitu setup MFA dikonfirmasi. Null sebelum itu.</summary>
+        public string? MfaSecret { get; set; }
+
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }

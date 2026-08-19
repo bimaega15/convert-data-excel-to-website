@@ -17,6 +17,7 @@ namespace Sifp_Vue.Server.Data.Configurations
             b.Property(x => x.Email).HasMaxLength(200);
             b.Property(x => x.FullName).HasMaxLength(200);
             b.Property(x => x.PasswordHash).HasMaxLength(500).IsRequired();
+            b.Property(x => x.MfaSecret).HasMaxLength(64);
             b.Property(x => x.CreatedBy).HasMaxLength(100);
             b.Property(x => x.UpdatedBy).HasMaxLength(100);
         }

@@ -24,6 +24,34 @@ namespace Sifp_Vue.Server.Models.Dtos
         public UserDto User { get; set; } = null!;
     }
 
+    /// <summary>
+    /// Dibalas setelah username/password (atau login Microsoft) benar, tapi sebelum
+    /// kode MFA diverifikasi — belum ada token bearer di sini. <see cref="SetupRequired"/>
+    /// true berarti akun ini belum pernah mengaktifkan MFA, jadi klien perlu
+    /// menampilkan QR code untuk di-scan sebelum meminta kode pertama.
+    /// </summary>
+    public class LoginChallengeDto
+    {
+        public string ChallengeToken { get; set; } = string.Empty;
+        public bool SetupRequired { get; set; }
+
+        /// <summary>Data URI PNG, hanya diisi saat <see cref="SetupRequired"/> true.</summary>
+        public string? QrCodeDataUri { get; set; }
+
+        /// <summary>Secret dalam format yang gampang diketik manual, fallback bila QR tidak bisa di-scan.</summary>
+        public string? ManualEntryKey { get; set; }
+    }
+
+    public class MfaVerifyRequest
+    {
+        [Required(ErrorMessage = "Sesi verifikasi tidak ditemukan.")]
+        public string ChallengeToken { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Kode MFA wajib diisi.")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "Kode MFA harus 6 digit angka.")]
+        public string Code { get; set; } = string.Empty;
+    }
+
     public class UserDto
     {
         public int Id { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sifp_Vue.Server.Data;
 
@@ -11,9 +12,11 @@ using Sifp_Vue.Server.Data;
 namespace Sifp_Vue.Server.Data.Migrations
 {
     [DbContext(typeof(SifpDbContext))]
-    partial class SifpDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819000033_AddUserMfaFields")]
+    partial class AddUserMfaFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

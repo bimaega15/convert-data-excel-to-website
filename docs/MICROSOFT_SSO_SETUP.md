@@ -10,14 +10,15 @@ tombol tetap tampil tetapi menampilkan pesan *"Login Microsoft belum dikonfigura
 ```
 Tombol  ──►  /api/auth/microsoft/login  ──►  Halaman login Microsoft
                                                      │  (user login @pertamina.com)
-        Vue  ◄── /auth/callback#sso=…  ◄── /api/auth/microsoft/callback  ◄──┘
-        (backend menerbitkan JWT aplikasi setelah cek: domain @pertamina.com + user terdaftar)
+   Vue /auth/mfa  ◄── #challenge=…  ◄── /api/auth/microsoft/callback  ◄──┘
+        (domain @pertamina.com + user terdaftar dicek, lalu tantangan MFA diterbitkan —
+         JWT aplikasi baru keluar setelah kode 6 digit authenticator diverifikasi)
 ```
 
 - **Auto-provisioning aktif** (`Auth:AutoProvision = true`): setiap akun `@pertamina.com`
   yang berhasil login Microsoft otomatis dibuatkan akun aplikasi dengan role default
-  **Viewer** (read-only), lalu langsung diarahkan ke dashboard — tanpa perlu didaftarkan
-  admin terlebih dulu.
+  **Viewer** (read-only), lalu diminta setup MFA (akun baru) atau kode MFA (akun lama)
+  sebelum masuk ke dashboard — tanpa perlu didaftarkan admin terlebih dulu.
 - Domain wajib `@pertamina.com` (lihat `Auth:AllowedEmailDomains`).
 - Tenant di-set **single-tenant**, jadi hanya akun organisasi Pertamina yang bisa login.
 

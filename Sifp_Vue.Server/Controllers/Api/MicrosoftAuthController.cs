@@ -106,13 +106,16 @@ namespace Sifp_Vue.Server.Controllers.Api
                 return RedirectToClient("/login", ssoError: result.Message);
             }
 
+            // Sama seperti login manual: belum ada token bearer di sini, hanya
+            // tantangan MFA (lihat AuthService.AuthenticateExternalEmailAsync) yang
+            // diteruskan ke halaman MFA klien untuk diselesaikan.
             var returnUrl = auth.Properties?.Items.TryGetValue("returnUrl", out var r) == true ? r : null;
             var payload = EncodePayload(result.Data);
-            return RedirectToClient("/auth/callback", returnUrl: returnUrl, fragment: $"sso={payload}");
+            return RedirectToClient("/auth/mfa", returnUrl: returnUrl, fragment: $"challenge={payload}");
         }
 
-        /// <summary>Serialisasi hasil login menjadi token base64url yang aman ditaruh di fragment URL.</summary>
-        private static string EncodePayload(LoginResultDto data)
+        /// <summary>Serialisasi payload menjadi token base64url yang aman ditaruh di fragment URL.</summary>
+        private static string EncodePayload<T>(T data)
         {
             var json = JsonSerializer.SerializeToUtf8Bytes(data, JsonWeb);
             return WebEncoders.Base64UrlEncode(json);

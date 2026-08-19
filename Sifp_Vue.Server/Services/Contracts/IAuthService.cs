@@ -11,16 +11,30 @@ namespace Sifp_Vue.Server.Services.Contracts
         /// </summary>
         Task<ApiResponse<ClaimsIdentity>> AuthenticateForAdminAsync(LoginRequest request, string authenticationScheme, CancellationToken cancellationToken = default);
 
-        /// <summary>Login manual (username/password) untuk klien Vue. Mengembalikan token bearer.</summary>
-        Task<ApiResponse<LoginResultDto>> AuthenticateForApiAsync(LoginRequest request, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Login manual (username/password) untuk klien Vue. Tidak langsung membalas token
+        /// bearer — mengembalikan tantangan MFA yang harus diselesaikan lewat
+        /// <see cref="VerifyMfaAsync"/> sebelum sesi benar-benar aktif.
+        /// </summary>
+        Task<ApiResponse<LoginChallengeDto>> AuthenticateForApiAsync(LoginRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Menukar email hasil login eksternal (Microsoft Entra ID) dengan token bearer aplikasi.
-        /// Email wajib berada di domain yang diizinkan (mis. @pertamina.com). Bila
-        /// Auth:AutoProvision aktif, akun yang belum ada dibuat otomatis dengan role default;
-        /// bila tidak, hanya akun terdaftar dan aktif yang diterima.
+        /// Menukar email hasil login eksternal (Microsoft Entra ID) dengan tantangan MFA
+        /// (sama seperti <see cref="AuthenticateForApiAsync"/>, token bearer baru terbit
+        /// setelah <see cref="VerifyMfaAsync"/>). Email wajib berada di domain yang
+        /// diizinkan (mis. @pertamina.com). Bila Auth:AutoProvision aktif, akun yang belum
+        /// ada dibuat otomatis dengan role default; bila tidak, hanya akun terdaftar dan
+        /// aktif yang diterima.
         /// </summary>
-        Task<ApiResponse<LoginResultDto>> AuthenticateExternalEmailAsync(string email, string? displayName = null, CancellationToken cancellationToken = default);
+        Task<ApiResponse<LoginChallengeDto>> AuthenticateExternalEmailAsync(string email, string? displayName = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Langkah kedua login: memverifikasi kode 6 digit terhadap tantangan yang
+        /// diterbitkan oleh <see cref="AuthenticateForApiAsync"/>/<see cref="AuthenticateExternalEmailAsync"/>.
+        /// Bila tantangan itu bertipe setup, secret yang tertanam di token baru disimpan
+        /// dan MFA diaktifkan setelah kode ini terbukti cocok. Sukses -> token bearer asli.
+        /// </summary>
+        Task<ApiResponse<LoginResultDto>> VerifyMfaAsync(MfaVerifyRequest request, CancellationToken cancellationToken = default);
     }
 
     public interface IUserService

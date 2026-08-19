@@ -3,9 +3,11 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashIcon from '../components/dashboard/DashIcon.vue'
 import { api } from '../services/api'
-import { setSession } from '../services/auth'
-import { loadDashboard } from '../data/dashboard'
-import { loadSheetManifest } from '../data/sheets'
+import { setPendingMfaChallenge } from '../services/mfaChallenge'
+import loginVisual from '../assets/images/d6a6296b-e298-48ef-a171-cfdd2b034f30.png'
+import iogLogo from '../assets/images/IOG PNG.png'
+import pertamina68Logo from '../assets/images/Pertamina Logo 68 Final-Logo Alternatif.png'
+import skkLogo from '../assets/images/SKK.png'
 
 const route = useRoute()
 const router = useRouter()
@@ -35,26 +37,11 @@ onMounted(() => {
   }
 })
 
-const features = [
-  { icon: 'refresh', title: 'Real-time Monitoring', text: 'Live data & insights' },
-  { icon: 'shield', title: 'Risk Focused', text: 'Prioritize what matters' },
-  { icon: 'auto', title: 'Data Driven', text: 'Actionable intelligence' },
-  { icon: 'gear', title: 'Operational Excellence', text: 'Continuous improvement' },
-]
-
 const passwordFieldType = computed(() => (showPassword.value ? 'text' : 'password'))
 
 function destination() {
   const returnUrl = route.query.returnUrl
   return typeof returnUrl === 'string' && returnUrl && returnUrl !== '/login' ? returnUrl : '/'
-}
-
-async function afterLogin(result) {
-  setSession(result)
-  // App sudah ter-mount tanpa data dashboard/manifest (endpointnya berpagar token
-  // dan tadi belum ada sesi) - dimuat sekarang sebelum masuk ke halaman utama.
-  await Promise.all([loadDashboard(), loadSheetManifest()])
-  router.push(destination())
 }
 
 function loginWithMicrosoft() {
@@ -69,12 +56,15 @@ async function loginManual() {
   manualLoading.value = true
   manualError.value = ''
   try {
-    const result = await api.post('/api/auth/login', {
+    // Username/password benar hanya membuka tantangan MFA; sesi baru aktif
+    // setelah kode 6 digit diverifikasi di halaman /mfa (lihat MfaPage.vue).
+    const challenge = await api.post('/api/auth/login', {
       username: username.value.trim(),
       password: password.value,
       rememberMe: rememberMe.value,
     })
-    await afterLogin(result)
+    setPendingMfaChallenge(challenge)
+    router.push({ name: 'mfa', query: { returnUrl: destination() } })
   } catch (err) {
     manualError.value = err.message ?? 'Login gagal.'
   } finally {
@@ -86,53 +76,29 @@ async function loginManual() {
 <template>
   <div class="login-page">
     <div class="login-visual">
-      <div class="login-visual__bg" aria-hidden="true"></div>
+      <img :src="loginVisual" alt="" class="login-visual__image" />
+      <div class="login-visual__scrim" aria-hidden="true"></div>
 
       <div class="login-visual__content">
-        <div class="login-brand">
-          <span class="login-mark">R4</span>
-          <span class="login-brand-text">
-            <strong>SIFP ASSURANCE</strong>
-            <small>Regional 4 · Pertamina EP Cepu</small>
-          </span>
+        <div class="login-visual__copy">
+          <span class="login-visual__eyebrow">Regional 4 · Pertamina EP Cepu</span>
+          <h1 class="login-headline">Drive Assurance.<br /><span>Deliver Excellence.</span></h1>
+          <p class="login-subtext">
+            Monitoring, improving, and assuring operational excellence across every SIFP exposure in Regional 4.
+          </p>
         </div>
 
-        <h1 class="login-headline">Drive Assurance.<br /><span>Deliver Excellence.</span></h1>
-        <p class="login-subtext">
-          Monitoring, improving, and assuring operational excellence across Regional 4.
-        </p>
-
-        <div class="login-preview" aria-hidden="true">
-          <div class="login-preview__bar">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="login-preview__body">
-            <div class="login-preview__gauges">
-              <div class="login-preview__gauge" style="--val: 70%; --gauge-color: var(--st-effective)">
-                <span>70%</span>
-              </div>
-              <div class="login-preview__gauge" style="--val: 90%; --gauge-color: var(--accent-blue)">
-                <span>90%</span>
-              </div>
-              <div class="login-preview__gauge" style="--val: 57%; --gauge-color: var(--accent-red)">
-                <span>57%</span>
-              </div>
-            </div>
-            <div class="login-preview__rows">
-              <span class="login-preview__row" v-for="n in 4" :key="n">
-                <i class="login-preview__row-dot" :class="`is-${n}`"></i>
-                <i class="login-preview__row-bar"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="login-features">
-          <div class="login-feature" v-for="feature in features" :key="feature.title">
-            <span class="login-feature__icon"><DashIcon :name="feature.icon" :size="18" /></span>
-            <span class="login-feature__text">
-              <strong>{{ feature.title }}</strong>
-              <small>{{ feature.text }}</small>
+        <div class="login-visual__partners">
+          <span class="login-visual__partners-label">Selaras dengan program nasional</span>
+          <div class="login-visual__logos">
+            <span class="login-visual__logo-chip">
+              <img :src="skkLogo" alt="SKK Migas" />
+            </span>
+            <span class="login-visual__logo-chip">
+              <img :src="iogLogo" alt="IOG 4.0" />
+            </span>
+            <span class="login-visual__logo-chip">
+              <img :src="pertamina68Logo" alt="Pertamina 68 - Energizing Indonesia" />
             </span>
           </div>
         </div>
@@ -173,6 +139,7 @@ async function loginManual() {
                 type="text"
                 class="form-control"
                 autocomplete="username"
+                placeholder="Masukkan username"
                 required
               />
             </div>
@@ -188,6 +155,7 @@ async function loginManual() {
                 :type="passwordFieldType"
                 class="form-control"
                 autocomplete="current-password"
+                placeholder="Masukkan password"
                 required
               />
               <button
@@ -244,33 +212,103 @@ async function loginManual() {
   position: relative;
   flex: 1 1 54%;
   overflow: hidden;
-  background: linear-gradient(160deg, #14246b, #1e2f83 55%, #24338f);
-  padding: 3rem 3.25rem;
-  display: flex;
-  align-items: center;
+  background: #0a1233;
 }
 
-.login-visual__bg {
+.login-visual__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: left center;
+}
+
+.login-visual__scrim {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1.3px, transparent 1.3px);
-  background-size: 16px 16px;
-  -webkit-mask-image: radial-gradient(ellipse 65% 60% at 68% 45%, #000 40%, transparent 78%);
-  mask-image: radial-gradient(ellipse 65% 60% at 68% 45%, #000 40%, transparent 78%);
+  background: linear-gradient(115deg, rgba(6, 12, 40, 0.05) 28%, rgba(6, 12, 40, 0.58) 62%, rgba(6, 12, 40, 0.85) 100%);
+  pointer-events: none;
 }
 
 .login-visual__content {
-  position: relative;
-  max-width: 620px;
-  margin: 0 auto;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2.5rem;
+  padding: 3rem;
   color: #fff;
 }
 
-.login-brand {
+.login-visual__copy,
+.login-visual__partners {
+  max-width: 400px;
+  text-align: left;
+}
+
+.login-visual__eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9db4ff;
+  margin-bottom: 0.9rem;
+}
+
+.login-headline {
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.22;
+  margin-bottom: 0.9rem;
+}
+
+.login-headline span {
+  color: #7fa1ff;
+}
+
+.login-subtext {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.55;
+}
+
+.login-visual__partners-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.75rem;
+}
+
+.login-visual__logos {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 2.25rem;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.login-visual__logo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0.45rem 0.7rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(4, 10, 35, 0.35);
+}
+
+.login-visual__logo-chip img {
+  height: 100%;
+  width: auto;
+  max-width: 88px;
+  object-fit: contain;
+  display: block;
 }
 
 .login-mark {
@@ -284,173 +322,6 @@ async function loginManual() {
   font-weight: 800;
   font-size: 1rem;
   color: #fff;
-}
-
-.login-brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-}
-
-.login-brand-text strong {
-  font-size: 0.98rem;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-}
-
-.login-brand-text small {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.login-headline {
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-
-.login-headline span {
-  color: #7fa1ff;
-}
-
-.login-subtext {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.78);
-  max-width: 420px;
-  margin-bottom: 2rem;
-}
-
-/* Mock dashboard preview card -- decorative only, not real data. */
-.login-preview {
-  background: var(--surface);
-  border-radius: 14px;
-  box-shadow: 0 24px 48px rgba(6, 12, 40, 0.4);
-  overflow: hidden;
-  margin-bottom: 2.25rem;
-}
-
-.login-preview__bar {
-  display: flex;
-  gap: 0.3rem;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.login-preview__bar span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--line);
-}
-
-.login-preview__body {
-  padding: 1.35rem 1.4rem 1.5rem;
-}
-
-.login-preview__gauges {
-  display: flex;
-  gap: 1.4rem;
-  margin-bottom: 1.4rem;
-}
-
-.login-preview__gauge {
-  position: relative;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: conic-gradient(var(--gauge-color) var(--val), #e3e7f3 0);
-}
-
-.login-preview__gauge::before {
-  content: '';
-  position: absolute;
-  inset: 9px;
-  border-radius: 50%;
-  background: var(--surface);
-}
-
-.login-preview__gauge span {
-  position: relative;
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: var(--gauge-color);
-}
-
-.login-preview__row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: 0.75rem;
-}
-
-.login-preview__row-dot {
-  flex: none;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-}
-
-.login-preview__row-dot.is-1,
-.login-preview__row-dot.is-4 {
-  background: var(--st-effective);
-}
-
-.login-preview__row-dot.is-2 {
-  background: var(--st-degraded);
-}
-
-.login-preview__row-dot.is-3 {
-  background: var(--st-failed);
-}
-
-.login-preview__row-bar {
-  flex: 1;
-  height: 9px;
-  border-radius: 5px;
-  background: #e9ecf6;
-}
-
-.login-features {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem 1.5rem;
-}
-
-.login-feature {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.login-feature__icon {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #9db4ff;
-}
-
-.login-feature__text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.3;
-}
-
-.login-feature__text strong {
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.login-feature__text small {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.65);
 }
 
 /* ---------- Right: form panel ---------- */

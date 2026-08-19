@@ -17,6 +17,14 @@ namespace Sifp_Vue.Server.Repositories
         Task<User?> GetByEmailWithRolesAsync(string email, CancellationToken cancellationToken = default);
 
         Task<User?> GetWithRolesAsync(int id, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Sama seperti <see cref="GetWithRolesAsync"/>, tapi entity yang dikembalikan
+        /// TETAP DILACAK EF (bukan <c>Query()</c>/AsNoTracking) supaya perubahan yang
+        /// diberikan lalu <c>SaveChangesAsync</c> benar-benar tersimpan. Dipakai saat
+        /// verifikasi MFA yang perlu menulis MfaSecret/MfaEnabled/LastLoginAt.
+        /// </summary>
+        Task<User?> GetByIdWithRolesTrackedAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> UsernameExistsAsync(string username, int? exceptId = null, CancellationToken cancellationToken = default);
         Task ReplaceRolesAsync(int userId, IEnumerable<int> roleIds, string assignedBy, CancellationToken cancellationToken = default);
     }
@@ -54,6 +62,11 @@ namespace Sifp_Vue.Server.Repositories
 
         public Task<User?> GetWithRolesAsync(int id, CancellationToken cancellationToken = default)
             => Query()
+                .Include(x => x.UserRoles).ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        public Task<User?> GetByIdWithRolesTrackedAsync(int id, CancellationToken cancellationToken = default)
+            => Context.Users
                 .Include(x => x.UserRoles).ThenInclude(x => x.Role)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 

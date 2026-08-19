@@ -25,17 +25,30 @@ namespace Sifp_Vue.Server.Controllers.Api
             _userService = userService;
         }
 
-        /// <summary>POST /api/auth/login — login manual username/password, mengembalikan token bearer.</summary>
+        /// <summary>POST /api/auth/login — login manual username/password. Membalas tantangan MFA, bukan token bearer.</summary>
         [HttpPost("login")]
-        [ProducesResponseType(typeof(ApiResponse<LoginResultDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<LoginChallengeDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationFailure<LoginChallengeDto>();
+            }
+
+            return FromResult(await _authService.AuthenticateForApiAsync(request, cancellationToken), StatusCodes.Status401Unauthorized);
+        }
+
+        /// <summary>POST /api/auth/mfa/verify — langkah kedua login: kode 6 digit dari authenticator app. Sukses -> token bearer.</summary>
+        [HttpPost("mfa/verify")]
+        [ProducesResponseType(typeof(ApiResponse<LoginResultDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> VerifyMfa([FromBody] MfaVerifyRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return ValidationFailure<LoginResultDto>();
             }
 
-            return FromResult(await _authService.AuthenticateForApiAsync(request, cancellationToken), StatusCodes.Status401Unauthorized);
+            return FromResult(await _authService.VerifyMfaAsync(request, cancellationToken), StatusCodes.Status401Unauthorized);
         }
 
         /// <summary>GET /api/auth/me — data user pemilik token bearer yang sedang dipakai.</summary>
