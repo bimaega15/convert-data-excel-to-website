@@ -67,5 +67,19 @@ namespace Sifp_Vue.Server.Controllers.Api
                 ? Failure<UserDto>("User tidak ditemukan.", StatusCodes.Status404NotFound)
                 : Success(user);
         }
+
+        /// <summary>POST /api/auth/windows — login menggunakan Windows Authenticator / Principal.</summary>
+        [HttpPost("windows")]
+        [ProducesResponseType(typeof(ApiResponse<LoginChallengeDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> WindowsLogin(CancellationToken cancellationToken)
+        {
+            var windowsIdentityName = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(windowsIdentityName))
+            {
+                windowsIdentityName = Environment.UserDomainName + "\\" + Environment.UserName;
+            }
+
+            return FromResult(await _authService.AuthenticateWindowsUserAsync(windowsIdentityName, Environment.UserName, cancellationToken), StatusCodes.Status401Unauthorized);
+        }
     }
 }

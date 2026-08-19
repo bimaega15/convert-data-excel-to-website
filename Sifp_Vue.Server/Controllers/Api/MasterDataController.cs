@@ -82,5 +82,13 @@ namespace Sifp_Vue.Server.Controllers.Api
         [ProducesResponseType(typeof(ApiResponse<int>), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteRows(string table, [FromBody] BulkDeleteRequest request, CancellationToken cancellationToken)
             => FromResult(await _service.DeleteAsync(table, request?.Ids ?? new List<int>(), cancellationToken));
+
+        /// <summary>
+        /// POST /api/master/{table}/create — membuat baris baru pada tabel master data.
+        /// </summary>
+        [HttpPost("{table}/create")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
+        public async Task<IActionResult> CreateRow(string table, [FromBody] System.Text.Json.JsonElement body, CancellationToken cancellationToken)
+            => FromResult(await _service.CreateRowAsync(table, body, cancellationToken));
     }
 }

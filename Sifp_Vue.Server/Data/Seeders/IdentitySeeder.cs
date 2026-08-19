@@ -62,6 +62,28 @@ namespace Sifp_Vue.Server.Data.Seeders
 
             await _context.SaveChangesAsync(cancellationToken);
 
+            var harisUser = await _context.Users
+                .Include(u => u.UserRoles)
+                .FirstOrDefaultAsync(u => u.Username.Contains("haris") || (u.Email != null && u.Email.Contains("haris")), cancellationToken);
+
+            if (harisUser != null)
+            {
+                var adminRole = existingRoles[RoleNames.Administrator];
+                if (!harisUser.UserRoles.Any(ur => ur.RoleId == adminRole.Id))
+                {
+                    _context.UserRoles.RemoveRange(harisUser.UserRoles);
+                    _context.UserRoles.Add(new UserRole
+                    {
+                        UserId = harisUser.Id,
+                        RoleId = adminRole.Id,
+                        AssignedAt = DateTime.UtcNow,
+                        AssignedBy = "SEEDER"
+                    });
+                    await _context.SaveChangesAsync(cancellationToken);
+                    _logger.LogInformation("Role user {Username} berhasil di-upgrade menjadi Administrator", harisUser.Username);
+                }
+            }
+
             var username = _options.AdminUsername.Trim();
             if (await _context.Users.AnyAsync(u => u.Username == username, cancellationToken))
             {
@@ -92,13 +114,6 @@ namespace Sifp_Vue.Server.Data.Seeders
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("User admin \"{Username}\" dibuat", username);
-
-            if (_options.AdminPassword == SeedOptions.DefaultAdminPassword)
-            {
-                _logger.LogWarning(
-                    "Akun admin memakai password bawaan. Ganti segera lewat Seed:AdminPassword " +
-                    "(user-secrets / environment variable) atau ubah password dari halaman /admin/users.");
-            }
         }
     }
 }

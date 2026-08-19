@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +9,11 @@ using Sifp_Vue.Server.Services.Contracts;
 namespace Sifp_Vue.Server.Controllers.Api
 {
     /// <summary>
-    /// Pengelolaan akun. Berbeda dengan endpoint /api lain yang terbuka, controller ini
-    /// tetap memerlukan cookie login area admin karena isinya data akun.
+    /// Pengelolaan akun. Mendukung token JWT (Vue client) maupun Cookie (Admin MVC).
     /// </summary>
     [Route("api/users")]
     [Authorize(
-        AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme,
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme,
         Roles = RoleNames.Administrator)]
     public class UsersController : ApiControllerBase
     {

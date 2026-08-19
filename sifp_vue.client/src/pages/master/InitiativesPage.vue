@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import PageHeader from '../../components/ui/PageHeader.vue'
 import DataTable from '../../components/ui/DataTable.vue'
 import DataState from '../../components/ui/DataState.vue'
+import AddRowModal from '../../components/ui/AddRowModal.vue'
 import { api } from '../../services/api'
 import { useApiRows } from '../../composables/useApiResource'
 import { useDeleteRows } from '../../composables/useDeleteRows'
@@ -16,13 +17,41 @@ const { deleting, deleteError, onDelete } = useDeleteRows(
   reload
 )
 
+const showModal = ref(false)
+const submitting = ref(false)
+const submitError = ref('')
+
+async function handleAdd(formData) {
+  submitting.value = true
+  submitError.value = ''
+  try {
+    const payload = {
+      improvementCode: formData.id || `IMP-R4-${Date.now().toString().slice(-3)}`,
+      initiative: formData.initiative,
+      relatedClsr: formData.relatedClsr,
+      owner: formData.owner,
+      status: formData.status || 'In Progress',
+      progressPercent: Number(formData.progress || 0),
+      expectedImpact: formData.expectedImpact,
+      notes: formData.notes
+    }
+    await api.post('/api/initiatives', payload)
+    showModal.value = false
+    reload()
+  } catch (err) {
+    submitError.value = err.message || 'Gagal menambah inisiatif.'
+  } finally {
+    submitting.value = false
+  }
+}
+
 const columns = [
   { key: 'id', label: 'ID', nowrap: true },
   { key: 'initiative', label: 'Inisiatif', clamp: true },
   { key: 'relatedClsr', label: 'CLSR Terkait', nowrap: true },
   { key: 'owner', label: 'Owner', nowrap: true },
   { key: 'status', label: 'Status', align: 'center' },
-  { key: 'progress', label: 'Progress', width: '180px' },
+  { key: 'progress', label: 'Progress', width: '180px', type: 'number' },
   { key: 'expectedImpact', label: 'Dampak yang Diharapkan', clamp: true },
   { key: 'notes', label: 'Catatan', nowrap: true },
 ]
@@ -48,9 +77,12 @@ const inProgress = computed(() => rows.value.filter((r) => r.status === 'In Prog
         :rows="rows"
         :initial-sort="{ key: 'id', dir: 'asc' }"
         selectable
+        can-add
+        add-label="Tambah Inisiatif"
         row-key="key"
         :deleting="deleting"
         :error-text="deleteError && deleteError.message"
+        @add="showModal = true"
         @delete="onDelete"
       >
         <template #cell-relatedClsr="{ value }">
@@ -69,6 +101,16 @@ const inProgress = computed(() => rows.value.filter((r) => r.status === 'In Prog
         </template>
       </DataTable>
     </DataState>
+
+    <AddRowModal
+      :show="showModal"
+      title="Tambah Inisiatif Baru"
+      :columns="columns"
+      :submitting="submitting"
+      :error-text="submitError"
+      @close="showModal = false"
+      @submit="handleAdd"
+    />
   </div>
 </template>
 

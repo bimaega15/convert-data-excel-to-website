@@ -104,5 +104,58 @@ namespace Sifp_Vue.Server.Services
                 ["ImprovementInitiatives"] = await _initiatives.CountAsync(cancellationToken)
             };
         }
+
+        public async Task<ApiResponse<object>> CreateRowAsync(string table, System.Text.Json.JsonElement body, CancellationToken cancellationToken = default)
+        {
+            var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            try
+            {
+                switch (table)
+                {
+                    case "sif-questions":
+                        var sq = System.Text.Json.JsonSerializer.Deserialize<Models.Entities.SifQuestion>(body.GetRawText(), options);
+                        if (sq is null) return ApiResponse<object>.Fail("Data SifQuestion tidak valid.");
+                        var createdSq = await _sifQuestions.AddAsync(sq, cancellationToken);
+                        return ApiResponse<object>.Ok(createdSq.ToDto(), "Data berhasil ditambahkan.");
+
+                    case "error-traps":
+                        var et = System.Text.Json.JsonSerializer.Deserialize<Models.Entities.ErrorTrap>(body.GetRawText(), options);
+                        if (et is null) return ApiResponse<object>.Fail("Data ErrorTrap tidak valid.");
+                        var createdEt = await _errorTraps.AddAsync(et, cancellationToken);
+                        return ApiResponse<object>.Ok(createdEt.ToDto(), "Data berhasil ditambahkan.");
+
+                    case "hp-tools":
+                        var hp = System.Text.Json.JsonSerializer.Deserialize<Models.Entities.HpTool>(body.GetRawText(), options);
+                        if (hp is null) return ApiResponse<object>.Fail("Data HpTool tidak valid.");
+                        var createdHp = await _hpTools.AddAsync(hp, cancellationToken);
+                        return ApiResponse<object>.Ok(createdHp.ToDto(), "Data berhasil ditambahkan.");
+
+                    case "drift-conditions":
+                        var dc = System.Text.Json.JsonSerializer.Deserialize<Models.Entities.DriftCondition>(body.GetRawText(), options);
+                        if (dc is null) return ApiResponse<object>.Fail("Data DriftCondition tidak valid.");
+                        var createdDc = await _driftConditions.AddAsync(dc, cancellationToken);
+                        return ApiResponse<object>.Ok(createdDc.ToDto(), "Data berhasil ditambahkan.");
+
+                    case "latent-conditions":
+                        var lc = System.Text.Json.JsonSerializer.Deserialize<Models.Entities.LatentCondition>(body.GetRawText(), options);
+                        if (lc is null) return ApiResponse<object>.Fail("Data LatentCondition tidak valid.");
+                        var createdLc = await _latentConditions.AddAsync(lc, cancellationToken);
+                        return ApiResponse<object>.Ok(createdLc.ToDto(), "Data berhasil ditambahkan.");
+
+                    case "ccvc-library":
+                        var cc = System.Text.Json.JsonSerializer.Deserialize<Models.Entities.CcvcLibraryItem>(body.GetRawText(), options);
+                        if (cc is null) return ApiResponse<object>.Fail("Data CcvcLibraryItem tidak valid.");
+                        var createdCc = await _ccvcLibrary.AddAsync(cc, cancellationToken);
+                        return ApiResponse<object>.Ok(createdCc.ToDto(), "Data berhasil ditambahkan.");
+
+                    default:
+                        return ApiResponse<object>.Fail($"Tabel \"{table}\" tidak ditemukan.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<object>.Fail($"Gagal menambah data: {ex.Message}");
+            }
+        }
     }
 }

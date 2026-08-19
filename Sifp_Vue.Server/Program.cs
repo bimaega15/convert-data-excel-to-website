@@ -91,6 +91,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IWorksheetService, WorksheetService>();
 builder.Services.AddScoped<IExcelImportService, ExcelImportService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 // Seeders
 builder.Services.AddScoped<IDataSeeder, IdentitySeeder>();
@@ -341,9 +342,8 @@ if (cliCommand is not null)
 // dari root secara eksplisit (lihat package.json).
 // ---------------------------------------------------------------------------
 
-if (!app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     await seeder.RunAsync();
 }

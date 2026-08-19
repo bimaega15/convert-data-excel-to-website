@@ -42,10 +42,11 @@ namespace Sifp_Vue.Server.Data
         public DbSet<Worksheet> Worksheets => Set<Worksheet>();
         public DbSet<WorksheetRow> WorksheetRows => Set<WorksheetRow>();
 
-        // ---------- Keamanan ----------
+        // ---------- Keamanan & Maintenance ----------
         public DbSet<User> Users => Set<User>();
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<UserRole> UserRoles => Set<UserRole>();
+        public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -27,6 +27,9 @@ namespace Sifp_Vue.Server.Services.Contracts
         /// mengirim seluruh Id yang ada. Mengembalikan jumlah baris yang terhapus.
         /// </summary>
         Task<ApiResponse<int>> DeleteAsync(string table, IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default);
+
+        /// <summary>Menambahkan satu baris data baru ke tabel master yang ditentukan.</summary>
+        Task<ApiResponse<object>> CreateRowAsync(string table, System.Text.Json.JsonElement body, CancellationToken cancellationToken = default);
     }
 
     public interface IInitiativeService

@@ -15,9 +15,11 @@ const props = defineProps({
   deleting: { type: Boolean, default: false },
   // Pesan error hapus (opsional) yang ditampilkan sebagai banner di atas tabel.
   errorText: { type: String, default: '' },
+  canAdd: { type: Boolean, default: false },
+  addLabel: { type: String, default: 'Tambah Baris' },
 })
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'add'])
 
 const selectedKeys = ref(new Set())
 const confirming = ref(false)
@@ -149,6 +151,9 @@ watch(() => props.rows, clearSelection)
         <DashIcon name="search" :size="15" />
         <input v-model="q" type="search" placeholder="Cari di semua kolom…" />
       </label>
+      <button v-if="canAdd" type="button" class="dt__btn dt__btn--primary" @click="emit('add')">
+        <DashIcon name="plus" :size="14" /> {{ addLabel }}
+      </button>
       <label class="dt__pagesize">
         <span>Baris</span>
         <select v-model.number="pageSize">
@@ -391,6 +396,15 @@ watch(() => props.rows, clearSelection)
 .dt__btn:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.dt__btn--primary {
+  background: var(--navy-bar);
+  color: #fff;
+}
+
+.dt__btn--primary:hover:not(:disabled) {
+  opacity: 0.9;
 }
 
 .dt__btn--danger {

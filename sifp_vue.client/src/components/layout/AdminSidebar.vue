@@ -79,9 +79,10 @@ const worksheetGroups = computed(() =>
 
 const menu = computed(() => [
   {
-    label: 'Menu',
+    label: 'Menu Utama',
     items: [
       { to: '/', label: 'Dashboard', icon: 'home' },
+      { to: '/admin/dashboard', label: 'Admin Dashboard', icon: 'gear' },
       { to: '/import', label: 'Import Excel', icon: 'upload' },
     ],
   },

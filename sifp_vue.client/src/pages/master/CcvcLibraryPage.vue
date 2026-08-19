@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import PageHeader from '../../components/ui/PageHeader.vue'
 import DataTable from '../../components/ui/DataTable.vue'
 import DataState from '../../components/ui/DataState.vue'
+import AddRowModal from '../../components/ui/AddRowModal.vue'
 import { fetchAllPages, api } from '../../services/api'
 import { useApiRows } from '../../composables/useApiResource'
 import { useDeleteRows } from '../../composables/useDeleteRows'
@@ -16,8 +17,26 @@ const { deleting, deleteError, onDelete } = useDeleteRows(
   reload
 )
 
+const showModal = ref(false)
+const submitting = ref(false)
+const submitError = ref('')
+
+async function handleAdd(formData) {
+  submitting.value = true
+  submitError.value = ''
+  try {
+    await api.post('/api/master/ccvc-library/create', formData)
+    showModal.value = false
+    reload()
+  } catch (err) {
+    submitError.value = err.message || 'Gagal menambah item CCVC library baru.'
+  } finally {
+    submitting.value = false
+  }
+}
+
 const columns = [
-  { key: 'no', label: 'No', align: 'center' },
+  { key: 'no', label: 'No', align: 'center', type: 'number' },
   { key: 'psecId', label: 'PSEC ID', nowrap: true },
   { key: 'psecName', label: 'SIF Exposure (PSEC)', nowrap: true },
   { key: 'exposureType', label: 'Tipe Exposure', nowrap: true },
@@ -49,18 +68,31 @@ const psecCount = computed(() => new Set(rows.value.map((r) => r.psecId)).size)
         :rows="rows"
         :initial-sort="{ key: 'no', dir: 'asc' }"
         selectable
+        can-add
+        add-label="Tambah CCVC Library"
         row-key="key"
         :deleting="deleting"
         :error-text="deleteError && deleteError.message"
+        @add="showModal = true"
         @delete="onDelete"
       >
         <template #cell-psecId="{ value }">
           <span class="chip">{{ value }}</span>
         </template>
         <template #cell-protocolGroup="{ value }">
-          <span class="pill pill--na">{{ value }}</span>
+          <span class="chip chip--accent">{{ value }}</span>
         </template>
       </DataTable>
     </DataState>
+
+    <AddRowModal
+      :show="showModal"
+      title="Tambah CCVC Library Baru"
+      :columns="columns"
+      :submitting="submitting"
+      :error-text="submitError"
+      @close="showModal = false"
+      @submit="handleAdd"
+    />
   </div>
 </template>

@@ -32,6 +32,12 @@ const routes = [
     meta: { title: 'Import Excel', subtitle: 'Data Management' },
   },
   {
+    path: '/admin/dashboard',
+    name: 'admin-dashboard',
+    component: () => import('../pages/admin/AdminDashboardPage.vue'),
+    meta: { title: 'Admin Dashboard', subtitle: 'Control Center & Master Data' },
+  },
+  {
     path: '/master/observations',
     name: 'observations',
     component: () => import('../pages/master/ObservationsPage.vue'),

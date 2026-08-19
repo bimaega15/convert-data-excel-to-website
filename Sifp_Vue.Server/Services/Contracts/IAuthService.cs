@@ -29,6 +29,12 @@ namespace Sifp_Vue.Server.Services.Contracts
         Task<ApiResponse<LoginChallengeDto>> AuthenticateExternalEmailAsync(string email, string? displayName = null, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Login via Windows Authenticator (NTLM/Kerberos Windows Principal).
+        /// Memvalidasi atau meng-autoprovision akun Windows lokal/domain dan membalas tantangan MFA.
+        /// </summary>
+        Task<ApiResponse<LoginChallengeDto>> AuthenticateWindowsUserAsync(string winIdentityName, string? displayName = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Langkah kedua login: memverifikasi kode 6 digit terhadap tantangan yang
         /// diterbitkan oleh <see cref="AuthenticateForApiAsync"/>/<see cref="AuthenticateExternalEmailAsync"/>.
         /// Bila tantangan itu bertipe setup, secret yang tertanam di token baru disimpan

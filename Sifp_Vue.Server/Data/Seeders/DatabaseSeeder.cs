@@ -70,6 +70,29 @@ namespace Sifp_Vue.Server.Data.Seeders
                 }
             }
 
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(@"
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'AuditLogs')
+                    BEGIN
+                        CREATE TABLE [dbo].[AuditLogs] (
+                            [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                            [Timestamp] DATETIME2 NOT NULL,
+                            [Username] NVARCHAR(150) NOT NULL,
+                            [Action] NVARCHAR(200) NOT NULL,
+                            [Module] NVARCHAR(100) NOT NULL,
+                            [Details] NVARCHAR(MAX) NULL,
+                            [IpAddress] NVARCHAR(50) NULL,
+                            [StatusCode] INT NULL
+                        );
+                    END
+                ", cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Penyiapan tabel AuditLogs: {Message}", ex.Message);
+            }
+
             if (!_options.RunSeeders)
             {
                 _logger.LogInformation("Seeder dilewati (Seed:RunSeeders = false).");
