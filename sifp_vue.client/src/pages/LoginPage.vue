@@ -23,11 +23,6 @@ const windowsLoading = ref(false)
 const ssoError = ref('')
 const manualError = ref('')
 
-// Origin backend untuk alur SSO (redirect penuh, bukan XHR). Saat dev backend
-// berada di :5250 sehingga tombol harus menuju ke sana langsung (bukan lewat
-// proxy Vite); di produksi Vue & API satu origin, jadi cukup path relatif.
-const backendOrigin = import.meta.env.DEV ? 'http://localhost:5250' : ''
-
 const year = new Date().getFullYear()
 
 // Backend mengembalikan kegagalan SSO sebagai query ?ssoError=... di halaman login.
@@ -43,14 +38,6 @@ const passwordFieldType = computed(() => (showPassword.value ? 'text' : 'passwor
 function destination() {
   const returnUrl = route.query.returnUrl
   return typeof returnUrl === 'string' && returnUrl && returnUrl !== '/login' ? returnUrl : '/'
-}
-
-function loginWithMicrosoft() {
-  // OIDC memerlukan navigasi penuh (redirect ke halaman Microsoft), bukan fetch.
-  const returnUrl = destination()
-  const target = `${backendOrigin}/api/auth/microsoft/login` +
-    (returnUrl && returnUrl !== '/' ? `?returnUrl=${encodeURIComponent(returnUrl)}` : '')
-  window.location.href = target
 }
 
 async function loginWithWindows() {
@@ -128,22 +115,10 @@ async function loginManual() {
         <h2 class="login-title">Welcome Back</h2>
         <p class="login-subtitle">Sign in to continue to SIFP Assurance Dashboard</p>
 
-        <div class="sso-buttons">
-          <button type="button" class="btn-windows" @click="loginWithMicrosoft">
-            <svg class="windows-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-              <rect x="0" y="0" width="7" height="7" fill="#f25022" />
-              <rect x="8" y="0" width="8" height="7" fill="#7fba00" />
-              <rect x="0" y="8" width="7" height="8" fill="#00a4ef" />
-              <rect x="8" y="8" width="8" height="8" fill="#ffb900" />
-            </svg>
-            Sign in with Microsoft
-          </button>
-
-          <button type="button" class="btn-windows btn-windows-auth" :disabled="windowsLoading" @click="loginWithWindows">
-            <DashIcon name="shield" :size="16" />
-            {{ windowsLoading ? 'Memproses Windows Auth…' : 'Sign in with Windows Authenticator' }}
-          </button>
-        </div>
+        <button type="button" class="btn-windows btn-windows-auth" :disabled="windowsLoading" @click="loginWithWindows">
+          <DashIcon name="shield" :size="16" />
+          {{ windowsLoading ? 'Memproses Windows Auth…' : 'Sign in with Windows Authenticator' }}
+        </button>
         <p v-if="ssoError" class="login-error">{{ ssoError }}</p>
 
         <div class="login-divider"><span>OR</span></div>
@@ -430,13 +405,6 @@ async function loginManual() {
   cursor: default;
 }
 
-.sso-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  width: 100%;
-}
-
 .btn-windows-auth {
   background: #f0f4ff;
   border-color: #d0dcfb;
@@ -446,10 +414,6 @@ async function loginManual() {
 .btn-windows-auth:hover:not(:disabled) {
   background: #e2ebff;
   border-color: var(--accent-blue);
-}
-
-.windows-icon {
-  color: var(--accent-blue);
 }
 
 .login-divider {
