@@ -3,18 +3,21 @@ import { initiatives } from '../../data/dashboard'
 </script>
 
 <template>
-  <section class="panel" aria-label="Improvement Initiatives Status">
-    <div class="panel-head panel-head--navy">8. IMPROVEMENT INITIATIVES (Status)</div>
+  <section class="panel" aria-label="Systemic Improvement Initiatives">
+    <div class="panel-head panel-head--navy panel-head--numbered">
+      <span class="panel-head__num">8</span>
+      <span>SYSTEMIC IMPROVEMENT INITIATIVES</span>
+    </div>
     <div class="panel-body init-body">
       <div class="init-scroll">
         <table class="init-table">
           <thead>
             <tr>
-              <th class="col-num">#</th>
-              <th class="col-name">INITIATIVES</th>
-              <th>OWNER</th>
-              <th>STATUS</th>
-              <th class="col-progress">PROGRESS</th>
+              <th class="col-num">No.</th>
+              <th class="col-name">Initiative</th>
+              <th>Owner</th>
+              <th>Status</th>
+              <th class="col-progress">Progress</th>
             </tr>
           </thead>
           <tbody>
@@ -23,7 +26,8 @@ import { initiatives } from '../../data/dashboard'
               <td class="init-name">{{ item.name }}</td>
               <td class="init-owner">{{ item.owner }}</td>
               <td class="init-status">
-                <span class="status-pill">{{ item.status }}</span>
+                <span class="status-dot-inline"></span>
+                <span>{{ item.status }}</span>
               </td>
               <td>
                 <div class="progress-cell">
@@ -60,15 +64,15 @@ import { initiatives } from '../../data/dashboard'
 .init-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 560px;
+  min-width: 480px;
 }
 
 .init-table th {
-  font-size: 0.64rem;
-  font-weight: 800;
-  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #464646;
   text-align: left;
-  padding: 0.35rem 0.45rem;
+  padding: 0.4rem 0.45rem;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
@@ -79,9 +83,10 @@ import { initiatives } from '../../data/dashboard'
 }
 
 .init-table td {
-  padding: 0.34rem 0.45rem;
+  padding: 0.4rem 0.45rem;
   border-bottom: 1px solid var(--line-soft);
-  font-size: 0.68rem;
+  font-size: 0.7rem;
+  color: #282828;
   vertical-align: middle;
 }
 
@@ -90,41 +95,36 @@ import { initiatives } from '../../data/dashboard'
 }
 
 .col-num {
-  width: 1.5rem;
-  font-weight: 800;
-  color: var(--ink);
+  width: 1.6rem;
+  font-weight: 600;
 }
 
 .col-progress {
-  width: 32%;
+  width: 34%;
 }
 
 .init-name {
-  font-weight: 700;
-  color: var(--ink);
+  font-weight: 600;
   line-height: 1.3;
 }
 
 .init-owner {
-  font-weight: 700;
-  color: var(--ink);
   text-align: center;
   white-space: nowrap;
 }
 
 .init-status {
   text-align: center;
+  white-space: nowrap;
 }
 
-.status-pill {
+.status-dot-inline {
   display: inline-block;
-  background: var(--amber-bright);
-  color: var(--ink-strong);
-  font-size: 0.62rem;
-  font-weight: 800;
-  padding: 0.16rem 0.6rem;
-  border-radius: 6px;
-  white-space: nowrap;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f49820;
+  margin-right: 0.35rem;
 }
 
 .progress-cell {
@@ -136,14 +136,14 @@ import { initiatives } from '../../data/dashboard'
 .progress-track {
   flex: 1;
   height: 8px;
-  background: var(--track);
+  background: #e0e4eb;
   border-radius: 999px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--st-effective);
+  background: #2962a4;
   border-radius: 999px;
 }
 
@@ -152,7 +152,7 @@ import { initiatives } from '../../data/dashboard'
   width: 2.2rem;
   text-align: right;
   font-size: 0.68rem;
-  font-weight: 800;
-  color: var(--ink);
+  font-weight: 700;
+  color: #282828;
 }
 </style>

@@ -1,18 +1,29 @@
 <script setup>
+import { computed } from 'vue'
 import { meta } from '../../data/dashboard'
+import skkLogo from '../../assets/images/SKK.png'
+import iogLogo from '../../assets/images/IOG PNG.png'
+import pertamina68Logo from '../../assets/images/Pertamina Logo 68 Final-Logo Alternatif.png'
+
+const dataCutoff = computed(() => {
+  if (!meta.generatedAt) return ''
+  const d = new Date(meta.generatedAt)
+  if (Number.isNaN(d.getTime())) return ''
+  return `Data per ${d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`
+})
 </script>
 
 <template>
   <header class="dash-header">
     <div class="dash-header__logos">
-      <span class="logo-chip">SKK Migas</span>
-      <span class="logo-chip">IOG 4.0</span>
-      <span class="logo-chip">Energizing<br />Indonesia</span>
+      <img :src="skkLogo" alt="SKK Migas" class="dash-header__logo dash-header__logo--wide" />
+      <img :src="iogLogo" alt="IOG 4.0" class="dash-header__logo" />
+      <img :src="pertamina68Logo" alt="Pertamina 68 - Energizing Indonesia" class="dash-header__logo" />
     </div>
 
     <div class="dash-header__title">
       <h1>{{ meta.title }}</h1>
-      <p>{{ meta.subtitle }}</p>
+      <p>{{ dataCutoff }}</p>
     </div>
 
     <div class="dash-header__right">
@@ -30,25 +41,23 @@ import { meta } from '../../data/dashboard'
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 1rem;
-  padding: 0.25rem 0.25rem 0.5rem;
+  padding: 0.4rem 0.25rem 0.6rem;
 }
 
 .dash-header__logos {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1.1rem;
 }
 
-.logo-chip {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.35rem 0.6rem;
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: var(--ink-muted);
-  text-align: center;
-  line-height: 1.15;
+.dash-header__logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.dash-header__logo--wide {
+  height: 34px;
 }
 
 .dash-header__title {
@@ -57,17 +66,17 @@ import { meta } from '../../data/dashboard'
 
 .dash-header__title h1 {
   margin: 0;
-  font-size: clamp(1.25rem, 2.6vw, 2.1rem);
+  font-size: clamp(1.1rem, 2.4vw, 1.7rem);
   font-weight: 800;
-  letter-spacing: 0.02em;
-  color: var(--ink-strong);
+  letter-spacing: 0.01em;
+  color: #082c68;
 }
 
 .dash-header__title p {
-  margin: 0.1rem 0 0;
-  font-size: clamp(0.78rem, 1.3vw, 1rem);
+  margin: 0.15rem 0 0;
+  font-size: clamp(0.72rem, 1.1vw, 0.85rem);
   font-weight: 700;
-  color: var(--accent-blue);
+  color: var(--ink);
 }
 
 .dash-header__right {

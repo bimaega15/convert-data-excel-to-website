@@ -20,6 +20,15 @@ namespace Sifp_Vue.Server.Models.Dtos
         public List<SummaryCardDto> SummaryCards { get; set; } = new();
         public List<string> SummaryNotes { get; set; } = new();
         public string FooterNote { get; set; } = string.Empty;
+
+        /// <summary>Jumlah observasi per bulan (kolom "Observation by Zone / Month" di dashboard).</summary>
+        public List<MonthlyObservationCountDto> ObservationsByMonth { get; set; } = new();
+    }
+
+    public class MonthlyObservationCountDto
+    {
+        public string? Month { get; set; }
+        public int Count { get; set; }
     }
 
     public class DashboardMetaDto

@@ -19,27 +19,29 @@ function fmt(value) {
 </script>
 
 <template>
-  <section class="panel" aria-label="CLSR Exposure Health Map by Zona">
-    <div class="panel-head panel-head--navy">1. CLSR EXPOSURE HEALTH MAP (10 CLSR) BY ZONA</div>
+  <section class="panel" aria-label="Critical Control Health Map by Zona">
+    <div class="panel-head panel-head--navy panel-head--numbered">
+      <span class="panel-head__num">1</span>
+      <span>CRITICAL CONTROL HEALTH MAP</span>
+    </div>
     <div class="panel-body hm-body">
       <div class="hm-scroll">
         <table class="hm-table">
           <thead>
             <tr>
-              <th class="hm-th-desc" colspan="2">CLSR DESCRIPTION</th>
+              <th class="hm-th-desc">Control</th>
               <th v-for="zone in healthMap.zones" :key="zone">{{ zone }}</th>
-              <th>REGIONAL 4</th>
+              <th>R4 Score</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, i) in healthMap.rows" :key="row.name">
-              <td class="hm-num">{{ i + 1 }}</td>
+            <tr v-for="row in healthMap.rows" :key="row.name">
               <td class="hm-name">{{ row.name }}</td>
               <td v-for="(cell, j) in row.cells" :key="j" class="hm-cell">
                 <span class="hm-dot">
                   <span
-                    class="status-dot"
-                    :class="`status-dot--${cell.status}`"
+                    class="status-swatch"
+                    :class="`status-swatch--${cell.status}`"
                     :title="cellTitle(row, j, cell)"
                   ></span>
                   <span v-if="cell.value != null" class="hm-cell-val">{{ fmt(cell.value) }}</span>
@@ -78,13 +80,13 @@ function fmt(value) {
 .hm-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 430px;
+  min-width: 380px;
 }
 
 .hm-table th {
   font-size: 0.66rem;
   font-weight: 800;
-  color: var(--ink);
+  color: var(--navy-bar);
   text-align: center;
   padding: 0.35rem 0.3rem;
   border-bottom: 1px solid var(--line);
@@ -93,7 +95,7 @@ function fmt(value) {
 
 .hm-th-desc {
   text-align: left !important;
-  padding-left: 1.6rem !important;
+  padding-left: 0.3rem !important;
 }
 
 .hm-table td {
@@ -116,17 +118,10 @@ function fmt(value) {
   border-bottom: none;
 }
 
-.hm-num {
-  width: 1.4rem;
-  font-weight: 800;
-  color: var(--ink);
-  text-align: center;
-}
-
 .hm-name {
   font-weight: 700;
-  color: var(--ink);
-  text-transform: uppercase;
+  color: #222222;
+  padding-left: 0.3rem;
   line-height: 1.2;
 }
 
@@ -148,11 +143,7 @@ function fmt(value) {
 .hm-regional {
   text-align: center;
   font-weight: 800;
-  color: var(--ink-muted);
-}
-
-.hm-regional--ok {
-  color: var(--ink);
+  color: #082c68;
 }
 
 .hm-regional--failed {

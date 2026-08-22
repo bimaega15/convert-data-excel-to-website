@@ -5,7 +5,7 @@
   --ink-muted: #5f6a9d;
 
   /* header panel */
-  --navy-bar: #1e2f83;
+  --navy-bar: #07356f;
   --green-bar: #0e8043;
   --red-bar: #cf2020;
   --blue-bar: #1f3bab;
@@ -72,12 +72,34 @@ body {
 .panel-head--blue { background: var(--blue-bar); }
 .panel-head--purple { background: var(--purple-bar); }
 
+/* header bar bernomor: badge putih membundar di kiri + judul rata kiri
+   (dipakai semua panel bernomor 1-9 di layout dashboard versi slicing). */
+.panel-head--numbered {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.panel-head__num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--navy-bar);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
 .panel-body {
   padding: 0.75rem 0.9rem;
   flex: 1;
 }
 
-/* dot status */
+/* dot status (dipakai di legenda & tabel ringkas: bulat) */
 .status-dot {
   display: inline-block;
   width: 13px;
@@ -90,6 +112,21 @@ body {
 .status-dot--degraded { background: var(--st-degraded); }
 .status-dot--failed { background: var(--st-failed); }
 .status-dot--nodata { background: var(--st-nodata); }
+
+/* swatch status persegi (dipakai di sel Critical Control Health Map,
+   beda dari .status-dot bulat yang dipakai di legenda) */
+.status-swatch {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.status-swatch--effective { background: var(--st-effective); }
+.status-swatch--degraded { background: var(--st-degraded); }
+.status-swatch--failed { background: var(--st-failed); }
+.status-swatch--nodata { background: var(--st-nodata); }
 
 /* pill target di bawah kartu KPI */
 .target-pill {

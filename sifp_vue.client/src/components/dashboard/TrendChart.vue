@@ -4,9 +4,12 @@ import { trend } from '../../data/dashboard'
 
 const VB_W = 480
 const VB_H = 250
-const PAD = { l: 42, r: 36, t: 30, b: 34 }
+const PAD = { l: 42, r: 36, t: 44, b: 34 }
 const plotW = VB_W - PAD.l - PAD.r
 const plotH = VB_H - PAD.t - PAD.b
+
+const ACTUAL_COLOR = '#0B3B78'
+const PLAN_COLOR = '#169447'
 
 // gabungan titik aktual + proyeksi pada satu sumbu bulan
 const actual = trend.points
@@ -20,6 +23,18 @@ const x = (i) => PAD.l + (i * plotW) / Math.max(allPoints.length - 1, 1)
 const y = (v) => PAD.t + (1 - v / 100) * plotH
 
 const gridLines = [0, 25, 50, 75, 100]
+
+// "Actual — through Jul   Plan / Target – Aug–Dec", dihitung dari data asli
+// (bukan teks tetap) supaya selalu cocok dengan bulan yang benar-benar ada.
+const captionText = computed(() => {
+  const lastActual = actual[actual.length - 1]?.month
+  const firstProj = projection[0]?.month
+  const lastProj = projection[projection.length - 1]?.month
+  const parts = []
+  if (lastActual) parts.push(`Actual — through ${lastActual}`)
+  if (firstProj) parts.push(`Plan / Target – ${firstProj}${lastProj && lastProj !== firstProj ? `–${lastProj}` : ''}`)
+  return parts.join('   ')
+})
 
 const actualPath = computed(() =>
   actual.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(p.value)}`).join(' ')
@@ -58,16 +73,14 @@ const tipStyle = computed(() => {
     top: `${(y(allPoints[hover.value].value) / VB_H) * 100}%`,
   }
 })
-
-// label angka: semua titik aktual + titik proyeksi terakhir
-function showLabel(i) {
-  return !allPoints[i].projected || i === allPoints.length - 1
-}
 </script>
 
 <template>
-  <section class="panel" aria-label="Regional Conformance Score Trend">
-    <div class="panel-head panel-head--navy">6. REGIONAL CONFORMANCE SCORE TREND (%)</div>
+  <section class="panel" aria-label="R4 Cumulative Conformance Trend">
+    <div class="panel-head panel-head--navy panel-head--numbered">
+      <span class="panel-head__num">6</span>
+      <span>R4 CUMULATIVE CONFORMANCE TREND (%)</span>
+    </div>
     <div class="panel-body trend-body">
       <div class="chart-wrap" @mousemove="onMove" @mouseleave="hover = null">
         <svg :viewBox="`0 0 ${VB_W} ${VB_H}`" role="img" aria-label="Line chart tren conformance score aktual dan proyeksi">
@@ -79,7 +92,7 @@ function showLabel(i) {
               :x2="VB_W - PAD.r"
               :y1="y(v)"
               :y2="y(v)"
-              stroke="#edf0f7"
+              :stroke="v === 100 ? '#0B55B7' : '#edf0f7'"
               stroke-width="1"
             />
             <text v-for="v in gridLines" :key="`l${v}`" :x="PAD.l - 7" :y="y(v) + 3" class="axis-label" text-anchor="end">
@@ -87,17 +100,9 @@ function showLabel(i) {
             </text>
           </g>
 
-          <!-- garis target -->
-          <line
-            :x1="PAD.l"
-            :x2="VB_W - PAD.r"
-            :y1="y(trend.target)"
-            :y2="y(trend.target)"
-            stroke="var(--st-effective)"
-            stroke-width="1.6"
-            stroke-dasharray="6 4"
-          />
-          <text :x="PAD.l + 4" :y="y(trend.target) - 7" class="target-label" text-anchor="start">
+          <!-- posisi tetap di pojok atas (bukan relatif ke garis target) supaya tidak
+               bertabrakan dengan label titik data saat proyeksi mencapai nilai target -->
+          <text v-if="trend.targetLabel" :x="VB_W - PAD.r" :y="14" class="target-label" text-anchor="end">
             {{ trend.targetLabel }}
           </text>
 
@@ -117,12 +122,12 @@ function showLabel(i) {
             v-if="projectionPath"
             :d="projectionPath"
             fill="none"
-            stroke="var(--ink-muted)"
-            stroke-width="2"
-            stroke-dasharray="5 5"
+            :stroke="PLAN_COLOR"
+            stroke-width="2.5"
+            stroke-dasharray="6 4"
             stroke-linejoin="round"
           />
-          <path :d="actualPath" fill="none" stroke="var(--st-failed)" stroke-width="2.5" stroke-linejoin="round" />
+          <path :d="actualPath" fill="none" :stroke="ACTUAL_COLOR" stroke-width="2.5" stroke-linejoin="round" />
 
           <!-- titik + label -->
           <g v-for="(p, i) in allPoints" :key="p.month">
@@ -130,11 +135,11 @@ function showLabel(i) {
               :cx="x(i)"
               :cy="y(p.value)"
               :r="hover === i ? 6 : 4.5"
-              :fill="p.projected ? '#fff' : 'var(--st-failed)'"
-              :stroke="p.projected ? 'var(--ink-muted)' : '#fff'"
+              :fill="p.projected ? PLAN_COLOR : ACTUAL_COLOR"
+              stroke="#fff"
               stroke-width="2"
             />
-            <text v-if="showLabel(i)" :x="x(i)" :y="y(p.value) - 11" class="point-label" text-anchor="middle">
+            <text :x="x(i)" :y="y(p.value) - 11" class="point-label" :fill="p.projected ? PLAN_COLOR : ACTUAL_COLOR" text-anchor="middle">
               {{ p.value.toFixed(2) }}%
             </text>
             <text :x="x(i)" :y="VB_H - PAD.b + 18" class="axis-label" text-anchor="middle">
@@ -149,10 +154,7 @@ function showLabel(i) {
         </div>
       </div>
 
-      <div class="trend-legend">
-        <span><i class="trend-legend__line trend-legend__line--actual"></i> Aktual</span>
-        <span v-if="projection.length"><i class="trend-legend__line trend-legend__line--proj"></i> Proyeksi</span>
-      </div>
+      <div class="trend-caption">{{ captionText }}</div>
     </div>
   </section>
 </template>
@@ -182,46 +184,23 @@ function showLabel(i) {
 }
 
 .target-label {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 700;
-  fill: var(--st-effective);
+  fill: #0b55b7;
   font-family: inherit;
 }
 
 .point-label {
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 800;
-  fill: var(--ink-strong);
   font-family: inherit;
 }
 
-.trend-legend {
-  display: flex;
-  justify-content: center;
-  gap: 1.2rem;
+.trend-caption {
+  text-align: center;
   font-size: 0.64rem;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--ink-muted);
   padding-top: 0.15rem;
-}
-
-.trend-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.trend-legend__line {
-  display: inline-block;
-  width: 22px;
-  height: 0;
-  border-top: 3px solid var(--st-failed);
-  border-radius: 2px;
-}
-
-.trend-legend__line--proj {
-  border-top-style: dashed;
-  border-top-color: var(--ink-muted);
-  border-top-width: 2px;
 }
 </style>

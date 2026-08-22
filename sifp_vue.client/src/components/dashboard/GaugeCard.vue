@@ -1,134 +1,85 @@
 <script setup>
 import { computed } from 'vue'
+import RingGauge from './RingGauge.vue'
 
 const props = defineProps({
   kpi: { type: Object, required: true },
 })
 
-const colors = {
-  green: 'var(--accent-green)',
-  blue: 'var(--accent-blue)',
-  purple: 'var(--accent-purple)',
+// Palet per KPI mengikuti desain slide (bukan `kpi.variant` dari backend,
+// yang cuma label semantik lama "green/blue/purple" — CCVC misalnya kini
+// tampil oranye di desain baru, bukan biru).
+const styles = {
+  PSEC: { bg: '#F7FFF7', border: '#078A37', ring: '#078A37', text: '#111111' },
+  CCVC: { bg: '#FFFDF5', border: '#F0A400', ring: '#F0A400', text: '#111111' },
+  PSIE: { bg: '#F7F5FF', border: '#6D28D9', ring: '#6D28D9', text: '#3F1678' },
 }
 
-const color = computed(() => colors[props.kpi.variant] ?? 'var(--accent-green)')
+const style = computed(() => styles[props.kpi.code] ?? styles.PSEC)
 
-// setengah lingkaran r=80: panjang busur = PI * r
-const ARC_LEN = Math.PI * 80
-const dash = computed(() => `${(props.kpi.value / 100) * ARC_LEN} ${ARC_LEN}`)
-
-const valueLabel = computed(() =>
-  props.kpi.pending ? 'Pending' : `${props.kpi.value.toFixed(1)}%`
-)
-const centerLabel = computed(() => (props.kpi.pending ? 'N/A' : `${props.kpi.value.toFixed(1)}%`))
+const valueLabel = computed(() => (props.kpi.pending ? 'Pending' : `${props.kpi.value.toFixed(props.kpi.value % 1 === 0 ? 0 : 2)}%`))
 </script>
 
 <template>
-  <section class="panel gauge-card" :aria-label="`${kpi.code} ${valueLabel}`">
+  <section
+    class="panel gauge-card"
+    :style="{ background: style.bg, borderColor: style.border }"
+    :aria-label="`${kpi.code} ${valueLabel}`"
+  >
     <div class="panel-body gauge-card__body">
-      <h2 class="gauge-card__code" :style="{ color }">{{ kpi.code }}</h2>
-      <p class="gauge-card__title">{{ kpi.title }}</p>
-      <p class="gauge-card__value" :style="{ color: kpi.pending ? 'var(--ink-muted)' : color }">
-        {{ valueLabel }}
-      </p>
-      <p class="gauge-card__desc">{{ kpi.desc }}</p>
+      <h2 class="gauge-card__title" :style="{ color: style.text }">{{ kpi.code }}</h2>
 
-      <div class="gauge-card__gauge">
-        <svg viewBox="0 0 200 112" role="img" :aria-label="`Gauge ${valueLabel}`">
-          <path
-            d="M 20 100 A 80 80 0 0 1 180 100"
-            fill="none"
-            stroke="var(--track)"
-            stroke-width="17"
-            stroke-linecap="round"
-          />
-          <path
-            d="M 20 100 A 80 80 0 0 1 180 100"
-            fill="none"
-            :stroke="color"
-            stroke-width="17"
-            stroke-linecap="round"
-            :stroke-dasharray="dash"
-          />
-          <text x="100" y="93" class="gauge-card__center">{{ centerLabel }}</text>
-        </svg>
-        <div class="gauge-card__scale">
-          <span>0%</span>
-          <span>100%</span>
-        </div>
-      </div>
-    </div>
+      <RingGauge
+        :value="kpi.pending ? 0 : kpi.value"
+        :color="kpi.pending ? '#D2D8DE' : style.ring"
+        track-color="#D2D8DE"
+        :size="132"
+        :thickness="13"
+        class="gauge-card__ring"
+      >
+        <span class="gauge-card__value" :style="{ color: kpi.pending ? 'var(--ink-muted)' : style.text }">
+          {{ valueLabel }}
+        </span>
+      </RingGauge>
 
-    <div class="target-pill">
-      <span>{{ kpi.target }}</span>
-      <span class="info-badge">i</span>
+      <p class="gauge-card__desc" :style="{ color: style.text }">{{ kpi.desc }}</p>
     </div>
   </section>
 </template>
 
 <style scoped>
+.gauge-card {
+  border-width: 1.5px;
+}
+
 .gauge-card__body {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-bottom: 0;
-}
-
-.gauge-card__code {
-  margin: 0.1rem 0 0;
-  font-size: 1.5rem;
-  font-weight: 800;
+  gap: 0.3rem;
 }
 
 .gauge-card__title {
   margin: 0;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--ink);
-  min-height: 2em;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.gauge-card__ring {
+  margin: 0.15rem 0;
 }
 
 .gauge-card__value {
-  margin: 0.3rem 0 0;
-  font-size: 1.7rem;
+  font-size: 1.35rem;
   font-weight: 800;
   line-height: 1;
 }
 
 .gauge-card__desc {
-  margin: 0.25rem 0 0.4rem;
-  font-size: 0.66rem;
-  font-weight: 600;
-  color: var(--ink-muted);
-  min-height: 2.1em;
-}
-
-.gauge-card__gauge {
-  width: min(180px, 90%);
-}
-
-.gauge-card__gauge svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.gauge-card__center {
-  font-size: 22px;
-  font-weight: 800;
-  fill: var(--ink-strong);
-  text-anchor: middle;
-  font-family: inherit;
-}
-
-.gauge-card__scale {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.62rem;
+  margin: 0;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: var(--ink);
-  margin-top: -0.35rem;
-  padding: 0 0.15rem;
+  line-height: 1.3;
 }
 </style>

@@ -28,6 +28,15 @@ export const initiatives = reactive([])
 export const summaryCards = reactive([])
 export const summaryNotes = reactive([])
 export const footerNote = ref('')
+export const observationsByMonth = reactive([])
+
+/** "Zona 11" / "Z11" -> "Z11" — label ringkas dipakai di kartu/tabel yang sempit
+ *  (Zone Scores, Observation by Zone/Month, Quick Facts). ZonaBarDto.Zone bisa
+ *  berupa salah satu bentuk tergantung data hasil import Excel. */
+export function zoneShort(label) {
+  const m = /(\d+)/.exec(label ?? '')
+  return m ? `Z${m[1]}` : (label ?? '')
+}
 
 export const statusLegend = [
   { status: 'effective', label: 'Effective (≥80%)' },
@@ -69,6 +78,7 @@ export async function loadDashboard() {
   fill(summaryCards, data.summaryCards)
   fill(summaryNotes, data.summaryNotes)
   footerNote.value = data.footerNote ?? ''
+  fill(observationsByMonth, data.observationsByMonth)
 
   return data
 }

@@ -2,6 +2,7 @@
 import DashboardHeader from '../components/dashboard/DashboardHeader.vue'
 import GaugeCard from '../components/dashboard/GaugeCard.vue'
 import ConformanceCard from '../components/dashboard/ConformanceCard.vue'
+import ZoneScoresCard from '../components/dashboard/ZoneScoresCard.vue'
 import QuickFacts from '../components/dashboard/QuickFacts.vue'
 import HealthMap from '../components/dashboard/HealthMap.vue'
 import TopFivePanel from '../components/dashboard/TopFivePanel.vue'
@@ -28,6 +29,7 @@ const defaultVisibility = {
   ccvc: true,
   psie: true,
   conformance: true,
+  zoneScores: true,
   quickFacts: true,
   healthMap: true,
   topPanel1: true,
@@ -49,21 +51,26 @@ const showKpiRow = computed(() =>
   visibleCards.value.ccvc ||
   visibleCards.value.psie ||
   visibleCards.value.conformance ||
-  visibleCards.value.quickFacts
+  visibleCards.value.zoneScores
+)
+
+// Baris "blok 1-7": Health Map (tinggi, kiri) + 2 sub-baris Top 5/Trend/Tabel di kanannya,
+// meniru layout slide (bagian kanan punya 2 baris yang tingginya gabung menyamai Health Map).
+const showTop5Top = computed(() =>
+  visibleCards.value.topPanel1 || visibleCards.value.topPanel2 || visibleCards.value.topPanel3
+)
+
+const showTop5Bottom = computed(() =>
+  visibleCards.value.topPanel4 || visibleCards.value.trendChart || visibleCards.value.zonaChart
 )
 
 const showMidRow = computed(() =>
-  visibleCards.value.healthMap ||
-  visibleCards.value.topPanel1 ||
-  visibleCards.value.topPanel2 ||
-  visibleCards.value.topPanel3 ||
-  visibleCards.value.topPanel4
+  visibleCards.value.healthMap || showTop5Top.value || showTop5Bottom.value
 )
 
-const showChartsRow = computed(() =>
-  visibleCards.value.trendChart ||
-  visibleCards.value.zonaChart ||
-  visibleCards.value.initiatives
+// Baris "blok 8-9": Initiatives + Executive Summary berdampingan, masing-masing separuh lebar.
+const showBottomRow = computed(() =>
+  visibleCards.value.initiatives || visibleCards.value.executiveSummary
 )
 
 watch(visibleCards, (newVal) => {
@@ -235,29 +242,37 @@ onUnmounted(() => {
       >
         <DashboardHeader />
 
+    <QuickFacts v-if="visibleCards.quickFacts" class="dash-quickfacts" />
+
     <div v-if="showKpiRow" class="dash-row dash-row--kpi">
       <GaugeCard v-if="visibleCards.psec" :kpi="kpis[0]" class="flex-1" />
       <GaugeCard v-if="visibleCards.ccvc" :kpi="kpis[1]" class="flex-1" />
       <GaugeCard v-if="visibleCards.psie" :kpi="kpis[2]" class="flex-1" />
-      <ConformanceCard v-if="visibleCards.conformance" class="flex-1-08" />
-      <QuickFacts v-if="visibleCards.quickFacts" class="flex-1-2" />
+      <ConformanceCard v-if="visibleCards.conformance" class="flex-1-4" />
+      <ZoneScoresCard v-if="visibleCards.zoneScores" class="flex-2-6" />
     </div>
 
     <div v-if="showMidRow" class="dash-row dash-row--mid">
-      <HealthMap v-if="visibleCards.healthMap" class="dash-healthmap flex-1-85" />
-      <TopFivePanel v-if="visibleCards.topPanel1" :panel="topPanels[0]" class="flex-1" />
-      <TopFivePanel v-if="visibleCards.topPanel2" :panel="topPanels[1]" class="flex-1" />
-      <TopFivePanel v-if="visibleCards.topPanel3" :panel="topPanels[2]" class="flex-1" />
-      <TopFivePanel v-if="visibleCards.topPanel4" :panel="topPanels[3]" class="flex-1" />
+      <HealthMap v-if="visibleCards.healthMap" class="dash-healthmap" />
+
+      <div v-if="showTop5Top || showTop5Bottom" class="dash-topfive-block">
+        <div v-if="showTop5Top" class="dash-row dash-row--top5-top">
+          <TopFivePanel v-if="visibleCards.topPanel1" :panel="topPanels[0]" class="flex-1" />
+          <TopFivePanel v-if="visibleCards.topPanel2" :panel="topPanels[1]" class="flex-1-12" />
+          <TopFivePanel v-if="visibleCards.topPanel3" :panel="topPanels[2]" class="flex-1-44" />
+        </div>
+        <div v-if="showTop5Bottom" class="dash-row dash-row--top5-bottom">
+          <TopFivePanel v-if="visibleCards.topPanel4" :panel="topPanels[3]" class="flex-1" />
+          <TrendChart v-if="visibleCards.trendChart" class="flex-1-6" />
+          <ZonaChart v-if="visibleCards.zonaChart" class="flex-0-95" />
+        </div>
+      </div>
     </div>
 
-    <div v-if="showChartsRow" class="dash-row dash-row--charts">
-      <TrendChart v-if="visibleCards.trendChart" class="flex-1-15" />
-      <ZonaChart v-if="visibleCards.zonaChart" class="flex-0-95" />
-      <InitiativesTable v-if="visibleCards.initiatives" class="dash-initiatives flex-1-55" />
+    <div v-if="showBottomRow" class="dash-row dash-row--bottom">
+      <InitiativesTable v-if="visibleCards.initiatives" class="flex-1" />
+      <ExecutiveSummary v-if="visibleCards.executiveSummary" class="flex-1" />
     </div>
-
-    <ExecutiveSummary v-if="visibleCards.executiveSummary" />
 
     <div class="dash-note">
       <span class="dash-note__icon"><DashIcon name="target" :size="24" /></span>
@@ -323,15 +338,16 @@ onUnmounted(() => {
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.ccvc"> CCVC Coverage</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.psie"> PSIE Effectiveness</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.conformance"> Conformance Score</label>
+            <label class="setting-item"><input type="checkbox" v-model="visibleCards.zoneScores"> Zone Scores</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.quickFacts"> Quick Facts</label>
-            <label class="setting-item"><input type="checkbox" v-model="visibleCards.healthMap"> CLSR Health Map</label>
+            <label class="setting-item"><input type="checkbox" v-model="visibleCards.healthMap"> Critical Control Health Map</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.topPanel1"> Top 5 SIF Exposures</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.topPanel2"> Top 5 Safeguard Gaps</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.topPanel3"> Top 5 Recurring Drift</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.topPanel4"> Top 5 Systemic Issues</label>
-            <label class="setting-item"><input type="checkbox" v-model="visibleCards.trendChart"> Trend Chart</label>
-            <label class="setting-item"><input type="checkbox" v-model="visibleCards.zonaChart"> Zona Chart</label>
-            <label class="setting-item"><input type="checkbox" v-model="visibleCards.initiatives"> Initiatives Table</label>
+            <label class="setting-item"><input type="checkbox" v-model="visibleCards.trendChart"> Conformance Trend</label>
+            <label class="setting-item"><input type="checkbox" v-model="visibleCards.zonaChart"> Observation by Zone/Month</label>
+            <label class="setting-item"><input type="checkbox" v-model="visibleCards.initiatives"> Improvement Initiatives</label>
             <label class="setting-item"><input type="checkbox" v-model="visibleCards.executiveSummary"> Executive Summary</label>
           </div>
         </div>
@@ -379,12 +395,43 @@ onUnmounted(() => {
 }
 
 .flex-1 { flex: 1; }
-.flex-1-08 { flex: 1.08; }
-.flex-1-2 { flex: 1.2; }
-.flex-1-85 { flex: 1.85; }
-.flex-1-15 { flex: 1.15; }
+.flex-1-4 { flex: 1.4; }
+.flex-2-6 { flex: 2.6; }
+.flex-1-12 { flex: 1.12; }
+.flex-1-44 { flex: 1.44; }
+.flex-1-6 { flex: 1.6; }
 .flex-0-95 { flex: 0.95; }
-.flex-1-55 { flex: 1.55; }
+
+.dash-quickfacts {
+  width: 100%;
+}
+
+/* Section 1 (Health Map) tinggi di kiri, menyamai tinggi 2 sub-baris
+   Top 5/Trend/Tabel di kanannya (meniru layout slide). */
+.dash-row--mid {
+  align-items: stretch;
+}
+
+.dash-healthmap {
+  flex: 0 0 29%;
+}
+
+.dash-topfive-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+}
+
+.dash-row--top5-top,
+.dash-row--top5-bottom {
+  flex: 1;
+}
+
+.dash-row--bottom {
+  align-items: stretch;
+}
 
 .dash-note {
   display: flex;
@@ -412,16 +459,16 @@ onUnmounted(() => {
   .dash-row {
     flex-wrap: wrap;
   }
-  .flex-1, .flex-1-08, .flex-1-2, .flex-1-85, .flex-1-15, .flex-0-95, .flex-1-55 {
+  .flex-1, .flex-1-4, .flex-2-6, .flex-1-12, .flex-1-44, .flex-1-6, .flex-0-95 {
     flex: 1 1 30%;
   }
-  .dash-healthmap, .dash-initiatives {
+  .dash-healthmap {
     flex: 1 1 100% !important;
   }
 }
 
 @media (max-width: 900px) {
-  .flex-1, .flex-1-08, .flex-1-2, .flex-1-85, .flex-1-15, .flex-0-95, .flex-1-55 {
+  .flex-1, .flex-1-4, .flex-2-6, .flex-1-12, .flex-1-44, .flex-1-6, .flex-0-95 {
     flex: 1 1 100%;
   }
 }

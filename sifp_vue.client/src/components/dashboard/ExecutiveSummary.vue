@@ -1,167 +1,85 @@
 <script setup>
 import DashIcon from './DashIcon.vue'
-import { summaryCards, summaryNotes, statusLegend } from '../../data/dashboard'
+import { summaryCards } from '../../data/dashboard'
 
 const toneColor = {
-  red: 'var(--accent-red)',
+  red: '#E10B12',
   navy: 'var(--navy-bar)',
-  green: 'var(--accent-green)',
+  green: '#07913B',
+  blue: '#0B73C9',
+  orange: '#E97700',
 }
 </script>
 
 <template>
   <section class="panel es-panel" aria-label="Executive Summary">
-    <div class="es-tab">9. EXECUTIVE SUMMARY – MANAGEMENT ATTENTION REQUIRED</div>
-
-    <div class="es-grid">
-      <article v-for="card in summaryCards" :key="card.title" class="es-card">
-        <span class="es-icon" :style="{ color: toneColor[card.tone] }">
-          <DashIcon :name="card.icon" :size="26" />
-        </span>
-        <div>
-          <h3 :style="{ color: toneColor[card.tone] }">{{ card.title }}</h3>
-          <p>{{ card.text }}</p>
-        </div>
-      </article>
-
-      <article class="es-card">
-        <div>
-          <h3 class="es-h-navy">LEGEND (Conformance Score)</h3>
-          <ul class="es-legend">
-            <li v-for="item in statusLegend" :key="item.status">
-              <span class="status-dot" :class="`status-dot--${item.status}`"></span>
-              <span>{{ item.label }}</span>
-            </li>
-          </ul>
-        </div>
-      </article>
-
-      <article class="es-card">
-        <div>
-          <h3 class="es-h-navy">NOTES</h3>
-          <ul class="es-notes">
-            <li v-for="note in summaryNotes" :key="note">{{ note }}</li>
-          </ul>
-        </div>
-      </article>
+    <div class="panel-head panel-head--navy panel-head--numbered">
+      <span class="panel-head__num">9</span>
+      <span>EXECUTIVE SUMMARY</span>
     </div>
+
+    <ul class="es-list">
+      <li v-for="card in summaryCards" :key="card.title">
+        <span class="es-icon" :style="{ background: toneColor[card.tone] ?? toneColor.navy }">
+          <DashIcon :name="card.icon" :size="20" />
+        </span>
+        <span class="es-label" :style="{ color: toneColor[card.tone] ?? toneColor.navy }">{{ card.title }}:</span>
+        <span class="es-text">{{ card.text }}</span>
+      </li>
+    </ul>
   </section>
 </template>
 
 <style scoped>
-.es-tab {
-  align-self: flex-start;
-  background: var(--red-bar);
-  color: #fff;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  padding: 0.4rem 1.1rem;
-  border-radius: 0 0 12px 0;
-}
-
-.es-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.25rem;
-  padding: 0.6rem 0.75rem 0.75rem;
-}
-
-.es-card {
+.es-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 1rem 0.6rem;
+  flex: 1;
   display: flex;
-  gap: 0.55rem;
-  padding: 0.2rem 0.65rem;
+  flex-direction: column;
 }
 
-.es-card + .es-card {
-  border-left: 1px solid var(--line);
+.es-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.es-list li:last-child {
+  border-bottom: none;
 }
 
 .es-icon {
   flex: none;
-  margin-top: 0.1rem;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
 }
 
-.es-card h3 {
-  margin: 0 0 0.3rem;
-  font-size: 0.66rem;
+.es-label {
+  flex: none;
+  font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-.es-h-navy {
-  color: var(--navy-bar);
-}
-
-.es-card p {
-  margin: 0;
-  font-size: 0.63rem;
-  font-weight: 600;
-  line-height: 1.45;
-  color: var(--ink);
-}
-
-.es-legend,
-.es-notes {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.es-legend li {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.es-notes li {
-  position: relative;
-  padding-left: 0.75rem;
-  font-size: 0.62rem;
-  font-weight: 600;
+.es-text {
+  flex: 1;
+  font-size: 0.76rem;
+  font-weight: 500;
   line-height: 1.4;
-  color: var(--ink);
-}
-
-.es-notes li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: var(--navy-bar);
-  font-weight: 800;
-}
-
-@media (max-width: 1500px) {
-  .es-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem 0.25rem;
-  }
-
-  .es-card:nth-child(5) {
-    border-left: none;
-  }
+  color: #222222;
 }
 
 @media (max-width: 900px) {
-  .es-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .es-card {
-    border-left: none !important;
-    padding-left: 0.2rem;
-  }
-}
-
-@media (max-width: 560px) {
-  .es-grid {
-    grid-template-columns: 1fr;
+  .es-list li {
+    flex-wrap: wrap;
   }
 }
 </style>

@@ -83,6 +83,23 @@ namespace Sifp_Vue.Server.Services
                     .ToString("MMMM yyyy", CultureInfo.InvariantCulture)
                 : "–";
 
+            // Dikelompokkan di memori (bukan GroupBy di SQL) karena DateOnly belum
+            // punya translator LINQ-to-SQL Server yang lengkap untuk Year/Month di EF Core 8.
+            var obsMonths = await _context.Observations.AsNoTracking()
+                .Where(x => x.ObservationDate.HasValue)
+                .Select(x => x.ObservationDate!.Value)
+                .ToListAsync(cancellationToken);
+
+            var observationsByMonth = obsMonths
+                .GroupBy(d => new DateOnly(d.Year, d.Month, 1))
+                .OrderBy(g => g.Key)
+                .Select(g => new MonthlyObservationCountDto
+                {
+                    Month = g.Key.ToDateTime(TimeOnly.MinValue).ToString("MMM", CultureInfo.InvariantCulture),
+                    Count = g.Count()
+                })
+                .ToList();
+
             var conformanceTarget = measures.GetValueOrDefault("CONF")?.TargetPercent ?? 80m;
 
             return new DashboardDto
@@ -118,7 +135,8 @@ namespace Sifp_Vue.Server.Services
                 SummaryNotes = BuildSummaryNotes(texts, quickFacts),
                 FooterNote = "Dashboard ini menggunakan data observasi V&V (Full Database). " +
                              "Nilai indikator diperbarui otomatis dari hasil konversi Excel setiap kali " +
-                             "data observasi bertambah dan tervalidasi."
+                             "data observasi bertambah dan tervalidasi.",
+                ObservationsByMonth = observationsByMonth
             };
         }
 
